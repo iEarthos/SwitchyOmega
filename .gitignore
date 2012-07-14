@@ -1,0 +1,9 @@
+## IDE generated files
+### DartEditor
+.children
+.project
+
+## Compiled files
+### dart2js
+*.dart.js
+*.dart.js.map
