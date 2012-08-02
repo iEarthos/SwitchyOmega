@@ -1,0 +1,37 @@
+SwitchyOmega authors:
+* FelisCatus <https://github.com/FelisCatus>
+
+SwitchyOmega is based on (modified):
+* scripts/i18n_templates2.js
+  => From project Chromium <http://code.google.com/chromium/>
+  => Copyright (c) 2012 The Chromium Authors. All rights reserved.
+
+SwitchyOmega includes or links to (unchanged):
+* Twitter Bootstrap<http://twitter.github.com/bootstrap>
+  => Copyright 2012 Twitter, Inc.
+  => http://www.apache.org/licenses/LICENSE-2.0
+  => * scripts/bootstrap.*
+  => * styles/bootstrap.*
+  => * styles/images/glyphicons-*
+* jQuery JavaScript Library
+  => Copyright 2011, John Resig
+  => Dual licensed under the MIT or GPL Version 2 licenses.
+  => http://jquery.org/license
+  => Includes Sizzle.js
+  => http://sizzlejs.com/
+  => Copyright 2011, The Dojo Foundation
+  => Released under the MIT, BSD, and GPL Licenses.
+  => * scripts/jquery-1.7.2.*
+* jQuery UI
+  => Copyright (c) 2012 https://github.com/jquery/jquery-ui/raw/master/AUTHORS.txt
+  => Licensed MIT, GPL
+  => * scripts/jquery-ui-*
+* Dart Libraries <https://code.google.com/p/dart/>
+  => Copyright (c) 2011-2012, the Dart project authors.
+  => * library("dart:*");
+  => * scripts/dart.js
+* Icons from Switchy!
+  => from Chrome Proxy Manager and Switcher <https://code.google.com/p/switchy/>
+  => Copyright (c) 2009 Mohammad Hejazi (mohammadhi at gmail d0t com)
+  => Dual licensed under the MIT and GPL licenses.
+  => * icons/*
