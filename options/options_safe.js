@@ -24,6 +24,9 @@ strings.forEach(function (name) {
   i18nCache[name] = chrome.i18n.getMessage(name);
 });
 
+// Set the title
+document.title = i18nCache['options_title'];
+
 var c = new Communicator();
 
 c.on({
@@ -48,8 +51,6 @@ c.on({
     respond(i18nCache);
   }
 });
-
-
 
 document.addEventListener('DOMContentLoaded', function () {
   c.dest = document.getElementsByTagName('iframe')[0].contentWindow;
