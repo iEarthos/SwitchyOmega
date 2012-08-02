@@ -1,0 +1,129 @@
+{
+  "appNameShort": {
+    "message": "SwitchyOmega",
+    "description": "A short name of the application."
+  },
+  
+  "manifest_app_name": {
+    "message": "Proxy SwitchyOmega",
+    "description": "Displayed as the name of the extension."
+  },
+  "manifest_app_description": {
+    "message": "Manage and switch between multiple proxies quickly & easily.",
+    "description": "Displayed as a longer description of the extension."
+  },
+  "manifest_icon_default_title": {
+    "message": "Loading...",
+    "description": "Displayed when the background page is loading."
+  },
+  
+  "dialog_close": {
+    "message": "Close"
+  },
+  "dialog_save": {
+    "message": "Save changes"
+  },
+  
+  "options_title": {
+    "message": "SwitchyOmega Options"
+  },
+  "options_navHeader_setting": {
+    "message": "Settings"
+  },
+  "options_navHeader_profiles": {
+    "message": "Profiles"
+  },
+  "options_tab_ui": {
+    "message": "User Interface"
+  },
+  "options_tab_general": {
+    "message": "General"
+  },
+  "options_tab_importExport": {
+    "message": "Import/Export"
+  },
+  "options_addProfile": {
+    "message": "Add profile..."
+  },
+  "options_group_miscOptions": {
+    "message": "Misc Options"
+  },
+  "options_confirmDelection": {
+    "message": "Confirm profile/condition deletion."
+  },
+  "options_refreshOnProfileChange": {
+    "message": "Refresh current tab on profile change."
+  },
+  "options_group_switchOptions": {
+    "message": "Switch Options"
+  },
+  "options_startupProfile": {
+    "message": "Startup Profile"
+  },
+  "options_quickSwitch": {
+    "message": "Quick Switch"
+  },
+  "options_cycledProfiles": {
+    "message": "Cycled Profiles"
+  },
+  "options_cycledProfilesHelp": {
+    "message": "When you click on the icon, the following profiles will be applied in their order."
+  },
+  "options_notCycledProfiles": {
+    "message": "Not Cycled Profiles"
+  },
+  "options_group_proxyChanges": {
+    "message": "Proxy Changes"
+  },
+  "options_revertProxyChanges": {
+    "message": "Revert proxy changes done by other apps."
+  },
+  "options_group_importExportProfile": {
+    "message": "Profile"
+  },
+  "options_exportPacFile": {
+    "message": "Export as PAC File"
+  },
+  "options_exportPacFileHelp": {
+    "message": "Export the current profile as a PAC file, so you can use it in other browsers."
+  },
+  "options_group_importExportSettings": {
+    "message": "Settings"
+  },
+  "options_makeBackup": {
+    "message": "Make backup"
+  },
+  "options_makeBackupHelp": {
+    "message": "Make a full backup of your options (including profiles and all other options)."
+  },
+  "options_restoreLocal": {
+    "message": "Restore from file"
+  },
+  "options_restoreLocalHelp": {
+    "message": "Restore your SwitchyOmega options from a local file."
+  },
+  "options_restoreOnline": {
+    "message": "Restore from online"
+  },
+  "options_restoreOnlinePlaceholder": {
+    "message": "Options file URL (e.g. 'http://example.com/switchy.bak')"
+  },
+  "options_restoreOnlineSubmit": {
+    "message": "Restore"
+  },
+  "options_profileTabPrefix": {
+    "message": "Profile :: "
+  },
+  "options_renameProfile": {
+    "message": "Rename"
+  },
+  "options_deleteProfile": {
+    "message": "Delete"
+  },
+  "options_modalHeader_renameProfile": {
+    "message": "Rename Profile"
+  },
+  "options_modalHeader_deleteProfile": {
+    "message": "Delete Profile"
+  }
+}

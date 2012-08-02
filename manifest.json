@@ -1,0 +1,28 @@
+{
+  "manifest_version": 2,
+  "name": "__MSG_manifest_app_name__",
+  "version": "2.0.1",
+  "description": "__MSG_manifest_app_description__",
+  "icons": {
+    "16": "icons/icon.png",
+    "128": "icons/icon-128.png"
+  },
+  "default_locale": "en",
+  "browser_action": {
+    "default_icon": "icons/icon-yellow.png",
+    "default_title": "__MSG_manifest_icon_default_title__",
+    "default_popup": "popup/popup.html"
+  },
+  "background": {
+    "page": "background/background_safe.html"
+  },
+  "homepage_url": "https://chrome.google.com/webstore/detail/dpplabbmogkhghncfbfdeeokoefdjegm",
+  "minimum_chrome_version": "21.0.0",
+  "options_page": "options/options_safe.html",
+  "permissions": [ "proxy", "tabs", "<all_urls>" ],
+  "sandbox": {
+    "pages": [
+      "options/options.html"
+    ]
+  }
+}

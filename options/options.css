@@ -1,0 +1,243 @@
+body {
+  
+}
+
+#options-nav {
+  margin-left: 0 !important;
+  min-height: 100%;
+}
+
+.navbar {
+  margin-bottom: 0;
+  margin-top: 15px;
+}
+
+.nav-wrapper {
+  position: fixed;
+  width: inherit;
+}
+
+.width-holder {
+  position: static;
+  visibility: hidden;
+}
+
+#main {
+  margin-left: 10px !important;
+}
+
+h1 {
+  font-size: 1.2em;
+  color: #5C6166;
+  display: inline-block;
+}
+
+.tab-pane h2 {
+  font-size: 1.5em;
+  line-height: 40px;
+}
+
+header > hr {
+  margin: 0;
+}
+
+.tab-pane {
+  max-height: 100%;
+  overflow-y: auto;
+  padding-top: 70px;
+}
+
+.tab-pane header {
+  background-color: rgba(255, 255, 255, 0.6);
+  background-image: -webkit-linear-gradient(top, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.6));
+  background-image:    -moz-linear-gradient(top, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.6));
+  background-image:      -o-linear-gradient(top, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.6));
+  background-image:         linear-gradient(to bottom, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.6));
+  position: fixed;
+  margin-left: 0;
+  max-height: 60px;
+  margin-top: -70px;
+  padding-top: 10px;
+}
+
+/* Responsive */
+
+@media (min-width: 768px) {
+  .navbar .btn-navbar {
+    display: none;
+  }
+  .collapse-target {
+    height: auto !important;
+    position: relative;
+    overflow: hidden;
+  }
+  #options-nav {
+    min-width: 130px !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .nav-wrapper {
+    position: static !important;
+  }
+  
+  #main {
+    float: left;
+  }
+  
+  .navbar {
+    margin-bottom: 10px;
+    margin-top: 0;
+  }
+  
+  .collapse-target {
+    height: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  h1 {
+    padding-right: 10px;
+    padding-left: 10px;
+    margin: 0 0 0 -5px;
+    display: block;
+    float: left;
+    padding: 8px 0 12px;
+    font-size: 20px;
+    font-weight: 200;
+    line-height: 1;
+    color: #999;
+  }
+  
+  .navbar-effect {
+    min-height: 40px;
+    padding-right: 20px;
+    padding-left: 20px;
+    background-color: #2C2C2C;
+    background-image: -webkit-linear-gradient(top, #333, #222);
+    background-image:    -moz-linear-gradient(top, #333, #222);
+    background-image:     -ms-linear-gradient(top, #333, #222);
+    background-image:      -o-linear-gradient(top, #333, #222);
+    background-image:         linear-gradient(top, #333, #222);
+    background-repeat: repeat-x;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    filter: progid:dximagetransform.microsoft.gradient(startColorstr='#333333', endColorstr='#222222', GradientType=0);
+    -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+    -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+  }
+  
+  .width-holder {
+    display: none;
+  }
+  
+  .tab-pane {
+    max-height: none;
+    padding-top: 0px;
+  }
+  
+  .tab-pane header {
+    position: static;
+    margin-bottom: 10px;
+    max-height: none;
+    margin-top: 0px;
+    padding-top: 0px;
+  }
+}
+
+/* Settings */
+
+.settings-group > * {
+  margin-left: 20px;
+}
+
+.settings-group > h3 {
+  margin-left: 0;
+  margin-bottom: 10px;
+  font-size: 1.2em;
+}
+
+input[type="file"] {
+  visibility:hidden;
+  position:absolute;
+}
+
+.h-control {
+  margin-bottom: 9px;
+}
+
+.h-control * {
+  display: inline;
+  margin-bottom: 0;
+}
+
+/* Nav list */
+
+.nav-list .active [class^="icon-"],
+.nav-list .active [class*=" icon-"] {
+  background-image: url(../styles/images/glyphicons-halflings-white.png);
+}
+
+/* Profile Toolbar */
+
+.profile-header h2 {
+  display: inline-block;
+}
+
+.profile-toolbar {
+  display: inline-block;
+  float: right;
+  line-height: 36px;
+}
+
+@media (max-width: 767px) {
+  .profile-toolbar {
+    float: left;
+    display: block;
+    margin-bottom: 10px;
+  }
+  
+  header > hr {
+    float: left;
+  }
+}
+
+.profile-color {
+  display: inline-block;
+  padding: 6px;
+  border: solid 1px #eee;
+  margin-right: 10px;
+}
+
+/* Quick Switch */
+
+#quick-switch-settings {
+  display: none;
+}
+
+.cycle-profile-container {
+  list-style-type: none;
+  min-height: 20px;
+  margin: 0;
+  display: inline-block;
+  min-width: 40%;
+  padding: 0;
+  border: solid 1px #abc;
+}
+
+.cycle-profile-container li {
+  display: block;
+  margin: 10px;
+  padding: 5px;
+  cursor: move;
+}
+
+#cycle-enabled li {
+  background-color: #E4FFCD;
+}
+
+#cycle-disabled li {
+  background-color: #ddd;
+}

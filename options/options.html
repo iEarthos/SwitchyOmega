@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+  <head>
+    <meta charset="utf-8" />
+    <title data-i18n="options_title"></title>
+    <link rel="stylesheet" type="text/css" href="../styles/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="../styles/bootstrap-responsive.min.css" />
+    <link rel="stylesheet" type="text/css" href="options.css" />
+    <script type="text/javascript" src="../scripts/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="../scripts/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../scripts/jquery-ui-1.8.21.custom.min.js"></script>
+    <script type="text/javascript" src="../scripts/communicator.js"></script>
+    <script type="text/javascript" src="../scripts/i18n_template2.js"></script>
+    <script type="text/javascript" src="../scripts/i18n_dict.js"></script>
+    <script type="text/javascript" src="options.js"></script>
+    
+    <script type="application/dart" src="options.dart"></script>
+    <script type="text/javascript" src="../scripts/dart.js"></script>
+  </head>
+  <body class="container-fluid">
+    <header class="span2" id="options-nav">
+      <div class="nav-wrapper">
+        <div class="navbar navbar-effect">
+          <h1 data-i18n="appNameShort"></h1>
+          <a href="#" class="btn btn-navbar" data-toggle="collapse" data-target=".collapse-target">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+        </div>
+        <nav class="collapse-target">
+          <ul id="tabs" class="nav nav-list">
+            <li class="nav-header" data-i18n="options_navHeader_setting"></li>
+            <li class="active">
+              <a href="#tab-ui" data-toggle="tab">
+                <i class="icon-edit"></i>
+                <span data-i18n="options_tab_ui"></span>
+              </a>
+            </li>
+            <li>
+              <a href="#tab-general" data-toggle="tab">
+                <i class="icon-cog"></i>
+                <span data-i18n="options_tab_general"></span>
+              </a>
+            </li>
+            <li>
+              <a href="#tab-importexport" data-toggle="tab">
+                <i class="icon-file"></i>
+                <span data-i18n="options_tab_importExport"></span>
+              </a>
+            </li>
+            <li class="divider"></li>
+            <li class="nav-header" data-i18n="options_navHeader_profiles"></li>
+            <li>
+              <a href="#profile-example" data-toggle="tab">
+                <i class="icon-globe"></i>
+                <span data-bind="profileName">Example</span>
+              </a>
+            </li>
+            <li>
+              <a>
+                <i class="icon-retweet"></i>
+                <span data-bind="profileName">Auto</span>
+              </a>
+            </li>
+            <li class="divider"></li>
+            <li>
+              <a>
+                <i class="icon-plus"></i>
+                <span data-i18n="options_addProfile"></span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+      <div class="width-holder">.</div>
+    </header>
+    <div id="main" class="span10">
+      <div class="tab-content">
+        <div class="tab-pane active" id="tab-ui">
+          <header class="span10">
+            <h2 data-i18n="options_tab_ui"></h2>
+            <hr />
+          </header>
+          <section class="settings-group">
+            <h3 data-i18n="options_group_miscOptions"></h3>
+            <p>
+              <label class="checkbox">
+                <input type="checkbox" id="confirm-deletion" />
+                <span data-i18n="options_confirmDelection"></span>
+              </label>
+            </p>
+            <p>
+              <label class="checkbox">
+                <input type="checkbox" id="refresh-on-profile-change" />
+                <span data-i18n="options_refreshOnProfileChange"></span>
+              </label>
+            </p>
+          </section>
+          <section class="settings-group">
+            <h3 data-i18n="options_group_switchOptions"></h3>
+            <div class="h-control">
+              <label data-i18n="options_startupProfile" for="startup-profile"></label>
+              <select id="startup-profile">
+                <option>Example</option>
+              </select>
+            </div>
+            <p>
+              <label class="checkbox">
+                <input type="checkbox" id="quick-switch" />
+                <span data-i18n="options_quickSwitch"></span>
+              </label>
+            </p>
+            <div id="quick-switch-settings" class="settings-group">
+              <h4 data-i18n="options_cycledProfiles"></h4>
+              <p class="help-block" data-i18n="options_cycledProfilesHelp"></p>
+              <ul id="cycle-enabled" class="cycle-profile-container">
+                <li><div class="profile-color" style="background-color: blue;"></div><span data-bind="profile-name">Example</span></li>
+              </ul>
+              <p></p>
+              <h4 data-i18n="options_notCycledProfiles"></h4>
+              <ul id="cycle-disabled" class="cycle-profile-container"></ul>
+            </div>
+          </section>
+        </div>
+        <div class="tab-pane" id="tab-general">
+          <header class="span10">
+            <h2 data-i18n="options_tab_general"></h2>
+            <hr />
+          </header>
+          <section class="settings-group">
+            <h3 data-i18n="options_group_proxyChanges"></h3>
+              <label class="checkbox">
+                <input type="checkbox" id="revert-proxy-changes" />
+                <span data-i18n="options_revertProxyChanges"></span>
+              </label>
+          </section>
+        </div>
+        <div class="tab-pane" id="tab-importexport">
+          <header class="span10">
+            <h2 data-i18n="options_tab_importExport"></h2>
+            <hr />
+          </header>
+          <section class="settings-group">
+            <h3 data-i18n="options_group_importExportProfile"></h3>
+            <p>
+              <button class="btn" id="export-pac-file" data-i18n="options_exportPacFile"></button>
+              <span class="help-inline" data-i18n="options_exportPacFileHelp"></span>
+            </p>
+          </section>
+          <section class="settings-group">
+            <h3 data-i18n="options_group_importExportSettings"></h3>
+            <p>
+              <button class="btn" id="make-backup" data-i18n="options_makeBackup"></button>
+              <span class="help-inline" data-i18n="options_makeBackupHelp"></span>
+            </p>
+            <p>
+              <input type="file" id="restore-local-selector" />
+              <button class="btn" id="restore-local" data-i18n="options_restoreLocal"></button>
+              <span class="help-inline" data-i18n="options_restoreLocalHelp"></span>
+            </p>
+            <p>
+              <label class="control-label" data-i18n="options_restoreOnline"></label>
+              <div class="form-inline">
+                <input type="text" class="input-xxlarge" data-i18n-values="placeholder: options_restoreOnlinePlaceholder" id="restore-url" />
+                <button class="btn" id="restore-online" data-i18n="options_restoreOnlineSubmit"></button>
+              </div>
+            </p>
+          </section>
+        </div>
+        <div class="tab-pane" id="profile-example">
+          <header class="span10 profile-header">
+            <h2>
+              <span data-i18n="options_profileTabPrefix"></span>
+              <span class="profile-name">Example</span>
+            </h2>
+            <div class="profile-toolbar">
+              <a class="profile-delete btn btn-info" data-toggle="modal" href="#modal-profile-rename">
+                <i class="icon-pencil icon-white"></i>
+                <span data-i18n="options_renameProfile"></span>
+              </a>
+              <a class="profile-delete btn btn-danger" data-toggle="modal" href="#modal-profile-delete">
+                <i class="icon-trash icon-white"></i>
+                <span data-i18n="options_deleteProfile"></span>
+              </a>
+            </div>
+            <hr />
+          </header>
+          TODO(catus)
+        </div>
+      </div>
+    </div>
+    <div class="modal hide fade" id="modal-profile-rename">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">×</button>
+        <h3 data-i18n="options_modalHeader_renameProfile"></h3>
+      </div>
+      <div class="modal-body">
+        <p>
+          <input type="text" value="Example" /> 
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" data-i18n="dialog_close">Close</button>
+        <a href="#" class="btn btn-primary" id="profile-rename-save" data-i18n="dialog_save"></a>
+      </div>
+    </div>
+    <div class="modal hide fade" id="modal-profile-delete">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">×</button>
+        <h3 data-i18n="options_modalHeader_deleteProfile"></h3>
+      </div>
+      <div class="modal-body">
+        <p>Do you really want to delete the follwing profile?</p>
+        <div class="well"><div class="profile-color" style="background-color: blue;"></div><span data-bind="profile-name">Example</span></div>
+      </div>
+      <div class="modal-footer">
+        <a href="#" class="btn" data-dismiss="modal" data-i18n="dialog_close"></a>
+        <a href="#" class="btn btn-primary btn-danger" data-i18n="options_deleteProfile"></a>
+      </div>
+    </div>
+  </body>
+</html>
