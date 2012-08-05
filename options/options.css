@@ -261,3 +261,22 @@ input[type="file"] {
 #cycle-disabled li {
   background-color: #ddd;
 }
+
+/* Fixed Profile */
+.fixed-servers {
+  width: auto;
+}
+
+.proxy-for-scheme {
+  display: none;
+}
+
+.bypass-list {
+  min-height: 150px;
+}
+
+/* PAC Profile */
+.pac-script {
+  min-height: 500px;
+}
+

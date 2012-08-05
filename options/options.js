@@ -89,4 +89,54 @@ $(document).ready(function () {
     var tabHash = e.target.getAttribute('href');
     c.send('tab.set', tabHash);
   });
+  
+  // Fixed servers
+  $('body').on('change', '.use-same-proxy', function (e) {
+    var check = $(e.target);
+    var proxies = check.closest('.fixed-servers').find('.proxy-for-scheme');
+    if (check[0].checked) {
+      proxies.hide();
+    } else {
+      proxies.show();
+    }
+  });
+  
+  // Pac Scripts
+  $('body').on('change', '.pac-url', function (e) {
+    var pacUrl = $(e.target);
+    var pacScript = pacUrl.closest('.tab-pane').find('.pac-script');
+    if (pacUrl[0].value) {
+      pacScript.attr('disabled', 'disabled');
+    } else {
+      pacScript.removeAttr('disabled');
+    }
+  });
+  
+  // Clear input
+  $('body').on('click', '.clear-input', function (e) {
+    var button = $(e.target).closest('.clear-input');
+    var input = button.prev('input');
+    if (button.hasClass('revert')) {
+      input.val(input.attr('data-restore')).change();
+      button.removeClass('revert');
+      button.find('i').removeClass('icon-repeat').addClass('icon-remove');
+    } else {
+      var v = input.val();
+      if (v) {
+        input.attr('data-restore', v);
+        input.val('').change();
+        button.addClass('revert');
+        button.find('i').removeClass('icon-remove').addClass('icon-repeat');
+        var handler = function () {
+          if (input.val()) {
+            button.removeClass('revert');
+            button.find('i').removeClass('icon-repeat').addClass('icon-remove');
+            input.off(eventMap);
+          }
+        };
+        var eventMap = {'change': handler, 'keyup': handler, 'keydown': handler};
+        input.on(eventMap);
+      }
+    }
+  });
 });

@@ -120,6 +120,42 @@
   "options_deleteProfile": {
     "message": "Delete"
   },
+  "options_group_proxyServers": {
+    "message": "Proxy servers"
+  },
+  "options_proxy_scheme": {
+    "message": "Scheme"
+  },
+  "options_proxy_protocol": {
+    "message": "Scheme"
+  },
+  "options_proxy_server": {
+    "message": "Server"
+  },
+  "options_proxy_port": {
+    "message": "Port"
+  },
+  "options_scheme_default": {
+    "message": "(default)"
+  },
+  "options_proxy_single": {
+    "message": "Use the proxy above for all protocols."
+  },
+  "options_group_bypassList": {
+    "message": "Bypass List"
+  },
+  "options_bypassListHelp": {
+    "message": "Servers for which you do not want to use any proxy: (One server on each line.)"
+  },
+  "options_group_pacUrl": {
+    "message": "PAC URL"
+  },
+  "options_pacUrlHelp": {
+    "message": "The PAC script will be updated from this URL. If it is left blank, the following scripts will be used directly instead."
+  },
+  "options_group_pacScript": {
+    "message": "PAC Script"
+  },
   "options_modalHeader_renameProfile": {
     "message": "Rename Profile"
   },

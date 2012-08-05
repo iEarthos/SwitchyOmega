@@ -77,6 +77,12 @@
               </a>
             </li>
             <li>
+              <a href="#profile-pac" data-toggle="tab">
+                <i class="icon-tasks"></i>
+                <span data-bind="profileName">Pac</span>
+              </a>
+            </li>
+            <li>
               <a>
                 <i class="icon-retweet"></i>
                 <span data-bind="profileName">Auto</span>
@@ -181,7 +187,7 @@
             <p>
               <label class="control-label" data-i18n="options_restoreOnline"></label>
               <div class="form-inline">
-                <input type="text" class="input-xxlarge" data-i18n-values="placeholder: options_restoreOnlinePlaceholder" id="restore-url" />
+                <input type="url" class="input-xxlarge" data-i18n-values="placeholder: options_restoreOnlinePlaceholder" id="restore-url" />
                 <button class="btn" id="restore-online" data-i18n="options_restoreOnlineSubmit"></button>
               </div>
             </p>
@@ -205,7 +211,146 @@
             </div>
             <hr />
           </header>
-          TODO(catus)
+          <section class="settings-group">
+            <h3 data-i18n="options_group_proxyServers"></h3>
+            <table class="fixed-servers table table-bordered table-striped">
+              <tr>
+                <th data-i18n="options_proxy_scheme"></th>
+                <th data-i18n="options_proxy_protocol"></th>
+                <th data-i18n="options_proxy_server"></th>
+                <th data-i18n="options_proxy_port"></th>
+              </tr>
+              <tr data-scheme="(default)">
+                <td data-i18n="options_scheme_default"></td>
+                <td>
+                  <select class="input-small">
+                    <option>HTTP</option>
+                    <option>HTTPS</option>
+                    <option>FTP</option>
+                    <option>SOCKS4</option>
+                    <option>SOCKS5</option>
+                  </select>
+                </td>
+                <td>
+                  <input type="text" value="127.0.0.1" />
+                </td>
+                <td>
+                  <input type="text" value="7070" class="input-small"/>
+                </td>
+              </tr>
+              <tr>
+                <td></td>
+                <td colspan="3">
+                  <label class="checkbox">
+                    <input type="checkbox" class="use-same-proxy" checked="checked" />
+                    <span data-i18n="options_proxy_single"></span>
+                  </label>
+                </td>
+              </tr>
+              <tr data-scheme="HTTP" class="proxy-for-scheme">
+                <td>http://</td>
+                <td>
+                  <select class="input-small">
+                    <option>HTTP</option>
+                    <option>HTTPS</option>
+                    <option>FTP</option>
+                    <option>SOCKS4</option>
+                    <option>SOCKS5</option>
+                  </select>
+                </td>
+                <td>
+                  <input type="text" value="127.0.0.1" />
+                </td>
+                <td>
+                  <input type="text" value="7070" class="input-small"/>
+                </td>
+              </tr>
+              <tr data-scheme="HTTPS" class="proxy-for-scheme">
+                <td>https://</td>
+                <td>
+                  <select class="input-small">
+                    <option>HTTP</option>
+                    <option>HTTPS</option>
+                    <option>FTP</option>
+                    <option>SOCKS4</option>
+                    <option>SOCKS5</option>
+                  </select>
+                </td>
+                <td>
+                  <input type="text" value="127.0.0.1" />
+                </td>
+                <td>
+                  <input type="text" value="7070" class="input-small"/>
+                </td>
+              </tr>
+              <tr data-scheme="FTP" class="proxy-for-scheme">
+                <td>ftp://</td>
+                <td>
+                  <select class="input-small">
+                    <option>HTTP</option>
+                    <option>HTTPS</option>
+                    <option>FTP</option>
+                    <option>SOCKS4</option>
+                    <option>SOCKS5</option>
+                  </select>
+                </td>
+                <td>
+                  <input type="text" value="127.0.0.1" />
+                </td>
+                <td>
+                  <input type="text" value="7070" class="input-small"/>
+                </td>
+              </tr>
+            </table>
+          </section>
+          <section class="settings-group">
+            <h3 data-i18n="options_group_bypassList"></h3>
+            <p class="help-block" data-i18n="options_bypassListHelp"></p>
+            <textarea class="bypass-list input-xxlarge">&lt;local&gt;</textarea>
+          </section>
+        </div>
+        <div class="tab-pane" id="profile-pac">
+          <header class="span10 profile-header">
+            <h2>
+              <span data-i18n="options_profileTabPrefix"></span>
+              <span class="profile-name">Pac</span>
+            </h2>
+            <div class="profile-toolbar">
+              <a class="profile-delete btn btn-info" data-toggle="modal" href="#modal-profile-rename">
+                <i class="icon-pencil icon-white"></i>
+                <span data-i18n="options_renameProfile"></span>
+              </a>
+              <a class="profile-delete btn btn-danger" data-toggle="modal" href="#modal-profile-delete">
+                <i class="icon-trash icon-white"></i>
+                <span data-i18n="options_deleteProfile"></span>
+              </a>
+            </div>
+            <hr />
+          </header>
+          <section class="settings-group">
+            <h3 data-i18n="options_group_pacUrl"></h3>
+            <div class="input-append">
+              <input type="url" class="pac-url input-xxlarge" value="http://wpad/wpad.dat" />
+              <a class="add-on clear-input btn">
+                <i class="icon-remove"></i>
+              </a>
+            </div>
+            <p class="help-block" data-i18n="options_pacUrlHelp"></p>
+          </section>
+          <section class="settings-group">
+            <h3 data-i18n="options_group_pacScript"></h3>
+            <textarea class="pac-script input-xxlarge" disabled="disabled">
+    var FindProxyForURL = function (url, host) {
+      if (host == 'www.example.com') {
+        return 'SOCKS5 127.0.0.1:7070';
+      }
+      if (host == 'www2.example.com') {
+        return 'PROXY 127.0.0.1:8888';
+      }
+      return 'DIRECT';
+    };
+            </textarea>
+          </section>
         </div>
       </div>
     </div>
