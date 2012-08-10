@@ -83,7 +83,13 @@
               </a>
             </li>
             <li>
-              <a>
+              <a href="#profile-rulelist" data-toggle="tab">
+                <i class="icon-list"></i>
+                <span data-bind="profileName">Rulelist</span>
+              </a>
+            </li>
+            <li>
+              <a href="#profile-auto" data-toggle="tab">
                 <i class="icon-retweet"></i>
                 <span data-bind="profileName">Auto</span>
               </a>
@@ -352,6 +358,58 @@
             </textarea>
           </section>
         </div>
+        <div class="tab-pane" id="profile-rulelist">
+          <header class="span10 profile-header">
+            <h2>
+              <span data-i18n="options_profileTabPrefix"></span>
+              <span class="profile-name">Rulelist</span>
+            </h2>
+            <div class="profile-toolbar">
+              <a class="profile-delete btn btn-info" data-toggle="modal" href="#modal-profile-rename">
+                <i class="icon-pencil icon-white"></i>
+                <span data-i18n="options_renameProfile"></span>
+              </a>
+              <a class="profile-delete btn btn-danger" data-toggle="modal" href="#modal-profile-delete">
+                <i class="icon-trash icon-white"></i>
+                <span data-i18n="options_deleteProfile"></span>
+              </a>
+            </div>
+            <hr />
+          </header>
+          <section class="settings-group">
+            <h3 data-i18n="options_group_ruleListResult"></h3>
+            <div class="h-control">
+              <label data-i18n="options_ruleListMatchProfile"></label>
+              <select>
+                <option>Example</option>
+                <option>[Direct]</option>
+              </select>
+            </div>
+            <div class="h-control">
+              <label data-i18n="options_ruleListDefaultProfile"></label>
+              <select>
+                <option>Example</option>
+                <option>[Direct]</option>
+              </select>
+            </div>
+          </section>
+          <section class="settings-group">
+            <h3 data-i18n="options_group_ruleListUrl"></h3>
+            <div class="input-append">
+              <input type="url" class="rule-list-url input-xxlarge" value="http://wpad/wpad.dat" />
+              <a class="add-on clear-input btn">
+                <i class="icon-remove"></i>
+              </a>
+            </div>
+            <p class="help-block" data-i18n="options_ruleListUrlHelp"></p>
+          </section>
+          <section class="settings-group">
+            <h3 data-i18n="options_group_ruleListText"></h3>
+            <textarea class="rule-list-text input-xxlarge" disabled="disabled">
+example.com
+            </textarea>
+          </section>
+        </div>
       </div>
     </div>
     <div class="modal hide fade" id="modal-profile-rename">
@@ -365,7 +423,7 @@
         </p>
       </div>
       <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" data-i18n="dialog_close">Close</button>
+        <a class="btn" data-dismiss="modal" data-i18n="dialog_close"></a>
         <a href="#" class="btn btn-primary" id="profile-rename-save" data-i18n="dialog_save"></a>
       </div>
     </div>
@@ -375,7 +433,7 @@
         <h3 data-i18n="options_modalHeader_deleteProfile"></h3>
       </div>
       <div class="modal-body">
-        <p>Do you really want to delete the follwing profile?</p>
+        <p data-i18n="options_deleteProfileConfirm"></p>
         <div class="well"><div class="profile-color" style="background-color: blue;"></div><span data-bind="profile-name">Example</span></div>
       </div>
       <div class="modal-footer">

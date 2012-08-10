@@ -263,6 +263,7 @@ input[type="file"] {
 }
 
 /* Fixed Profile */
+
 .fixed-servers {
   width: auto;
 }
@@ -276,7 +277,14 @@ input[type="file"] {
 }
 
 /* PAC Profile */
+
 .pac-script {
+  min-height: 500px;
+}
+
+/* Rule list profile */
+
+.rule-list-text {
   min-height: 500px;
 }
 

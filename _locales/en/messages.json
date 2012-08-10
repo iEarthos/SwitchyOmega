@@ -156,10 +156,31 @@
   "options_group_pacScript": {
     "message": "PAC Script"
   },
+  "options_group_ruleListResult": {
+    "message": "Rule list result profiles"
+  },
+  "options_ruleListMatchProfile": {
+    "message": "Match profile"
+  },
+  "options_ruleListDefaultProfile": {
+    "message": "Default profile"
+  },
+  "options_group_ruleListUrl": {
+    "message": "Rule List URL"
+  },
+  "options_ruleListUrlHelp": {
+    "message": "The rule list will be updated from this URL. If it is left blank, the following text will be parsed instead."
+  },
+  "options_group_ruleListText": {
+    "message": "Rule List Text"
+  },
   "options_modalHeader_renameProfile": {
     "message": "Rename Profile"
   },
   "options_modalHeader_deleteProfile": {
     "message": "Delete Profile"
+  },
+  "options_deleteProfileConfirm": {
+    "message": "Do you really want to delete the following profile?"
   }
 }
