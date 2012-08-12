@@ -193,6 +193,12 @@ input[type="file"] {
   margin-bottom: 0;
 }
 
+/* Sortable helpers */
+
+.sort-bar {
+  cursor: move;
+}
+
 /* Nav list */
 
 .nav-list .active [class^="icon-"],
@@ -260,6 +266,11 @@ input[type="file"] {
 
 #cycle-disabled li {
   background-color: #ddd;
+}
+
+/* Cancel input margin in tables. */
+td select, td textarea, td input {
+  margin-bottom: 0px !important;
 }
 
 /* Fixed Profile */

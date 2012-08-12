@@ -37,6 +37,26 @@
     <script type="text/javascript" src="../scripts/dart.js"></script>
   </head>
   <body class="container-fluid">
+    <div>
+      <datalist id="profiles">
+        <option>Example</option>
+        <option>Pac</option>
+        <option>Rulelist</option>
+        <option>Auto</option>
+        <option>System</option>
+        <option>Direct</option>
+      </datalist>
+      <datalist id="condition-types">
+        <option data-i18n="condition_hostWildcard"></option>
+        <option data-i18n="condition_hostRegex"></option>
+        <option data-i18n="condition_hostLevels"></option>
+        <option data-i18n="condition_urlWildcard"></option>
+        <option data-i18n="condition_urlRegex"></option>
+        <option data-i18n="condition_keyword"></option>
+        <option data-i18n="condition_always"></option>
+        <option data-i18n="condition_never"></option>
+      </datalist>
+    </div>
     <header class="span2" id="options-nav">
       <div class="nav-wrapper">
         <div class="navbar navbar-effect">
@@ -132,9 +152,7 @@
             <h3 data-i18n="options_group_switchOptions"></h3>
             <div class="h-control">
               <label data-i18n="options_startupProfile" for="startup-profile"></label>
-              <select id="startup-profile">
-                <option>Example</option>
-              </select>
+              <select id="startup-profile" data-list="profiles"></select>
             </div>
             <p>
               <label class="checkbox">
@@ -190,13 +208,13 @@
               <button class="btn" id="restore-local" data-i18n="options_restoreLocal"></button>
               <span class="help-inline" data-i18n="options_restoreLocalHelp"></span>
             </p>
-            <p>
+            <div>
               <label class="control-label" data-i18n="options_restoreOnline"></label>
               <div class="form-inline">
                 <input type="url" class="input-xxlarge" data-i18n-values="placeholder: options_restoreOnlinePlaceholder" id="restore-url" />
                 <button class="btn" id="restore-online" data-i18n="options_restoreOnlineSubmit"></button>
               </div>
-            </p>
+            </div>
           </section>
         </div>
         <div class="tab-pane" id="profile-example">
@@ -220,93 +238,95 @@
           <section class="settings-group">
             <h3 data-i18n="options_group_proxyServers"></h3>
             <table class="fixed-servers table table-bordered table-striped">
-              <tr>
-                <th data-i18n="options_proxy_scheme"></th>
-                <th data-i18n="options_proxy_protocol"></th>
-                <th data-i18n="options_proxy_server"></th>
-                <th data-i18n="options_proxy_port"></th>
-              </tr>
-              <tr data-scheme="(default)">
-                <td data-i18n="options_scheme_default"></td>
-                <td>
-                  <select class="input-small">
-                    <option>HTTP</option>
-                    <option>HTTPS</option>
-                    <option>FTP</option>
-                    <option>SOCKS4</option>
-                    <option>SOCKS5</option>
-                  </select>
-                </td>
-                <td>
-                  <input type="text" value="127.0.0.1" />
-                </td>
-                <td>
-                  <input type="text" value="7070" class="input-small"/>
-                </td>
-              </tr>
-              <tr>
-                <td></td>
-                <td colspan="3">
-                  <label class="checkbox">
-                    <input type="checkbox" class="use-same-proxy" checked="checked" />
-                    <span data-i18n="options_proxy_single"></span>
-                  </label>
-                </td>
-              </tr>
-              <tr data-scheme="HTTP" class="proxy-for-scheme">
-                <td>http://</td>
-                <td>
-                  <select class="input-small">
-                    <option>HTTP</option>
-                    <option>HTTPS</option>
-                    <option>FTP</option>
-                    <option>SOCKS4</option>
-                    <option>SOCKS5</option>
-                  </select>
-                </td>
-                <td>
-                  <input type="text" value="127.0.0.1" />
-                </td>
-                <td>
-                  <input type="text" value="7070" class="input-small"/>
-                </td>
-              </tr>
-              <tr data-scheme="HTTPS" class="proxy-for-scheme">
-                <td>https://</td>
-                <td>
-                  <select class="input-small">
-                    <option>HTTP</option>
-                    <option>HTTPS</option>
-                    <option>FTP</option>
-                    <option>SOCKS4</option>
-                    <option>SOCKS5</option>
-                  </select>
-                </td>
-                <td>
-                  <input type="text" value="127.0.0.1" />
-                </td>
-                <td>
-                  <input type="text" value="7070" class="input-small"/>
-                </td>
-              </tr>
-              <tr data-scheme="FTP" class="proxy-for-scheme">
-                <td>ftp://</td>
-                <td>
-                  <select class="input-small">
-                    <option>HTTP</option>
-                    <option>HTTPS</option>
-                    <option>FTP</option>
-                    <option>SOCKS4</option>
-                    <option>SOCKS5</option>
-                  </select>
-                </td>
-                <td>
-                  <input type="text" value="127.0.0.1" />
-                </td>
-                <td>
-                  <input type="text" value="7070" class="input-small"/>
-                </td>
-              </tr>
+              <tbody>
+                <tr>
+                  <th data-i18n="options_proxy_scheme"></th>
+                  <th data-i18n="options_proxy_protocol"></th>
+                  <th data-i18n="options_proxy_server"></th>
+                  <th data-i18n="options_proxy_port"></th>
+                </tr>
+                <tr data-scheme="(default)">
+                  <td data-i18n="options_scheme_default"></td>
+                  <td>
+                    <select class="input-small">
+                      <option>HTTP</option>
+                      <option>HTTPS</option>
+                      <option>FTP</option>
+                      <option>SOCKS4</option>
+                      <option>SOCKS5</option>
+                    </select>
+                  </td>
+                  <td>
+                    <input type="text" value="127.0.0.1" />
+                  </td>
+                  <td>
+                    <input type="text" value="7070" class="input-small"/>
+                  </td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td colspan="3">
+                    <label class="checkbox">
+                      <input type="checkbox" class="use-same-proxy" checked="checked" />
+                      <span data-i18n="options_proxy_single"></span>
+                    </label>
+                  </td>
+                </tr>
+                <tr data-scheme="HTTP" class="proxy-for-scheme">
+                  <td>http://</td>
+                  <td>
+                    <select class="input-small">
+                      <option>HTTP</option>
+                      <option>HTTPS</option>
+                      <option>FTP</option>
+                      <option>SOCKS4</option>
+                      <option>SOCKS5</option>
+                    </select>
+                  </td>
+                  <td>
+                    <input type="text" value="127.0.0.1" />
+                  </td>
+                  <td>
+                    <input type="text" value="7070" class="input-small"/>
+                  </td>
+                </tr>
+                <tr data-scheme="HTTPS" class="proxy-for-scheme">
+                  <td>https://</td>
+                  <td>
+                    <select class="input-small">
+                      <option>HTTP</option>
+                      <option>HTTPS</option>
+                      <option>FTP</option>
+                      <option>SOCKS4</option>
+                      <option>SOCKS5</option>
+                    </select>
+                  </td>
+                  <td>
+                    <input type="text" value="127.0.0.1" />
+                  </td>
+                  <td>
+                    <input type="text" value="7070" class="input-small"/>
+                  </td>
+                </tr>
+                <tr data-scheme="FTP" class="proxy-for-scheme">
+                  <td>ftp://</td>
+                  <td>
+                    <select class="input-small">
+                      <option>HTTP</option>
+                      <option>HTTPS</option>
+                      <option>FTP</option>
+                      <option>SOCKS4</option>
+                      <option>SOCKS5</option>
+                    </select>
+                  </td>
+                  <td>
+                    <input type="text" value="127.0.0.1" />
+                  </td>
+                  <td>
+                    <input type="text" value="7070" class="input-small"/>
+                  </td>
+                </tr>
+              </tbody>
             </table>
           </section>
           <section class="settings-group">
@@ -380,17 +400,11 @@
             <h3 data-i18n="options_group_ruleListResult"></h3>
             <div class="h-control">
               <label data-i18n="options_ruleListMatchProfile"></label>
-              <select>
-                <option>Example</option>
-                <option>[Direct]</option>
-              </select>
+              <select data-list="profiles"></select>
             </div>
             <div class="h-control">
               <label data-i18n="options_ruleListDefaultProfile"></label>
-              <select>
-                <option>Example</option>
-                <option>[Direct]</option>
-              </select>
+              <select data-list="profiles"></select>
             </div>
           </section>
           <section class="settings-group">
@@ -408,6 +422,73 @@
             <textarea class="rule-list-text input-xxlarge" disabled="disabled">
 example.com
             </textarea>
+          </section>
+        </div>
+        <div class="tab-pane" id="profile-auto">
+          <header class="span10 profile-header">
+            <h2>
+              <span data-i18n="options_profileTabPrefix"></span>
+              <span class="profile-name">Auto</span>
+            </h2>
+            <div class="profile-toolbar">
+              <a class="profile-delete btn btn-info" data-toggle="modal" href="#modal-profile-rename">
+                <i class="icon-pencil icon-white"></i>
+                <span data-i18n="options_renameProfile"></span>
+              </a>
+              <a class="profile-delete btn btn-danger" data-toggle="modal" href="#modal-profile-delete">
+                <i class="icon-trash icon-white"></i>
+                <span data-i18n="options_deleteProfile"></span>
+              </a>
+            </div>
+            <hr />
+          </header>
+          <section class="settings-group">
+            <h3 data-i18n="options_group_switchRules"></h3>
+            <table class="fixed-servers table table-bordered table-condensed">
+              <tbody>
+                <tr>
+                  <th data-i18n="options_sort"></th>
+                  <th data-i18n="options_conditionType"></th>
+                  <th data-i18n="options_conditionDetails"></th>
+                  <th data-i18n="options_resultProfile"></th>
+                </tr>
+              </tbody>
+              <tbody class="conditions">
+                <tr>
+                  <td class="sort-bar">.</td>
+                  <td>
+                    <select data-list="condition-types"></select>
+                  </td>
+                  <td>
+                    <input type="url" class="" value="*.example.com" />
+                  </td>
+                  <td>
+                    <select data-list="profiles"></select>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="sort-bar">.</td>
+                  <td>
+                    <select data-list="condition-types"></select>
+                  </td>
+                  <td>
+                    <input type="url" class="" value="*.example.net" />
+                  </td>
+                  <td>
+                    <select data-list="profiles"></select>
+                  </td>
+                </tr>
+              </tbody>
+              <tbody>
+                <tr>
+                  <td></td>
+                  <td colspan="2" data-i18n="options_switchDefaultProfile"></td>
+                  <td>
+                    <select data-list="profiles"></select>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </section>
         </div>
       </div>

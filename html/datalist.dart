@@ -18,12 +18,19 @@
  * along with SwitchyOmega.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#library('switchy_html');
+class DataListElement implements Element native "*HTMLDataListElement" {
 
-#import('dart:html');
-#import('../lang/lib.dart');
+}
 
-#source('dynamic_event.dart');
-#source('dom_helpers.dart');
-#source('datalist.dart');
+final String autoBindToDataListAttrName = "data-list";
 
+void autoBindToDataList(Element processTarget) {
+  processTarget.queryAll('[$autoBindToDataListAttrName]').forEach((el) {
+    var id = el.attributes[autoBindToDataListAttrName];
+    var result = processTarget.query('#$id');
+    if (result != null) {
+      el.nodes.clear();
+      el.nodes.addAll(result.queryAll('option').map((o) => o.clone(true)));
+    }
+  });
+}

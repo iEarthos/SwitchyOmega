@@ -82,7 +82,15 @@ $(document).ready(function () {
       containers.sortable('disable');
       $('#quick-switch-settings').slideUp();
     }
-  })
+  });
+  
+  // Conditions Sort
+  var conditions = $('.conditions');
+  conditions.sortable({
+    change: function () {
+      // onFieldModified(false);
+    }
+  }).disableSelection();
   
   // Memorize Tab
   $('#options-nav a[data-toggle="tab"]').on('shown', function (e) {

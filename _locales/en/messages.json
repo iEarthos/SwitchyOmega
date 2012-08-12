@@ -17,6 +17,31 @@
     "description": "Displayed when the background page is loading."
   },
   
+  "condition_hostWildcard" : {
+    "message": "Host wildcard"
+  },
+  "condition_hostRegex" : {
+    "message": "Host regex"
+  },
+  "condition_hostLevels" : {
+    "message": "Host levels"
+  },
+  "condition_urlWildcard" : {
+    "message": "URL wildcard"
+  },
+  "condition_urlRegex" : {
+    "message": "URL regex"
+  },
+  "condition_keyword" : {
+    "message": "Keyword"
+  },
+  "condition_always" : {
+    "message": "Always"
+  },
+  "condition_never" : {
+    "message": "Never"
+  },
+  
   "dialog_close": {
     "message": "Close"
   },
@@ -173,6 +198,24 @@
   },
   "options_group_ruleListText": {
     "message": "Rule List Text"
+  },
+  "options_group_switchRules": {
+    "message": "Switch rules"
+  },
+  "options_sort": {
+    "message": "Sort"
+  },
+  "options_conditionType": {
+    "message": "Condition Type"
+  },
+  "options_conditionDetails": {
+    "message": "Condition Details"
+  },
+  "options_resultProfile": {
+    "message": "Profile"
+  },
+  "options_switchDefaultProfile": {
+    "message": "Default"
   },
   "options_modalHeader_renameProfile": {
     "message": "Rename Profile"

@@ -60,4 +60,6 @@ void main() {
   handleFixedServerUI();
   handlePacScriptsUI();
   handleRulelistUI();
+  autoBindToDataList(document);
 }
+
