@@ -1,0 +1,51 @@
+body {
+  margin: 0 2px;
+  padding: 0;
+  min-width: 180px;
+}
+
+.nav {
+  margin-bottom: 0;
+}
+
+.nav-pills.nav-stacked > li > a {
+  padding-left: 8px;
+  padding-right: 25px;
+  white-space: nowrap;
+}
+
+.nav-pills .active [class^="icon-"],
+.nav-pills .active [class*=" icon-"] {
+  background-image: url(../styles/images/glyphicons-halflings-white.png);
+}
+
+.nav-pills .divider {
+  height: 1px;
+  margin: 8px 1px;
+  overflow: hidden;
+  background-color: #E5E5E5;
+  border-bottom: 1px solid white;
+}
+
+i {
+  margin-right: 6px;
+}
+
+.btn-group a {
+  padding-left: 8px !important;
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
+  box-shadow: none !important;
+}
+
+.dropdown-menu {
+  margin-left: 8px !important;
+}
+
+.current-domain {
+  color: #08C;
+}
+
+select, textarea, input {
+  margin-bottom: 0px !important;
+}

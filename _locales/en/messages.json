@@ -225,5 +225,11 @@
   },
   "options_deleteProfileConfirm": {
     "message": "Do you really want to delete the following profile?"
+  },
+  
+  "popup_title": {
+    "message": "SwitchyOmega Popup",
+    "description": "The page title of the popup. Normally you won't see it."
   }
+  
 }
