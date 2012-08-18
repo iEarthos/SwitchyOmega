@@ -26,13 +26,6 @@ class ProfileCollection extends Plainable implements Set<Profile> {
   Map<String, Profile> _profiles;
   
   /**
-   * A plain option map which tells objects to use profile names instead of
-   * profiles.
-   */
-  static final Map<String, bool> profileNameOnly = 
-      const { 'profileNameOnly' : true };
-  
-  /**
    * Returns the profile by its [name].
    */
   Profile getProfileByName(String name) {
@@ -45,27 +38,18 @@ class ProfileCollection extends Plainable implements Set<Profile> {
   Profile operator [](String name) {
     return _profiles[name];
   }
-
-  void _dumpProfilesTo(List<Object> list, Set<Profile> profiles) {
-    var it = profiles.iterator();
-    while (it.hasNext()) {
-      var first = it.next();
-      if (first is InclusiveProfile) {
-        InclusiveProfile p = first; // CAST
-        var h = profiles.intersection(new HashSet.from(p.getProfiles()));
-        profiles.removeAll(h);
-        _dumpProfilesTo(list, h);
-      }
-      list.add(first.toPlain(null, profileNameOnly));
-      profiles.remove(first);
-      it = profiles.iterator();
-    }
-  }
   
   void _addPredefined() {
     this.add(new AutoDetectProfile());
     this.add(new DirectProfile());
     this.add(new SystemProfile());
+  }
+  
+  void _setResolver(Profile p) {
+    if (p is InclusiveProfile) {
+      InclusiveProfile ip = p; // CAST
+      ip.getProfileByName = this.getProfileByName;
+    }
   }
   
   /**
@@ -74,8 +58,8 @@ class ProfileCollection extends Plainable implements Set<Profile> {
    */
   List<Object> toPlain([List<Object> p, Object config]) {
     if (p == null) p = new List<Object>();
-    _dumpProfilesTo(p, new HashSet.from(
-      _profiles.getValues().filter((prof) => !prof.predefined)));
+    p.addAll(_profiles.getValues().filter((prof) => !prof.predefined)
+        .map((prof) => prof.toPlain()));
     
     return p;
   }
@@ -85,14 +69,15 @@ class ProfileCollection extends Plainable implements Set<Profile> {
     _addPredefined();
     if (profiles != null) {
       this.addAll(profiles);
+      profiles.forEach(_setResolver);
     }
   }
   
-  factory ProfileCollection.fromPlain(List<Object> p, [Object config]) {
+  factory ProfileCollection.fromPlain(List<Object> p) {
     var c = new ProfileCollection();
-    var config = { 'profileResolver' : c.getProfileByName };
-    for (var profile in p) {
-      c.add(new Profile.fromPlain(profile, config));
+    for (Map<String, Object> profile in p) { // CAST
+      profile['resolver'] = c.getProfileByName;
+      c.add(new Profile.fromPlain(profile));
     }
     
     return c;
@@ -104,6 +89,7 @@ class ProfileCollection extends Plainable implements Set<Profile> {
 
   void add(Profile value) {
     _profiles[value.name] = value;
+    _setResolver(value);
   }
 
   /**
@@ -117,6 +103,7 @@ class ProfileCollection extends Plainable implements Set<Profile> {
   void addAll(Collection<Profile> collection) {
     for (var p in collection) {
       _profiles[p.name] = p;
+      _setResolver(p);
     }
   }
 

@@ -50,8 +50,8 @@ class PacProfile extends ScriptProfile {
     w.inline('}');
   }
 
-  Map<String, Object> toPlain([Map<String, Object> p, Object config]) {
-    p = super.toPlain(p, config);
+  Map<String, Object> toPlain([Map<String, Object> p]) {
+    p = super.toPlain(p);
     
     if (pacUrl != null) {
       p['pacUrl'] = this.pacUrl;
@@ -65,9 +65,9 @@ class PacProfile extends ScriptProfile {
   
   PacProfile(String name) : super(name);
   
-  factory PacProfile.fromPlain(Map<String, Object> p, [Object config]) {
+  factory PacProfile.fromPlain(Map<String, Object> p) {
     if (p['profileType'] == 'AutoDectProfile')
-      return new AutoDetectProfile.fromPlain(p, config);
+      return new AutoDetectProfile.fromPlain(p);
     var f = new PacProfile(p['name']);
     f.color = p['color'];
     var u = p['pacUrl'];

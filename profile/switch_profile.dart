@@ -27,53 +27,34 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
   
   List<Rule> _rules;
   
-  Map<IncludableProfile, int> _refCount;
+  Map<String, int> _refCount;
 
-  void _addReference(IncludableProfile p) {
-    if (p is InclusiveProfile) {
-      InclusiveProfile sp = p; // CAST
-      if (sp.containsProfile(this)) {
-        throw new CircularReferenceException(this, sp);
-      }
-      for (var pp in sp.getProfiles()) {
-        _refCount[pp] = ifNull(_refCount[pp], 0) + 1;
-      }
-    }
-    _refCount[p] = ifNull(_refCount[p], 0) + 1;
+  void _addReference(String name) {
+    _refCount[name] = ifNull(_refCount[name], 0) + 1;
   }
 
-  void _releaseRef(IncludableProfile p) {
-    var c = _refCount[p];
+  void _removeReference(String name) {
+    var c = _refCount[name];
     if (c > 1) {
-      _refCount[p] = c - 1;
+      _refCount[name] = c - 1;
     } else {
-      _refCount.remove(p);
+      _refCount.remove(name);
     }
   }
   
-  void _removeReference(IncludableProfile p) {
-    if (p is InclusiveProfile) {
-      InclusiveProfile sp = p; // CAST
-      for (var pp in sp.getProfiles()) {
-        _releaseRef(pp);
-      }
-    }
-    _releaseRef(p);
-  }
-  
-  IncludableProfile _defaultProfile;
-  IncludableProfile get defaultProfile() => _defaultProfile;
-  void set defaultProfile(IncludableProfile value) {
+  String _defaultProfileName;
+  String get defaultProfileName() => _defaultProfileName;
+  void set defaultProfile(String value) {
+    _refCount.remove(_defaultProfileName);
     _addReference(value);
-    _refCount.remove(_defaultProfile);
-    _defaultProfile = value;
+    _defaultProfileName = value;
   }
 
-  bool containsProfile(IncludableProfile p) {
-    return _refCount.containsKey(p);
+  bool containsProfileName(String name) {
+    return _refCount.containsKey(name);
   }
   
-  List<IncludableProfile> getProfiles() {
+  List<String> getProfileNames() {
     return _refCount.getKeys();
   }
   
@@ -84,66 +65,46 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
     for (var rule in _rules) {
       w.inline('if (');
       rule.condition.writeTo(w);
-      w.code(')').indent()
-       .code('return ${rule.profile.getScriptName()};')
+      w.code(')').indent();
+      IncludableProfile ip = getProfileByName(rule.profileName);
+      w.code('return ${ip.getScriptName()};')
        .outdent();
     }
     
-    w.code('return ${defaultProfile.getScriptName()};');
+    IncludableProfile dp = getProfileByName(defaultProfileName);
+    w.code('return ${dp.getScriptName()};');
     w.inline('}');
   }
 
-  Profile choose(String url, String host, String scheme, Date datetime) {
+  String choose(String url, String host, String scheme, Date datetime) {
     for (var rule in _rules) {
       if (rule.condition.match(url, host, scheme, datetime))
-        return rule.profile;
+        return rule.profileName;
     }
-    return defaultProfile;
+    return defaultProfileName;
   }
   
-  /**
-   * [:config['profileNameOnly']:] can be set to true for writing
-   * [defaultProfile.name] as defaultProfileName instead of the whole profile.
-   * This config is also applied to all rules.
-   */
-  Map<String, Object> toPlain([Map<String, Object> p, Map<String, Object> config]) {
-    p = super.toPlain(p, config);
-    if (config != null && config['profileNameOnly'] != null) {
-      p['defaultProfileName'] = defaultProfile.name;
-    } else {
-      p['defaultProfile'] = defaultProfile.toPlain(null, config);
-    }
-    p['rules'] = this.map((r) => r.toPlain(null, config));
+  Map<String, Object> toPlain([Map<String, Object> p]) {
+    p = super.toPlain(p);
+    p['defaultProfileName'] = defaultProfileName;
+    p['rules'] = this.map((r) => r.toPlain());
     
     return p;
   }
   
-  SwitchProfile(String name, IncludableProfile defaultProfile)
-      : super(name) {
-    this._refCount = new Map<IncludableProfile, int>();
-    _defaultProfile = defaultProfile;
-    _addReference(_defaultProfile);
+  SwitchProfile(String name, String defaultProfileName, ProfileResolver resolver)
+      : super(name, resolver) {
+    this._refCount = new Map<String, int>();
+    this._defaultProfileName = defaultProfileName;
+    _addReference(_defaultProfileName);
     this._rules = <Rule>[];
   }
   
-  /**
-   * If [:p['defaultProfileName']:] is used instead of [:p['defaultProfile']:],
-   * [:config['profileResolver']:] must be set to a [ProfileResolver].
-   */
-  factory SwitchProfile.fromPlain(Map<String, Object> p, 
-    [Map<String, Object> config]) {
-    var prof = p['defaultProfile'];
-    var dp = null;
-    if (prof == null) {
-      ProfileResolver resolver = config['profileResolver']; // CAST
-      dp = resolver(p['defaultProfileName']);
-    } else {
-      dp = new Profile.fromPlain(prof, config);
-    }
-    var f = new SwitchProfile(p['name'], dp);
+  factory SwitchProfile.fromPlain(Map<String, Object> p) {
+    var f = new SwitchProfile(p['name'], p['defaultProfileName'], p['resolver']);
     f.color = p['color'];
     List<Rule> rl = p['rules']; // CAST
-    f.addAll(rl.map((r) => new Rule.fromPlain(r, config)));
+    f.addAll(rl.map((r) => new Rule.fromPlain(r)));
     
     return f;
   }
@@ -173,24 +134,24 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
   Rule operator [](int index) => _rules[index];
 
   void operator []=(int index, Rule value) {
-    _addReference(value.profile);
-    if (index < _rules.length) _refCount.remove(_rules[index].profile);
+    _addReference(value.profileName);
+    if (index < _rules.length) _removeReference(_rules[index].profileName);
     _rules[index] = value;
   }
 
   void add(Rule value) {
-    _addReference(value.profile);
+    _addReference(value.profileName);
     _rules.add(value);
   }
 
   void addLast(Rule value) {
-    _addReference(value.profile);
+    _addReference(value.profileName);
     _rules.addLast(value);
   }
 
   void addAll(Collection<Rule> collection) {
     for (var rule in collection) {
-      _addReference(rule.profile);
+      _addReference(rule.profileName);
     }
     _rules.addAll(collection);
   }
@@ -210,12 +171,12 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
   void clear() {
     _rules.clear();
     _refCount.clear();
-    _addReference(_defaultProfile);
+    _addReference(defaultProfileName);
   }
 
   Rule removeLast() {
     var rule = _rules.removeLast();
-    _removeReference(rule.profile);
+    _removeReference(rule.profileName);
     return rule;
   }
 
@@ -223,40 +184,26 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
 
   List<Rule> getRange(int start, int length) => _rules.getRange(start, length);
 
-  void setRange(int start, int length, List<Rule> from, [int startFrom]) {
+  void setRange(int start, int length, List<Rule> from, [int startFrom = 0]) {
     for(var rule in _rules.getRange(start, length)) {
-      _removeReference(rule.profile);
+      _removeReference(rule.profileName);
     }
-    for (var rule in from) {
-      _addReference(rule.profile);
+    for (var i = startFrom; i < from.length; i++) {
+      _addReference(from[i].profileName);
     }
     _rules.setRange(start, length, from, startFrom);
   }
 
   void removeRange(int start, int length) {
     for(var rule in _rules.getRange(start, length)) {
-      _removeReference(rule.profile);
+      _removeReference(rule.profileName);
     }
     _rules.removeRange(start, length);
   }
 
   void insertRange(int start, int length, [Rule initialValue]) {
-     if (initialValue != null) _addReference(initialValue.profile);
+     if (initialValue != null) _addReference(initialValue.profileName);
      _rules.insertRange(start, length);
   }
-}
-
-/**
- * Thrown when a circular reference of two [InclusiveProfile]s is detected.
- */
-class CircularReferenceException implements Exception {
-  final InclusiveProfile parent;
-  final InclusiveProfile result;
-
-  CircularReferenceException(this.parent, this.result);
-
-  String toString() => 'Profile "${result.name}" cannot be configured as a '
-                       'result profile of Profile "${parent.name}", because it'
-                       'references Profile "${parent.name}", directly or indirectly.';
 }
 

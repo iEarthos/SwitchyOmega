@@ -54,7 +54,7 @@ abstract class Profile extends Plainable implements Hashable {
     this.name = name;
   }
   
-  Map<String, Object> toPlain([Map<String, Object> p, Object config]) {
+  Map<String, Object> toPlain([Map<String, Object> p]) {
     if (p == null) p = new Map<String, Object>();
     p['name'] = this.name;
     p['profileType'] = this.profileType;
@@ -63,26 +63,36 @@ abstract class Profile extends Plainable implements Hashable {
     return p;
   }
   
-  factory Profile.fromPlain(Map<String, Object> p, [Object config]) {
+  factory Profile.fromPlain(Map<String, Object> p) {
+    Profile profile = null;
     switch (p['profileType']) {
       case 'AutoDetectProfile':
-        return new AutoDetectProfile.fromPlain(p, config);      
+        profile = new AutoDetectProfile.fromPlain(p);     
+        break;
       case 'DirectProfile':
-        return new DirectProfile.fromPlain(p, config);
+        profile = new DirectProfile.fromPlain(p);
+        break;
       case 'FixedProfile':
-        return new FixedProfile.fromPlain(p, config);
+        profile = new FixedProfile.fromPlain(p);
+        break;
       case 'PacProfile':
-        return new PacProfile.fromPlain(p, config);
+        profile = new PacProfile.fromPlain(p);
+        break;
       case 'RuleListProfile':
         // TODO
+        break;
       case 'SwitchProfile':
-        return new SwitchProfile.fromPlain(p, config);
+        profile = new SwitchProfile.fromPlain(p);
+        break;
       case 'SystemProfile':
-        return new SystemProfile.fromPlain(p, config);
+        profile = new SystemProfile.fromPlain(p);
+        break;
       default:
         throw new UnsupportedOperationException(
           'profileType = "${p['profileType']}"');
     }
+    profile.color = p['color'];
+    return profile;
   }
 }
 
@@ -95,3 +105,4 @@ class ProfileColors {
   static final system = '#aaaaaa';
   static final direct = '#aaaaaa';
 }
+

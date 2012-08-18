@@ -38,6 +38,6 @@ class SystemProfile extends Profile {
       return _instance = new SystemProfile._private();
   }
   
-  factory SystemProfile.fromPlain(Object p, [Object config])
+  factory SystemProfile.fromPlain(Object p)
     => new SystemProfile();
 }

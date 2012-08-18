@@ -34,12 +34,12 @@ void main() {
   f.bypassList.add(new BypassCondition('*:3333'));
   f.bypassList.add(new BypassCondition('<local>'));
   
-  var s = new SwitchProfile('auto', d);
+  var s = new SwitchProfile('auto', d.name, null);
   // The following line will only work in PAC files because it uses isInNet.
   // f.bypassList.add(new BypassCondition('192.168.0.0/18'));
-  s.add(new Rule(new HostWildcardCondition('*.example.com'), f));
-  s.add(new Rule(new HostLevelsCondition(0, 0), new DirectProfile()));
-  s.add(new Rule(new KeywordCondition('foo'), f));
+  s.add(new Rule(new HostWildcardCondition('*.example.com'), f.name));
+  s.add(new Rule(new HostLevelsCondition(0, 0), new DirectProfile().name));
+  s.add(new Rule(new KeywordCondition('foo'), f.name));
   
   var col = new ProfileCollection([d, f, s]);
   
@@ -69,7 +69,7 @@ void main() {
 ProxyServer resolveProxy(Profile p, String url, String host, String scheme) {
   while (p != null) {
     if (p is InclusiveProfile) {
-      p = p.choose(url, host, scheme, null);
+      p = p.getProfileByName(p.choose(url, host, scheme, null));
     }
     if (p is FixedProfile) {
       return p.getProxyFor(url, host, scheme);

@@ -98,18 +98,18 @@ class FixedProfile extends IncludableProfile {
     return fallbackProxy;
   }
   
-  Map<String, Object> toPlain([Map<String, Object> p, Object config]) {
-    p = super.toPlain(p, config);
+  Map<String, Object> toPlain([Map<String, Object> p]) {
+    p = super.toPlain(p);
     
     if (this.proxyForHttp != null)
-      p['proxyForHttp'] = this.proxyForHttp.toPlain(null, config);
+      p['proxyForHttp'] = this.proxyForHttp.toPlain();
     if (this.proxyForHttps != null)
-      p['proxyForHttps'] = this.proxyForHttps.toPlain(null, config);
+      p['proxyForHttps'] = this.proxyForHttps.toPlain();
     if (this.proxyForFtp != null)
-      p['proxyForFtp'] = this.proxyForFtp.toPlain(null, config);
+      p['proxyForFtp'] = this.proxyForFtp.toPlain();
     if (this.fallbackProxy != null)
-      p['fallbackProxy'] = this.fallbackProxy.toPlain(null, config);
-    p['bypassList'] = this.bypassList.map((b) => b.toPlain(null, config));
+      p['fallbackProxy'] = this.fallbackProxy.toPlain();
+    p['bypassList'] = this.bypassList.map((b) => b.toPlain());
     return p;
   }
   
@@ -117,19 +117,19 @@ class FixedProfile extends IncludableProfile {
     bypassList = new List<BypassCondition>();
   }
   
-  factory FixedProfile.fromPlain(Map<String, Object> p, [Object config]) {
+  factory FixedProfile.fromPlain(Map<String, Object> p) {
     var f = new FixedProfile(p['name']);
     f.color = p['color'];
     if (p['proxyForHttp'] != null)
-      f.proxyForHttp = new ProxyServer.fromPlain(p['proxyForHttp'], config);
+      f.proxyForHttp = new ProxyServer.fromPlain(p['proxyForHttp']);
     if (p['proxyForHttps'] != null)
-      f.proxyForHttps = new ProxyServer.fromPlain(p['proxyForHttps'], config);
+      f.proxyForHttps = new ProxyServer.fromPlain(p['proxyForHttps']);
     if (p['proxyForFtp'] != null)
-      f.proxyForFtp = new ProxyServer.fromPlain(p['proxyForFtp'], config);
+      f.proxyForFtp = new ProxyServer.fromPlain(p['proxyForFtp']);
     if (p['fallbackProxy'] != null)
-      f.fallbackProxy = new ProxyServer.fromPlain(p['fallbackProxy'], config);
+      f.fallbackProxy = new ProxyServer.fromPlain(p['fallbackProxy']);
     List<Object> bl = p['bypassList']; // CAST
-    f.bypassList = bl.map((b) => new BypassCondition.fromPlain(b, config));
+    f.bypassList = bl.map((b) => new BypassCondition.fromPlain(b));
     
     return f;
   }
@@ -167,7 +167,7 @@ class ProxyServer extends Plainable {
     'socks5': 'SOCKS5'
   };
   
-  Map<String, Object> toPlain([Map<String, Object> p, Object config]) {
+  Map<String, Object> toPlain([Map<String, Object> p]) {
     if (p == null) p = new Map<String, Object>();
     p['scheme'] = this.scheme;
     p['host'] = this.host;
@@ -180,7 +180,7 @@ class ProxyServer extends Plainable {
     if (this.port == null) this.port = defaultPort[scheme];
   }
   
-  ProxyServer.fromPlain(Map<String, Object> p, [Object config]) {
+  ProxyServer.fromPlain(Map<String, Object> p) {
     this.scheme = p['scheme'];
     this.host = p['host'];
     this.port = p['port'];

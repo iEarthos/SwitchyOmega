@@ -32,8 +32,8 @@ abstract class RuleListProfile extends InclusiveProfile {
     _rules = null;
   }
   
-  IncludableProfile matchProfile;
-  IncludableProfile defaultProfile;
+  String matchProfileName;
+  String defaultProfileName;
   
   List<Rule> _rules;
   
@@ -49,16 +49,24 @@ abstract class RuleListProfile extends InclusiveProfile {
     if (_rules == null) _rules = parseRules(ruleList);
     w.code('function (url, host, scheme) {');
     w.code("'use strict';");
+   
+    IncludableProfile mp = getProfileByName(matchProfileName);
+    var matchScriptName = mp.getScriptName();
+    IncludableProfile dp = getProfileByName(defaultProfileName);
+    var defaultScriptName = dp.getScriptName();
     
     for (var rule in _rules) {
       w.inline('if (');
       rule.condition.writeTo(w);
-      w.code(')').indent()
-       .code('return ${rule.profile.getScriptName()};')
+      w.code(')').indent();
+      var scriptName = rule.profileName == this.matchProfileName ?
+          matchScriptName :
+          defaultScriptName;
+      w.code('return ${scriptName};')
        .outdent();
     }
     
-    w.code('return ${defaultProfile.getScriptName()};');
+    w.code('return ${defaultScriptName};');
     w.inline('}');
   }
   
@@ -67,28 +75,18 @@ abstract class RuleListProfile extends InclusiveProfile {
    */
   abstract List<Rule> parseRules(String rules);
   
-  bool containsProfile(IncludableProfile p) {
-    return matchProfile == p || defaultProfile == p;
+  bool containsProfileName(String name) {
+    return matchProfileName == name || defaultProfileName == name;
   }
   
-  List<IncludableProfile> getProfiles() {
-    return [matchProfile, defaultProfile];
+  List<String> getProfileNames() {
+    return [matchProfileName, defaultProfileName];
   }
   
-  /**
-   * [:config['profileNameOnly']:] can be set to true for writing
-   * [defaultProfile.name] as defaultProfileName and
-   * [matchProfile.name] as matchProfileName.
-   */
-  Map<String, Object> toPlain([Map<String, Object> p, Map<String, Object> config]) {
-    p = super.toPlain(p, config);
-    if (config != null && config['profileNameOnly'] != null) {
-      p['defaultProfileName'] = defaultProfile.name;
-      p['matchProfileName'] = matchProfile.name;
-    } else {
-      p['defaultProfile'] = defaultProfile.toPlain(null, config);
-      p['matchProfile'] = matchProfile.toPlain(null, config);
-    }
+  Map<String, Object> toPlain([Map<String, Object> p]) {
+    p = super.toPlain(p);
+    p['defaultProfileNameName'] = defaultProfileName;
+    p['matchProfileNameName'] = matchProfileName;
     if (sourceUrl != null) {
       p['sourceUrl'] = sourceUrl;
     } else {
@@ -96,33 +94,16 @@ abstract class RuleListProfile extends InclusiveProfile {
     }
   }
   
-  RuleListProfile(String name, this.defaultProfile, this.matchProfile)
-    : super(name);
+  RuleListProfile(String name, this.defaultProfileName, this.matchProfileName,
+      ProfileResolver resolver)
+    : super(name, resolver);
   
-  /**
-   * If [:p['defaultProfileName']:] is used instead of [:p['defaultProfile']:],
-   * or [:p['matchProfileName']:] is used instead of [:p['matchProfile']:],
-   * [:config['profileResolver']:] must be set to a [ProfileResolver].
-   */
-  factory RuleListProfile.fromPlain(Map<String, Object> p, 
-    [Map<String, Object> config]) {
-    RuleListProfile f = null;
+  factory RuleListProfile.fromPlain(Map<String, Object> p) {
+    RuleListProfile f = null; // TODO
     
     f.color = p['color'];
-    var prof = p['defaultProfile'];
-    if (prof == null) {
-      ProfileResolver resolver = config['profileResolver']; // CAST
-      f.defaultProfile = resolver(p['defaultProfileName']);
-    } else {
-      f.defaultProfile = new Profile.fromPlain(prof, config);
-    }
-    prof = p['matchProfile'];
-    if (prof == null) {
-      ProfileResolver resolver = config['profileResolver']; // CAST
-      f.matchProfile = resolver(p['matchProfileName']);
-    } else {
-      f.matchProfile = new Profile.fromPlain(prof, config);
-    }
+    f.defaultProfileName = p['defaultProfileNameName'];
+    f.matchProfileName = p['matchProfileNameName'];
     
     var u = p['sourceUrl'];
     if (u != null) {

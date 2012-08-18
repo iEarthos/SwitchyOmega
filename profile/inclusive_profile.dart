@@ -24,14 +24,39 @@
  */
 abstract class InclusiveProfile extends ScriptProfile {
   /**
-   * Returns true if [p] is a result profile of this profile. Otherwise, false.
+   * Returns true if this profile has a result profile which name is [name].
+   * Otherwise, false.
    */
-  abstract bool containsProfile(IncludableProfile p);
+  abstract bool containsProfileName(String name);
+  
+  /** A function that find profiles by their names. */
+  ProfileResolver getProfileByName;
   
   /**
-   * Get all result profiles of this profile.
+   * Get the names of all result profiles of this profile.
    */
-  abstract List<IncludableProfile> getProfiles();
+  abstract List<String> getProfileNames();
+  
+  Map<String, IncludableProfile> getAllReferences() {
+    var s = new HashMap<String, IncludableProfile>();
+    var queue = new List<String>.from(getProfileNames());
+    while (queue.length > 0) {
+      var p = getProfileByName(queue[0]);
+      queue.removeRange(0, 1);
+      s[p.name] = p;
+      if (p is InclusiveProfile) {
+        InclusiveProfile sp = p; // CAST
+        for (var pp in sp.getProfileNames()) {
+          var circ = s[pp];
+          if (circ != null || pp == this.name) {
+            throw new CircularReferenceException(sp, ifNull(circ, this));
+          }
+          queue.add(pp);
+        }
+      }
+    }
+    return s;
+  }
   
   /**
    * Convert this profile to a complete PAC script with all included profiles.
@@ -66,7 +91,7 @@ abstract class InclusiveProfile extends ScriptProfile {
   
   void _writeAllProfilesTo(CodeWriter w) {
     // Write all included profiles
-    for (var p in this.getProfiles()) {
+    for (var p in getAllReferences().getValues()) {
       w.inline('${p.getScriptName()} : ');
       p.writeTo(w);
       w.code(',');
@@ -79,52 +104,47 @@ abstract class InclusiveProfile extends ScriptProfile {
   }
   
   /**
-   * Select one result profile according to the params.
+   * Select one result profile according to the params and return its name.
    */
-  abstract Profile choose(String url, String host, String scheme, Date datetime);
+  abstract String choose(String url, String host, String scheme, Date datetime);
   
-  InclusiveProfile(String name) : super(name);
+  InclusiveProfile(String name, this.getProfileByName) : super(name);
 }
 
 typedef Profile ProfileResolver(String name); 
 
+/**
+ * Thrown when a circular reference of two [InclusiveProfile]s is detected.
+ */
+class CircularReferenceException implements Exception {
+  final InclusiveProfile parent;
+  final InclusiveProfile result;
+
+  CircularReferenceException(this.parent, this.result);
+
+  String toString() => 'Profile "${result.name}" cannot be configured as a '
+                       'result profile of Profile "${parent.name}", because it'
+                       'references Profile "${parent.name}", directly or indirectly.';
+}
+
 class Rule extends Plainable {
   Condition condition;
-  IncludableProfile profile;
+  String profileName;
   
-  /**
-   * [:config['profileNameOnly']:] can be set to true for writing
-   * [profile.name] as profileName instead of the whole profile.
-   */
-  Map<String, Object> toPlain([Map<String, Object> p, Map<String, Object> config]) {
+  Map<String, Object> toPlain([Map<String, Object> p]) {
     if (p == null) p = new Map<String, Object>();
     
-    p['condition'] = this.condition.toPlain(null, config);
-    
-    if (config != null && config['profileNameOnly'] != null) {
-      p['profileName'] = this.profile.name;
-    } else {
-      p['profile'] = this.profile.toPlain(null, config);
-    }
+    p['condition'] = this.condition.toPlain();
+    p['profileName'] = this.profileName;
     
     return p;
   }
   
-  /**
-   * If [:p['profileName']:] is used instead of [:p['profile']:],
-   * [:config['profileResolver']:] must be set to a [ProfileResolver].
-   */
-  Rule.fromPlain(Map<String, Object> p, [Map<String, Object> config]) {
+  Rule.fromPlain(Map<String, Object> p) {
     this.condition = new Condition.fromPlain(p['condition']);
     
-    var prof = p['profile'];
-    if (prof != null) {
-      this.profile = new Profile.fromPlain(prof, config);
-    } else {
-      ProfileResolver resolver = config['profileResolver']; // CAST
-      this.profile = resolver(p['profileName']);
-    }
+    this.profileName = p['profileName'];
   }
   
-  Rule(this.condition, this.profile);
+  Rule(this.condition, this.profileName);
 }

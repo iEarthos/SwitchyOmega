@@ -23,13 +23,13 @@
  */
 abstract class Plainable {
   /**
-   * Convert this object to a plain data structure using [config].
+   * Convert this object to a plain data structure.
    * if [p] is not null, the data of this object should be added to [p].
    */
-  abstract Object toPlain([Object p, Object config]);
+  abstract Object toPlain([Object p]);
   
   // Plainable classes should implement the following constructor:
   
-  // Construct an object from the plain data structure [p] with [config].
-  // Plainable.fromPlain(Object p, [Object config]);
+  // Construct an object from the plain data structure [p].
+  // Plainable.fromPlain(Object p);
 }

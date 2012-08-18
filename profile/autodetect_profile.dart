@@ -40,6 +40,6 @@ class AutoDetectProfile extends PacProfile {
       return _instance = new AutoDetectProfile._private();
   }
   
-  factory AutoDetectProfile.fromPlain(Object p, [Object config])
+  factory AutoDetectProfile.fromPlain(Object p)
     => new AutoDetectProfile();
 }
