@@ -39,7 +39,7 @@ class Communicator {
     this.source.on.message.add(this._onmessage);
   }
   
-  void _postMessage(Window dest, String action, Object value,
+  void _postMessage(Window destWin, String action, Object value,
                     CommunicatorCallback callback, [String reply_to = null]) {
     String reqid;
     
@@ -54,7 +54,7 @@ class Communicator {
       map[reqid] = callback;
     }
     
-    dest.postMessage({
+    destWin.postMessage({
       'action': action,
       'reqid': reqid,
       'reply_to': reply_to,
@@ -63,35 +63,36 @@ class Communicator {
   }
   
   CommunicatorCallback createResponder(MessageEvent e) {
-    return (value, [callback]) {
-      this._postMessage(e.source, e.data['action'], value, callback, e.data['reqid']);
+    return (Object value, [Function respond]) {
+      Map<String, Object> data = e.data; // CAST
+      this._postMessage(e.source, data['action'], value, respond, data['reqid']);
     };
   }
   
   void _onmessage(MessageEvent e) {
-    
-    var reply_to = e.data['reply_to'];
+    Map<String, Object> data = e.data; // CAST
+    var reply_to = data['reply_to'];
     if (reply_to != null) {
-      var map = this._callback_maps[e.data['action']];
+      var map = this._callback_maps[data['action']];
       if (map != null) {
         var callback = map[reply_to];
         if (callback != null) {
           map.remove(reply_to);
-          callback(e.data['value'], this.createResponder(e));
+          callback(data['value'], this.createResponder(e));
         }
       }
     } else {
-      var callbacks = this._action_handlers[e.data['action']];
+      var callbacks = this._action_handlers[data['action']];
       if (callbacks != null) {
         var responder = this.createResponder(e);
         callbacks.forEach((cb) {
-          cb(e.data['value'], responder);
+          cb(data['value'], responder);
         });
       }
     }
   }
   
-  Communicator send(String action, Object value, CommunicatorCallback callback) {
+  Communicator send(String action, [Object value, CommunicatorCallback callback]) {
     this._postMessage(this.dest, action, value, callback);
     
     return this;
@@ -108,7 +109,7 @@ class Communicator {
     } else {
       Map<String, CommunicatorCallback> actionMap = action; // CAST
       actionMap.forEach((a, cb) {
-        this.on(a, cb)
+        this.on(a, cb);
       });
     }
     
