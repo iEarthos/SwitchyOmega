@@ -98,19 +98,20 @@ abstract class RuleListProfile extends InclusiveProfile {
       ProfileResolver resolver)
     : super(name, resolver);
   
-  factory RuleListProfile.fromPlain(Map<String, Object> p) {
-    RuleListProfile f = null; // TODO
-    
-    f.color = p['color'];
-    f.defaultProfileName = p['defaultProfileNameName'];
-    f.matchProfileName = p['matchProfileNameName'];
-    
+  void fromPlain(Map<String, Object> p) {
+    super.fromPlain(p);
+    defaultProfileName = p['defaultProfileNameName'];
+    matchProfileName = p['matchProfileNameName'];
     var u = p['sourceUrl'];
     if (u != null) {
-      f.sourceUrl = u;
+      sourceUrl = u;
     } else {
-      f.ruleList = p['ruleList'];
+      ruleList = p['ruleList'];
     }
+  }
+  
+  factory RuleListProfile.fromPlain(Map<String, Object> p) {
+    RuleListProfile f = null; // TODO
     
     return f;
   }

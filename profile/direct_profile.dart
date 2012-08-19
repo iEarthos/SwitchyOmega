@@ -41,6 +41,8 @@ class DirectProfile extends IncludableProfile {
       return _instance = new DirectProfile._private();
   }
   
+  void fromPlain(Object p) {}
+  
   factory DirectProfile.fromPlain(Object p) 
     => new DirectProfile();
 }

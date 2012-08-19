@@ -44,12 +44,20 @@ class HostRegexCondition extends HostCondition {
     this.regex = (regex is String) ? new RegExp(regex) : regex;
   }
   
-  Map<String, Object> toPlain([Map<String, Object> p, Object config]) {
-    p = super.toPlain(p, config);
+  Map<String, Object> toPlain([Map<String, Object> p]) {
+    p = super.toPlain(p);
     p['pattern'] = this.pattern;
     return p;
   }
   
-  factory HostRegexCondition.fromPlain(Map<String, Object> p, [Object config])
-    => new HostRegexCondition(p['pattern']);
+  void fromPlain(Map<String, Object> p) {
+    super.fromPlain(p);
+    this.pattern = p['pattern'];
+  }
+  
+  factory HostRegexCondition.fromPlain(Map<String, Object> p) {
+    var c = new HostRegexCondition(p['pattern']);
+    c.fromPlain(p);
+    return c;
+  }
 }

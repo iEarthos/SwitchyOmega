@@ -121,13 +121,21 @@ class IpCondition extends HostCondition {
     this._prefixLength = prefixLength;
   }
   
-  Map<String, Object> toPlain([Map<String, Object> p, Object config]) {
-    p = super.toPlain(p, config);
+  Map<String, Object> toPlain([Map<String, Object> p]) {
+    p = super.toPlain(p);
     p['ip'] = this.ip;
     p['prefixLength'] = this.prefixLength;
   }
   
-  factory IpCondition.fromPlain(Map<String, Object> p, [Object config]) {
-    return new IpCondition(p['ip'], p['prefixLength']);
+  void fromPlain(Map<String, Object> p) {
+    super.fromPlain(p);
+    this.ip = p['ip'];
+    this.prefixLength = p['prefixLength'];
+  }
+  
+  factory IpCondition.fromPlain(Map<String, Object> p) {
+    var c = new IpCondition(p['ip'], p['prefixLength']);
+    c.fromPlain(p);
+    return c;
   }
 }

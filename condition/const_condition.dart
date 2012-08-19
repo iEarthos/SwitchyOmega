@@ -61,9 +61,11 @@ class AlwaysCondition extends ConstCondition {
       return _instance = new AlwaysCondition._private();
   }
   
+  void fromPlain(Object p) {}
+  
   AlwaysCondition._private();
   
-  factory AlwaysCondition.fromPlain(Map<String, Object> p, [Object config])
+  factory AlwaysCondition.fromPlain(Map<String, Object> p)
     => new AlwaysCondition();
 }
 
@@ -85,8 +87,10 @@ class NeverCondition extends ConstCondition {
       return _instance = new NeverCondition._private();
   }
   
+  void fromPlain(Object p) {}
+  
   NeverCondition._private();
   
-  factory NeverCondition.fromPlain(Map<String, Object> p, [Object config])
+  factory NeverCondition.fromPlain(Map<String, Object> p)
     => new NeverCondition();
 }

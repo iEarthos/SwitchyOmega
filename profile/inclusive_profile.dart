@@ -140,10 +140,13 @@ class Rule extends Plainable {
     return p;
   }
   
-  Rule.fromPlain(Map<String, Object> p) {
+  void fromPlain(Map<String, Object> p) {
     this.condition = new Condition.fromPlain(p['condition']);
-    
     this.profileName = p['profileName'];
+  }
+  
+  Rule.fromPlain(Map<String, Object> p) {
+    this.fromPlain(p);
   }
   
   Rule(this.condition, this.profileName);

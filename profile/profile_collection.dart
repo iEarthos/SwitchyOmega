@@ -73,13 +73,17 @@ class ProfileCollection extends Plainable implements Set<Profile> {
     }
   }
   
+  void fromPlain(List<Object> p) {
+    for (Map<String, Object> profile in p) { // CAST
+      var pp = new Profile.fromPlain(profile);
+      _setResolver(pp);
+      this.add(pp);
+    }
+  }
+  
   factory ProfileCollection.fromPlain(List<Object> p) {
     var c = new ProfileCollection();
-    for (Map<String, Object> profile in p) { // CAST
-      profile['resolver'] = c.getProfileByName;
-      c.add(new Profile.fromPlain(profile));
-    }
-    
+    c.fromPlain(p);
     return c;
   }
 

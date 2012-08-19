@@ -62,20 +62,23 @@ class PacProfile extends ScriptProfile {
     return p;
   }
   
-  
   PacProfile(String name) : super(name);
+  
+  void fromPlain(Map<String, Object> p) {
+    super.fromPlain(p);
+    var u = p['pacUrl'];
+    if (u != null) {
+      this.pacUrl = u;
+    } else {
+      this.pacScript = p['pacScript'];
+    }
+  }
   
   factory PacProfile.fromPlain(Map<String, Object> p) {
     if (p['profileType'] == 'AutoDectProfile')
       return new AutoDetectProfile.fromPlain(p);
     var f = new PacProfile(p['name']);
-    f.color = p['color'];
-    var u = p['pacUrl'];
-    if (u != null) {
-      f.pacUrl = u;
-    } else {
-      f.pacScript = p['pacScript'];
-    }
+    f.fromPlain(p);
     return f;
   }
 }

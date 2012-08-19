@@ -100,12 +100,15 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
     this._rules = <Rule>[];
   }
   
+  void fromPlain(Map<String, Object> p) {
+    super.fromPlain(p);
+    List<Rule> rl = p['rules']; // CAST
+    this.addAll(rl.map((r) => new Rule.fromPlain(r)));
+  }
+  
   factory SwitchProfile.fromPlain(Map<String, Object> p) {
     var f = new SwitchProfile(p['name'], p['defaultProfileName'], p['resolver']);
-    f.color = p['color'];
-    List<Rule> rl = p['rules']; // CAST
-    f.addAll(rl.map((r) => new Rule.fromPlain(r)));
-    
+    f.fromPlain(p);
     return f;
   }
 

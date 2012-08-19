@@ -25,11 +25,24 @@ abstract class Plainable {
   /**
    * Convert this object to a plain data structure.
    * if [p] is not null, the data of this object should be added to [p].
+   * If base is also [Plainable], please call [:super.toPlain(p):] at the 
+   * beginning of the implementation.
    */
   abstract Object toPlain([Object p]);
   
+  /**
+   * Modify this object's current state according to plain data structure [p].
+   * If base is also [Plainable], please call [:super.fromPlain(p):] at the
+   * beginning of the implementation.
+   */
+  abstract void fromPlain(Object p);
+  
   // Plainable classes should implement the following constructor:
   
-  // Construct an object from the plain data structure [p].
+  //** Construct an object from the plain data structure [p].
+  // * If the constructor is a factory, call the .fromPlain constructors of the
+  // * subclasses. Otherwise, just call [:this.fromPlain(p):] to initialize this
+  // * object.
+  // */
   // Plainable.fromPlain(Object p);
 }

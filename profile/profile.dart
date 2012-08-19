@@ -63,6 +63,11 @@ abstract class Profile extends Plainable implements Hashable {
     return p;
   }
   
+  void fromPlain(Map<String, Object> p) {
+    this.name = p['name'];
+    this.color = p['color'];
+  }
+  
   factory Profile.fromPlain(Map<String, Object> p) {
     Profile profile = null;
     switch (p['profileType']) {
@@ -91,7 +96,6 @@ abstract class Profile extends Plainable implements Hashable {
         throw new UnsupportedOperationException(
           'profileType = "${p['profileType']}"');
     }
-    profile.color = p['color'];
     return profile;
   }
 }

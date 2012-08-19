@@ -37,13 +37,20 @@ class KeywordCondition extends UrlCondition {
   
   KeywordCondition([this.pattern = '']);
   
-  Map<String, Object> toPlain([Map<String, Object> p, Object config]) {
-    p = super.toPlain(p, config);
+  Map<String, Object> toPlain([Map<String, Object> p]) {
+    p = super.toPlain(p);
     p['pattern'] = this.pattern;
     return p;
   }
   
-  factory KeywordCondition.fromPlain(Map<String, Object> p, [Object config]) {
-    return new KeywordCondition(p['pattern']);
+  void fromPlain(Map<String, Object> p) {
+    super.fromPlain(p);
+    this.pattern = p['pattern'];
+  }
+  
+  factory KeywordCondition.fromPlain(Map<String, Object> p) {
+    var c = new KeywordCondition(p['pattern']);
+    c.fromPlain(p);
+    return c;
   }
 }

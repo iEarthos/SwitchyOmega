@@ -79,14 +79,21 @@ class HostWildcardCondition extends HostCondition {
     this._pattern = pattern;
   }
   
-  Map<String, Object> toPlain([Map<String, Object> p, Object config]) {
-    p = super.toPlain(p, config);
+  Map<String, Object> toPlain([Map<String, Object> p]) {
+    p = super.toPlain(p);
     p['pattern'] = this.pattern;
     return p;
   }
   
-  factory HostWildcardCondition.fromPlain(Map<String, Object> p, 
-      [Object config]) {
-    return new HostWildcardCondition(p['pattern']);
+  
+  void fromPlain(Map<String, Object> p) {
+    super.fromPlain(p);
+    this.pattern = p['pattern'];
+  }
+  
+  factory HostWildcardCondition.fromPlain(Map<String, Object> p) {
+    var c = new HostWildcardCondition(p['pattern']);
+    c.fromPlain(p);
+    return c;
   }
 }

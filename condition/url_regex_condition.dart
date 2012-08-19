@@ -44,13 +44,20 @@ class UrlRegexCondition extends UrlCondition {
     this.regex = (regex is String) ? new RegExp(regex) : regex;
   }
   
-  Map<String, Object> toPlain([Map<String, Object> p, Object config]) {
-    p = super.toPlain(p, config);
+  Map<String, Object> toPlain([Map<String, Object> p]) {
+    p = super.toPlain(p);
     p['pattern'] = this.pattern;
     return p;
   }
   
-  factory UrlRegexCondition.fromPlain(Map<String, Object> p, [Object config]) {
-    return new UrlRegexCondition(p['pattern']);
+  void fromPlain(Map<String, Object> p) {
+    super.fromPlain(p);
+    this.pattern = p['pattern'];
+  }
+  
+  factory UrlRegexCondition.fromPlain(Map<String, Object> p) {
+    var c = new UrlRegexCondition(p['pattern']);
+    c.fromPlain(p);
+    return c;
   }
 }

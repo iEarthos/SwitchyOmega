@@ -36,7 +36,7 @@ abstract class Condition extends Plainable {
    */
   abstract void writeTo(CodeWriter w);
   
-  Map<String, Object> toPlain([Map<String, Object> p, Object config]) {
+  Map<String, Object> toPlain([Map<String, Object> p]) {
     if (p == null) p = new Map<String, Object>();
     p['conditionType'] = this.conditionType;
 
@@ -45,28 +45,30 @@ abstract class Condition extends Plainable {
   
   Condition();
   
-  factory Condition.fromPlain(Map<String, Object> p, [Object config]) {
+  void fromPlain(Object p) {}
+  
+  factory Condition.fromPlain(Map<String, Object> p) {
     switch (p['conditionType']) {
       case 'BypassCondition':
-        return new BypassCondition.fromPlain(p, config);
+        return new BypassCondition.fromPlain(p);
       case 'AlwaysCondition':
-        return new AlwaysCondition.fromPlain(p, config);
+        return new AlwaysCondition.fromPlain(p);
       case 'NeverCondition':
-        return new NeverCondition.fromPlain(p, config);
+        return new NeverCondition.fromPlain(p);
       case 'HostLevelsCondition':
-        return new HostLevelsCondition.fromPlain(p, config);
+        return new HostLevelsCondition.fromPlain(p);
       case 'HostRegexCondition':
-        return new HostRegexCondition.fromPlain(p, config);
+        return new HostRegexCondition.fromPlain(p);
       case 'HostWildcardCondition':
-        return new HostWildcardCondition.fromPlain(p, config);
+        return new HostWildcardCondition.fromPlain(p);
       case 'IpCondition':
-        return new IpCondition.fromPlain(p, config);
+        return new IpCondition.fromPlain(p);
       case 'KeywordCondition':
-        return new KeywordCondition.fromPlain(p, config);
+        return new KeywordCondition.fromPlain(p);
       case 'UrlRegexCondition':
-        return new UrlRegexCondition.fromPlain(p, config);
+        return new UrlRegexCondition.fromPlain(p);
       case 'UrlWildcardCondition':
-        return new UrlWildcardCondition.fromPlain(p, config);
+        return new UrlWildcardCondition.fromPlain(p);
     }
   }
 }
