@@ -34,8 +34,8 @@ void dynamicEvent(String name, String selector, DynamicEventCallback listener) {
            cur != e.currentTarget;
            cur = ifNull(cur.parent, e.currentTarget)) {
         if (cur is Element) {
-          _dynamicEventHandlers[e.type].forEach((selector, handlers) {
-            if (cur.matchesSelector(selector)) {
+          _dynamicEventHandlers[e.type].forEach((sel, handlers) {
+            if (cur.matchesSelector(sel)) {
               handlers.forEach((handler) { handler(e, cur); });
             }
           });

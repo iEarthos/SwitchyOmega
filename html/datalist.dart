@@ -18,10 +18,6 @@
  * along with SwitchyOmega.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-class DataListElement implements Element native "*HTMLDataListElement" {
-
-}
-
 final String autoBindToDataListAttrName = "data-list";
 
 void autoBindToDataList(Element processTarget) {
