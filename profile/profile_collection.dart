@@ -47,8 +47,7 @@ class ProfileCollection extends Plainable implements Set<Profile> {
   
   void _setResolver(Profile p) {
     if (p is InclusiveProfile) {
-      InclusiveProfile ip = p; // CAST
-      ip.getProfileByName = this.getProfileByName;
+      (p as InclusiveProfile).getProfileByName = this.getProfileByName;
     }
   }
   
@@ -73,8 +72,8 @@ class ProfileCollection extends Plainable implements Set<Profile> {
     }
   }
   
-  void fromPlain(List<Object> p) {
-    for (Map<String, Object> profile in p) { // CAST
+  void loadPlain(List<Object> p) {
+    for (Map<String, Object> profile in p) {
       var pp = new Profile.fromPlain(profile);
       _setResolver(pp);
       this.add(pp);
@@ -83,7 +82,7 @@ class ProfileCollection extends Plainable implements Set<Profile> {
   
   factory ProfileCollection.fromPlain(List<Object> p) {
     var c = new ProfileCollection();
-    c.fromPlain(p);
+    c.loadPlain(p);
     return c;
   }
 
@@ -190,5 +189,10 @@ class ProfileCollection extends Plainable implements Set<Profile> {
 
   Iterator<Profile> iterator() {
     return _profiles.getValues().iterator();
+  }
+  
+  Dynamic reduce(Dynamic initialValue,
+                 Dynamic combine(Dynamic previousValue, Profile element)) {
+    _profiles.getValues().reduce(initialValue, combine); 
   }
 }

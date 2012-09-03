@@ -100,15 +100,15 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
     this._rules = <Rule>[];
   }
   
-  void fromPlain(Map<String, Object> p) {
-    super.fromPlain(p);
-    List<Rule> rl = p['rules']; // CAST
+  void loadPlain(Map<String, Object> p) {
+    super.loadPlain(p);
+    var rl = p['rules'] as List<Map<String, Object>>;
     this.addAll(rl.map((r) => new Rule.fromPlain(r)));
   }
   
   factory SwitchProfile.fromPlain(Map<String, Object> p) {
     var f = new SwitchProfile(p['name'], p['defaultProfileName'], p['resolver']);
-    f.fromPlain(p);
+    f.loadPlain(p);
     return f;
   }
 
@@ -207,6 +207,11 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
   void insertRange(int start, int length, [Rule initialValue]) {
      if (initialValue != null) _addReference(initialValue.profileName);
      _rules.insertRange(start, length);
+  }
+  
+  Dynamic reduce(Dynamic initialValue,
+                 Dynamic combine(Dynamic previousValue, Rule element)) {
+    _rules.reduce(initialValue, combine); 
   }
 }
 

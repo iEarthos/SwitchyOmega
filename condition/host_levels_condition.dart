@@ -61,15 +61,15 @@ class HostLevelsCondition extends HostCondition {
   }
   
   
-  void fromPlain(Map<String, Object> p) {
-    super.fromPlain(p);
+  void loadPlain(Map<String, Object> p) {
+    super.loadPlain(p);
     this.minValue = p['minValue'];
     this.maxValue = p['maxValue'];
   }
   
   factory HostLevelsCondition.fromPlain(Map<String, Object> p) {
     var c = new HostLevelsCondition(p['minValue'], p['maxValue']);
-    c.fromPlain(p);
+    c.loadPlain(p);
     return c;
   }
 }

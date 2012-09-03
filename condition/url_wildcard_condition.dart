@@ -72,14 +72,14 @@ class UrlWildcardCondition extends UrlCondition {
     return p;
   }
   
-  void fromPlain(Map<String, Object> p) {
-    super.fromPlain(p);
+  void loadPlain(Map<String, Object> p) {
+    super.loadPlain(p);
     this.pattern = p['pattern'];
   }
   
   factory UrlWildcardCondition.fromPlain(Map<String, Object> p) {
     var c = new UrlWildcardCondition(p['pattern']);
-    c.fromPlain(p);
+    c.loadPlain(p);
     return c;
   }
 }

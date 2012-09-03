@@ -61,7 +61,7 @@ class AlwaysCondition extends ConstCondition {
       return _instance = new AlwaysCondition._private();
   }
   
-  void fromPlain(Object p) {}
+  void loadPlain(Object p) {}
   
   AlwaysCondition._private();
   
@@ -87,7 +87,7 @@ class NeverCondition extends ConstCondition {
       return _instance = new NeverCondition._private();
   }
   
-  void fromPlain(Object p) {}
+  void loadPlain(Object p) {}
   
   NeverCondition._private();
   

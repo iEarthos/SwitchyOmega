@@ -64,8 +64,8 @@ class PacProfile extends ScriptProfile {
   
   PacProfile(String name) : super(name);
   
-  void fromPlain(Map<String, Object> p) {
-    super.fromPlain(p);
+  void loadPlain(Map<String, Object> p) {
+    super.loadPlain(p);
     var u = p['pacUrl'];
     if (u != null) {
       this.pacUrl = u;
@@ -78,7 +78,7 @@ class PacProfile extends ScriptProfile {
     if (p['profileType'] == 'AutoDectProfile')
       return new AutoDetectProfile.fromPlain(p);
     var f = new PacProfile(p['name']);
-    f.fromPlain(p);
+    f.loadPlain(p);
     return f;
   }
 }

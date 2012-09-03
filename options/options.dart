@@ -24,7 +24,7 @@
 #import('../html/lib.dart');
 
 void handleFixedServerUI() {
-  dynamicEvent('change', '.use-same-proxy', function (e, check) {
+  dynamicEvent('change', '.use-same-proxy', function (e, InputElement check) {
     var proxies = closestElement(check, '.fixed-servers').queryAll('.proxy-for-scheme');
     if (check.checked) {
       proxies.forEach((p) { p.style.display = 'none'; });
@@ -35,7 +35,7 @@ void handleFixedServerUI() {
 }
 
 void handlePacScriptsUI() {
-  dynamicEvent('change', '.pac-url', function (e, pacUrl) {
+  dynamicEvent('change', '.pac-url', function (e, InputElement pacUrl) {
     var pacScript = closestElement(pacUrl, '.tab-pane').query('.pac-script');
     if (pacUrl.value != '') {
       pacScript.attributes['disabled'] = 'disabled';
@@ -46,7 +46,7 @@ void handlePacScriptsUI() {
 }
 
 void handleRulelistUI() {
-  dynamicEvent('change', '.rule-list-url', function (e, rulelistUrl) {
+  dynamicEvent('change', '.rule-list-url', function (e, InputElement rulelistUrl) {
     var rulelistText = closestElement(rulelistUrl, '.tab-pane').query('.rule-list-text');
     if (rulelistUrl.value != '') {
       rulelistText.attributes['disabled'] = 'disabled';

@@ -47,7 +47,7 @@ void main() {
   var json = JSON.stringify(col.toPlain());
   col = new ProfileCollection.fromPlain(JSON.parse(json));
   
-  InclusiveProfile auto = col['auto']; // CAST
+  var auto = col['auto'] as InclusiveProfile;
   print(auto.toScript());
   
   // Some test cases

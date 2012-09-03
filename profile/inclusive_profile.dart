@@ -45,11 +45,10 @@ abstract class InclusiveProfile extends ScriptProfile {
       queue.removeRange(0, 1);
       s[p.name] = p;
       if (p is InclusiveProfile) {
-        InclusiveProfile sp = p; // CAST
-        for (var pp in sp.getProfileNames()) {
+        for (var pp in (p as InclusiveProfile).getProfileNames()) {
           var circ = s[pp];
           if (circ != null || pp == this.name) {
-            throw new CircularReferenceException(sp, ifNull(circ, this));
+            throw new CircularReferenceException(p, ifNull(circ, this));
           }
           queue.add(pp);
         }
@@ -140,13 +139,13 @@ class Rule extends Plainable {
     return p;
   }
   
-  void fromPlain(Map<String, Object> p) {
+  void loadPlain(Map<String, Object> p) {
     this.condition = new Condition.fromPlain(p['condition']);
     this.profileName = p['profileName'];
   }
   
   Rule.fromPlain(Map<String, Object> p) {
-    this.fromPlain(p);
+    this.loadPlain(p);
   }
   
   Rule(this.condition, this.profileName);

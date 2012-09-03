@@ -38,7 +38,7 @@ class SystemProfile extends Profile {
       return _instance = new SystemProfile._private();
   }
   
-  void fromPlain(Object p) {}
+  void loadPlain(Object p) {}
   
   factory SystemProfile.fromPlain(Object p)
     => new SystemProfile();

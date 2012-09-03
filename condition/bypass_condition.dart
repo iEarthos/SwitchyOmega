@@ -62,7 +62,7 @@ class BypassCondition extends Condition {
     }
     parts = server.split('/');
     if (parts.length > 1) {
-      _ip = new IpCondition(parts[0], Math.parseInt(parts[1]));
+      _ip = new IpCondition(parts[0], parseInt(parts[1]));
       _hostWildcard = null;
     } else {
       _urlRegex = null;
@@ -125,14 +125,14 @@ class BypassCondition extends Condition {
     return p;
   }
   
-  void fromPlain(Map<String, Object> p) {
-    super.fromPlain(p);
+  void loadPlain(Map<String, Object> p) {
+    super.loadPlain(p);
     this.pattern = p['pattern'];
   }
   
   factory BypassCondition.fromPlain(Map<String, Object> p) {
     var c = new BypassCondition(p['pattern']);
-    c.fromPlain(p);
+    c.loadPlain(p);
     return c;
   }
   

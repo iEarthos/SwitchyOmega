@@ -50,14 +50,14 @@ class UrlRegexCondition extends UrlCondition {
     return p;
   }
   
-  void fromPlain(Map<String, Object> p) {
-    super.fromPlain(p);
+  void loadPlain(Map<String, Object> p) {
+    super.loadPlain(p);
     this.pattern = p['pattern'];
   }
   
   factory UrlRegexCondition.fromPlain(Map<String, Object> p) {
     var c = new UrlRegexCondition(p['pattern']);
-    c.fromPlain(p);
+    c.loadPlain(p);
     return c;
   }
 }

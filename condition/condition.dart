@@ -45,7 +45,7 @@ abstract class Condition extends Plainable {
   
   Condition();
   
-  void fromPlain(Object p) {}
+  void loadPlain(Object p) {}
   
   factory Condition.fromPlain(Map<String, Object> p) {
     switch (p['conditionType']) {

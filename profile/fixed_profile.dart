@@ -117,8 +117,8 @@ class FixedProfile extends IncludableProfile {
     bypassList = new List<BypassCondition>();
   }
   
-  void fromPlain(Map<String, Object> p) {
-    super.fromPlain(p);
+  void loadPlain(Map<String, Object> p) {
+    super.loadPlain(p);
     if (p['proxyForHttp'] != null)
       proxyForHttp = new ProxyServer.fromPlain(p['proxyForHttp']);
     if (p['proxyForHttps'] != null)
@@ -127,14 +127,14 @@ class FixedProfile extends IncludableProfile {
       proxyForFtp = new ProxyServer.fromPlain(p['proxyForFtp']);
     if (p['fallbackProxy'] != null)
       fallbackProxy = new ProxyServer.fromPlain(p['fallbackProxy']);
-    List<Object> bl = p['bypassList']; // CAST
+    var bl = p['bypassList'] as List<Object>;
     bypassList = bl.map((b) => new BypassCondition.fromPlain(b));
   }
   
   
   factory FixedProfile.fromPlain(Map<String, Object> p) {
     var f = new FixedProfile(p['name']);
-    f.fromPlain(p);
+    f.loadPlain(p);
     return f;
   }
 }
@@ -184,13 +184,13 @@ class ProxyServer extends Plainable {
     if (this.port == null) this.port = defaultPort[scheme];
   }
   
-  void fromPlain(Map<String, Object> p) {
+  void loadPlain(Map<String, Object> p) {
     this.scheme = p['scheme'];
     this.host = p['host'];
     this.port = p['port'];
   }
   
   ProxyServer.fromPlain(Map<String, Object> p) {
-    this.fromPlain(p);
+    this.loadPlain(p);
   }
 }

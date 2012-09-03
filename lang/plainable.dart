@@ -32,10 +32,10 @@ abstract class Plainable {
   
   /**
    * Modify this object's current state according to plain data structure [p].
-   * If base is also [Plainable], please call [:super.fromPlain(p):] at the
+   * If base is also [Plainable], please call [:super.loadPlain(p):] at the
    * beginning of the implementation.
    */
-  abstract void fromPlain(Object p);
+  abstract void loadPlain(Object p);
   
   // Plainable classes should implement the following constructor:
   

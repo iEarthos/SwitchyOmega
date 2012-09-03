@@ -100,10 +100,10 @@ class IpCondition extends HostCondition {
   int convertAddr(String host) {
     var m = Ipv4Regex.firstMatch(host);
     if (m == null) return null;
-    return (Math.parseInt(m[0]) & 0xff) << 24 +
-        (Math.parseInt(m[1]) & 0xff) << 16 +
-        (Math.parseInt(m[2]) & 0xff) << 8 +
-        (Math.parseInt(m[3]) & 0xff);
+    return (parseInt(m[0]) & 0xff) << 24 +
+        (parseInt(m[1]) & 0xff) << 16 +
+        (parseInt(m[2]) & 0xff) << 8 +
+        (parseInt(m[3]) & 0xff);
   }
   
   bool matchHost(String host) {
@@ -127,15 +127,15 @@ class IpCondition extends HostCondition {
     p['prefixLength'] = this.prefixLength;
   }
   
-  void fromPlain(Map<String, Object> p) {
-    super.fromPlain(p);
+  void loadPlain(Map<String, Object> p) {
+    super.loadPlain(p);
     this.ip = p['ip'];
     this.prefixLength = p['prefixLength'];
   }
   
   factory IpCondition.fromPlain(Map<String, Object> p) {
     var c = new IpCondition(p['ip'], p['prefixLength']);
-    c.fromPlain(p);
+    c.loadPlain(p);
     return c;
   }
 }

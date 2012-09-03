@@ -98,8 +98,8 @@ abstract class RuleListProfile extends InclusiveProfile {
       ProfileResolver resolver)
     : super(name, resolver);
   
-  void fromPlain(Map<String, Object> p) {
-    super.fromPlain(p);
+  void loadPlain(Map<String, Object> p) {
+    super.loadPlain(p);
     defaultProfileName = p['defaultProfileNameName'];
     matchProfileName = p['matchProfileNameName'];
     var u = p['sourceUrl'];

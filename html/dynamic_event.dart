@@ -23,16 +23,17 @@ typedef void DynamicEventCallback(Event e, Element matchedNode);
 Map<String, Map<String, List<DynamicEventCallback>>> _dynamicEventHandlers = null;
 void dynamicEvent(String name, String selector, DynamicEventCallback listener) {
   if (_dynamicEventHandlers == null) {
-    _dynamicEventHandlers = new Map<String, Map<String, List<DynamicEventCallback>>>();
+    _dynamicEventHandlers = 
+        new Map<String, Map<String, List<DynamicEventCallback>>>();
   }
   var h = _dynamicEventHandlers[name];
   List<DynamicEventCallback> l = null;
   if (h == null) {
-    h = _dynamicEventHandlers[name] = new Map<String, List<DynamicEventCallback>>();
+    h = _dynamicEventHandlers[name] = 
+        new Map<String, List<DynamicEventCallback>>();
     document.on[name].add(function (e) {
-      for (var cur = e.target; 
-           cur != e.currentTarget;
-           cur = ifNull(cur.parent, e.currentTarget)) {
+      var cur = e.target;
+      do {
         if (cur is Element) {
           _dynamicEventHandlers[e.type].forEach((sel, handlers) {
             if (cur.matchesSelector(sel)) {
@@ -40,7 +41,8 @@ void dynamicEvent(String name, String selector, DynamicEventCallback listener) {
             }
           });
         }
-      }
+        cur = cur is Node ? (cur as Node).parent : null;
+      } while (cur != null && cur != e.currentTarget);
     });
   } else {
     l = h[selector];

@@ -23,6 +23,7 @@
 #import('dart:core');
 #import('dart:uri');
 #import('dart:json');
+#import('dart:math'); // for parseInt
 
 #import('../lang/lib.dart');
 #import('../utils/code_writer.dart');

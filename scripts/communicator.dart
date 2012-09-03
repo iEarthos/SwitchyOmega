@@ -21,6 +21,7 @@
 #library('communicator');
 
 #import('dart:html');
+#import('dart:math');
 
 typedef void CommunicatorCallback(Object value, [Function respond]);
 
@@ -29,6 +30,7 @@ class Communicator {
   Window source;
   Map<String, Map<String, CommunicatorCallback>> _callback_maps;
   Map<String, List<CommunicatorCallback>> _action_handlers;
+  Random _random = new Random();
   
   Communicator([this.dest = null, this.source = null]) {
     if (this.source == null) {
@@ -49,7 +51,7 @@ class Communicator {
         map = this._callback_maps[action] = new Map<String, CommunicatorCallback>();
       }
       do {
-        reqid = Math.random().toString();
+        reqid = _random.nextDouble().toString();
       } while (map[reqid] != null);
       map[reqid] = callback;
     }
@@ -64,13 +66,13 @@ class Communicator {
   
   CommunicatorCallback createResponder(MessageEvent e) {
     return (Object value, [Function respond]) {
-      Map<String, Object> data = e.data; // CAST
+      var data = e.data as Map<String, Object>;
       this._postMessage(e.source, data['action'], value, respond, data['reqid']);
     };
   }
   
   void _onmessage(MessageEvent e) {
-    Map<String, Object> data = e.data; // CAST
+    var data = e.data as Map<String, Object>;
     var reply_to = data['reply_to'];
     if (reply_to != null) {
       var map = this._callback_maps[data['action']];
@@ -100,14 +102,14 @@ class Communicator {
   
   Communicator on(action, CommunicatorCallback callback) {
     if (action is String) {
-      var actionString = action; // CAST
+      var actionString = action as String;
       var callbacks = this._action_handlers[action];
       if (callbacks == null) {
         callbacks = this._action_handlers[action] = [];
       }
-      callbacks.push(callback);
+      callbacks.add(callback);
     } else {
-      Map<String, CommunicatorCallback> actionMap = action; // CAST
+      var actionMap = action as Map<String, CommunicatorCallback>;
       actionMap.forEach((a, cb) {
         this.on(a, cb);
       });

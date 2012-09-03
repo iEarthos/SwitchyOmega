@@ -63,7 +63,7 @@ abstract class Profile extends Plainable implements Hashable {
     return p;
   }
   
-  void fromPlain(Map<String, Object> p) {
+  void loadPlain(Map<String, Object> p) {
     this.name = p['name'];
     this.color = p['color'];
   }
