@@ -21,7 +21,7 @@
 /**
  * An object that could be translated to and from a plain data structrure.
  */
-abstract class Plainable {
+abstract class Plainable extends JsonSerializable {
   /**
    * Convert this object to a plain data structure.
    * if [p] is not null, the data of this object should be added to [p].
@@ -36,6 +36,10 @@ abstract class Plainable {
    * beginning of the implementation.
    */
   abstract void loadPlain(Object p);
+  
+  Object toJson() {
+    return this.toPlain();
+  }
   
   // Plainable classes should implement the following constructor:
   

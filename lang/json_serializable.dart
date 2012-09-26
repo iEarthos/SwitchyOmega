@@ -18,7 +18,14 @@
  * along with SwitchyOmega.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#library('lang');
-#source('helper_func.dart');
-#source('json_serializable.dart');
-#source('plainable.dart');
+/**
+ * An object that could be serialized to JSON. Instances of subclasses
+ * are accepted by [JSON.stringify] in dart:json.
+ */
+abstract class JsonSerializable {
+  /**
+   * Convert this object to a plain data structure. This method will be called
+   * when dart:json tries to serialize this object.
+   */
+  abstract Object toJson();
+}

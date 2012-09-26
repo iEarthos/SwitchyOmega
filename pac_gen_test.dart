@@ -44,7 +44,7 @@ void main() {
   var col = new ProfileCollection([d, f, s]);
   
   // Serialize the profiles to JSON and then parse back to test the roundtrip.
-  var json = JSON.stringify(col.toPlain());
+  var json = JSON.stringify(col);
   col = new ProfileCollection.fromPlain(JSON.parse(json));
   
   var auto = col['auto'] as InclusiveProfile;
