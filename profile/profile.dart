@@ -50,7 +50,8 @@ abstract class Profile extends Plainable implements Hashable {
   }
   
   /** Create a [name]d profile. */
-  Profile(String name, [this.color = ProfileColors.profile_default]) {
+  Profile(String name, [this.color = null]) {
+    if (this.color == null) this.color = ProfileColors.profile_default;
     this.name = name;
   }
   

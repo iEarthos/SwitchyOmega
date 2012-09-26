@@ -183,6 +183,12 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
     return rule;
   }
 
+  Rule removeAt(int index) {
+    var rule = _rules.removeAt(index);
+    _removeReference(rule.profileName);
+    return rule;
+  }
+  
   Rule last() => _rules.last();
 
   List<Rule> getRange(int start, int length) => _rules.getRange(start, length);
