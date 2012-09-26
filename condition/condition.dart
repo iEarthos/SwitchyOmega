@@ -23,18 +23,18 @@
  * profile is selected.
  */
 abstract class Condition extends Plainable {
-  abstract String get conditionType();
+  String get conditionType();
   
   /**
    * Returns true if the [url], [host], [scheme] and [datetime] matches this
    * condition. False otherwise. 
    */
-  abstract bool match(String url, String host, String scheme, Date datetime);
+  bool match(String url, String host, String scheme, Date datetime);
   
   /**
    * Write this condition to [w] as a JavaScript expression.
    */
-  abstract void writeTo(CodeWriter w);
+  void writeTo(CodeWriter w);
   
   Map<String, Object> toPlain([Map<String, Object> p]) {
     if (p == null) p = new Map<String, Object>();

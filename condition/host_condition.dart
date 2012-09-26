@@ -26,5 +26,5 @@ abstract class HostCondition extends Condition {
    * Returns true if the [host] matches this condition.
    * False otherwise. 
    */
-  abstract bool matchHost(String host);
+  bool matchHost(String host);
 }

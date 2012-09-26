@@ -27,7 +27,7 @@ abstract class IncludableProfile extends Profile {
    * Convert this profile to an JavaScript expression which can be used in PAC
    * scripts and write the result to a [CodeWriter]. 
   */
-  abstract void writeTo(CodeWriter w);
+  void writeTo(CodeWriter w);
   
   String _scriptName;
   void set name(String value) {

@@ -27,5 +27,5 @@ abstract class JsonSerializable {
    * Convert this object to a plain data structure. This method will be called
    * when dart:json tries to serialize this object.
    */
-  abstract Object toJson();
+  Object toJson();
 }

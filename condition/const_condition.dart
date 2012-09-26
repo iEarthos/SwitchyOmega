@@ -25,12 +25,12 @@ abstract class ConstCondition extends Condition {
   /**
    * Get the constant value.
    */
-  abstract bool get value();
+  bool get value();
   
   /**
    * Get the constant JavaScript expression.
    */
-  abstract String get expression();  
+  String get expression();  
   
   /**
    * Returns [value] at all times.

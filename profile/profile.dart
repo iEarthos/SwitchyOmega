@@ -30,7 +30,7 @@ abstract class Profile extends Plainable implements Hashable {
   }
 
   /** When overridden in derived classes, return the profile type. */
-  abstract String get profileType();
+  String get profileType();
 
   /**
     Colors can help to tell profiles from each other.

@@ -28,14 +28,14 @@ abstract class Plainable extends JsonSerializable {
    * If base is also [Plainable], please call [:super.toPlain(p):] at the 
    * beginning of the implementation.
    */
-  abstract Object toPlain([Object p]);
+  Object toPlain([Object p]);
   
   /**
    * Modify this object's current state according to plain data structure [p].
    * If base is also [Plainable], please call [:super.loadPlain(p):] at the
    * beginning of the implementation.
    */
-  abstract void loadPlain(Object p);
+  void loadPlain(Object p);
   
   Object toJson() {
     return this.toPlain();

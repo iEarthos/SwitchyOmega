@@ -27,7 +27,7 @@ abstract class InclusiveProfile extends ScriptProfile {
    * Returns true if this profile has a result profile which name is [name].
    * Otherwise, false.
    */
-  abstract bool containsProfileName(String name);
+  bool containsProfileName(String name);
   
   /** A function that find profiles by their names. */
   ProfileResolver getProfileByName;
@@ -35,7 +35,7 @@ abstract class InclusiveProfile extends ScriptProfile {
   /**
    * Get the names of all result profiles of this profile.
    */
-  abstract List<String> getProfileNames();
+  List<String> getProfileNames();
   
   Map<String, IncludableProfile> getAllReferences() {
     var s = new HashMap<String, IncludableProfile>();
@@ -105,7 +105,7 @@ abstract class InclusiveProfile extends ScriptProfile {
   /**
    * Select one result profile according to the params and return its name.
    */
-  abstract String choose(String url, String host, String scheme, Date datetime);
+  String choose(String url, String host, String scheme, Date datetime);
   
   InclusiveProfile(String name, this.getProfileByName) : super(name);
 }

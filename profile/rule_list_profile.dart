@@ -73,7 +73,7 @@ abstract class RuleListProfile extends InclusiveProfile {
   /**
    * Parse the [rules] and return the results.
    */
-  abstract List<Rule> parseRules(String rules);
+  List<Rule> parseRules(String rules);
   
   bool containsProfileName(String name) {
     return matchProfileName == name || defaultProfileName == name;
