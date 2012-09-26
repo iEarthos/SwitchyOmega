@@ -24,8 +24,7 @@
 /**
  * A helper to emit code.
  */
-interface CodeWriter default WellFormattedCodeWriter {
-  CodeWriter();
+abstract class CodeWriter {
   /**
    * Indent by one level. Returns [:this:].
    */
@@ -66,6 +65,10 @@ interface CodeWriter default WellFormattedCodeWriter {
    * Returns all the stuff written to the code writer so far as a string.
    */
   String toString();
+  
+  factory CodeWriter() {
+    return new WellFormattedCodeWriter();
+  }
 }
 
 /**
