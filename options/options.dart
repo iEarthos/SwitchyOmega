@@ -22,6 +22,9 @@
 
 #import('dart:html');
 #import('../html/lib.dart');
+#import('../utils/communicator.dart');
+#import('../browser/message/lib.dart');
+
 
 void handleFixedServerUI() {
   dynamicEvent('change', '.use-same-proxy', function (e, InputElement check) {
@@ -55,6 +58,8 @@ void handleRulelistUI() {
     }
   });
 }
+
+Communicator c = new Communicator();
 
 void main() {
   handleFixedServerUI();
