@@ -40,37 +40,39 @@ Communicator.prototype._postMessage = function (dest, action, value, callback, r
     map[reqid] = callback;
   }
   
-  dest.postMessage({
+  dest.postMessage(JSON.stringify({
     'action': action,
     'reqid': reqid,
     'reply_to': reply_to,
     'value': value
-  }, '*');
+  }), '*');
 }
 
-Communicator.prototype.createResponder = function (e) {
+Communicator.prototype.createResponder = function (source, action, reqid) {
   var that = this;
   return function (value, callback) {
-    that._postMessage(e.source, e.data.action, value, callback, e.data.reqid)
+    that._postMessage(source, action, value, callback, reqid)
   };
 };
 
 Communicator.prototype._onmessage = function (e) {
-  if (e.data.reply_to) {
-    var map = this._callback_maps[e.data.action];
+  var data = JSON.parse(e.data);
+  if (data.reply_to) {
+    var map = this._callback_maps[data.action];
     if (map) {
-      var callback = map[e.data.reply_to];
+      var callback = map[data.reply_to];
       if (callback) {
-        delete map[e.data.reply_to];
-        callback(e.data.value, this.createResponder(e));
+        delete map[data.reply_to];
+        callback(data.value,
+            this.createResponder(e.source, data.action, data.reqid));
       }
     }
   } else {
-    var callbacks = this._action_handlers[e.data.action];
+    var callbacks = this._action_handlers[data.action];
     if (callbacks) {
-      var responder = this.createResponder(e);
+      var responder = this.createResponder(e.source, data.action, data.reqid);
       callbacks.forEach(function (cb) {
-        cb(e.data.value, responder);
+        cb(data.value, responder);
       });
     }
   }

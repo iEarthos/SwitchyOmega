@@ -22,6 +22,7 @@
 
 #import('dart:html');
 #import('dart:math');
+#import('dart:json');
 
 typedef void CommunicatorCallback(Object value, [Function respond]);
 
@@ -56,23 +57,22 @@ class Communicator {
       map[reqid] = callback;
     }
     
-    destWin.postMessage({
+    destWin.postMessage(JSON.stringify({
       'action': action,
       'reqid': reqid,
       'reply_to': reply_to,
       'value': value
-    }, '*');
+    }), '*');
   }
   
-  CommunicatorCallback createResponder(MessageEvent e) {
+  CommunicatorCallback createResponder(Window source, String action, String reqid) {
     return (Object value, [Function respond]) {
-      var data = e.data as Map<String, Object>;
-      this._postMessage(e.source, data['action'], value, respond, data['reqid']);
+      this._postMessage(source, action, value, respond, reqid);
     };
   }
   
   void _onmessage(MessageEvent e) {
-    var data = e.data as Map<String, Object>;
+    var data = JSON.parse(e.data) as Map<String, Object>;
     var reply_to = data['reply_to'];
     if (reply_to != null) {
       var map = this._callback_maps[data['action']];
@@ -80,13 +80,15 @@ class Communicator {
         var callback = map[reply_to];
         if (callback != null) {
           map.remove(reply_to);
-          callback(data['value'], this.createResponder(e));
+          callback(data['value'], 
+              this.createResponder(e.source, data['action'], data['reqid']));
         }
       }
     } else {
       var callbacks = this._action_handlers[data['action']];
       if (callbacks != null) {
-        var responder = this.createResponder(e);
+        var responder = this.createResponder(
+            e.source, data['action'], data['reqid']);
         callbacks.forEach((cb) {
           cb(data['value'], responder);
         });
