@@ -163,7 +163,7 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
     _rules.sort(compare);
   }
 
-  int indexOf(Rule element, [int start]) {
+  int indexOf(Rule element, [int start = 0]) {
     return _rules.indexOf(element, start);
   }
 
