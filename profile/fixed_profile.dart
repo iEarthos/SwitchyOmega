@@ -193,4 +193,14 @@ class ProxyServer extends Plainable {
   ProxyServer.fromPlain(Map<String, Object> p) {
     this.loadPlain(p);
   }
+  
+  factory ProxyServer.parse(String proxyString, String scheme) {
+    var match = new RegExp(r':(\d+)$').firstMatch(proxyString);
+    if (match != null) {
+      return new ProxyServer(
+          proxyString.substring(0, proxyString.length - match.group(0).length),
+          scheme,
+          int.parse(match.group(1)));
+    }
+  }
 }
