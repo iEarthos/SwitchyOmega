@@ -31,7 +31,7 @@ HashSet<int> _regExpMetaChars = null;
  */
 HashSet<int> get regExpMetaChars() {
   if (_regExpMetaChars == null)
-    _regExpMetaChars = new HashSet.from(@'[\^$.|?*+(){}'.charCodes());
+    _regExpMetaChars = new HashSet.from(r'[\^$.|?*+(){}'.charCodes());
   return _regExpMetaChars;
 }
 
@@ -63,12 +63,12 @@ String shExp2RegExp(String pattern, [bool trimAsterisk = false]) {
         sb.add('.');
         break;
       default:
-        if (regExpMetaChars.contains(codes[i])) sb.add(@'\');
+        if (regExpMetaChars.contains(codes[i])) sb.add(r'\');
         sb.addCharCode(codes[i]);
         break;
     }
   }
-  if (end == pattern.length) sb.add(@'$');
+  if (end == pattern.length) sb.add(r'$');
   
   return sb.toString();
 }

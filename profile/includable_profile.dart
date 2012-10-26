@@ -52,7 +52,7 @@ abstract class IncludableProfile extends Profile {
       if (c < 128) {
         sb.addCharCode(c);
       } else {
-        sb.add(@'\u');
+        sb.add(r'\u');
         var hex = c.toRadixString(16);
         // Fill to 4 digits
         for (var i = hex.length; i < 4; i++) {

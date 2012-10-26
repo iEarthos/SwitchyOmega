@@ -48,7 +48,7 @@ class HostWildcardCondition extends HostCondition {
       return shExp2RegExp(_pattern.substring(1), trimAsterisk: true);
     } else if (_pattern.startsWith('*.')) {
       return shExp2RegExp(_pattern.substring(2), trimAsterisk: true)
-          .replaceFirst('^', @'(^|\.)');
+          .replaceFirst('^', r'(^|\.)');
     }
     
     return shExp2RegExp(_pattern, trimAsterisk: true);

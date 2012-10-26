@@ -23,8 +23,9 @@
 #import('dart:html');
 #import('../html/lib.dart');
 #import('../utils/communicator.dart');
+#import('../browser/lib.dart');
 #import('../browser/message/lib.dart');
-
+#import('dart:json');
 
 void handleFixedServerUI() {
   dynamicEvent('change', '.use-same-proxy', function (e, InputElement check) {
@@ -59,9 +60,14 @@ void handleRulelistUI() {
   });
 }
 
-Communicator c = new Communicator();
+Communicator c = new Communicator(window.top);
+ObservableSwitchyOptions options = null;
 
 void main() {
+  c.send('options.get', null, (Map<String, Object> o, [Function respond]) {
+    options = new ObservableSwitchyOptions.fromPlain(o);
+  });
+  
   handleFixedServerUI();
   handlePacScriptsUI();
   handleRulelistUI();

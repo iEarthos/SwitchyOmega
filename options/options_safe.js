@@ -21,7 +21,7 @@
 'use strict';
 var i18nCache = {};
 strings.forEach(function (name) {
-  i18nCache[name] = chrome.i18n.getMessage(name);
+  i18nCache[name] = 'PH' // chrome.i18n.getMessage(name);
 });
 
 // Set the title
@@ -49,6 +49,16 @@ c.on({
   },
   'i18n.cache': function (data, respond) {
     respond(i18nCache);
+  },
+  'options.get': function (data, respond) {
+  	respond({
+  	  'date': true,
+  	  'test': 'fail',
+  	  'profiles': {
+  	    'direct' : { 'name': 'direct', 'profileType': 'DirectProfile' },
+  	    'system' : { 'name': 'system', 'profileType': 'SystemProfile' }
+  	  }
+  	});
   }
 });
 

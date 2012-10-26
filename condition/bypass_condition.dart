@@ -75,7 +75,7 @@ class BypassCondition extends Condition {
           var serverRegex = shExp2RegExp(server);
           serverRegex = serverRegex.substring(1, serverRegex.length - 1);
           _urlRegex = new UrlRegexCondition(
-            @'^[^:]+:/*' '$serverRegex:$matchPort');
+            r'^[^:]+:/*' '$serverRegex:$matchPort');
         }
       }
       if (_urlRegex == null && server != '*') {

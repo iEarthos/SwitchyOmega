@@ -28,6 +28,7 @@ abstract class SwitchyOptions extends Plainable {
   set currentProfileName(String value);
   
   Object toPlain([Map<String, Object> p]) {
+    if (p == null) p = new Map<String, Object>();
     p['confirmDeletion'] = confirmDeletion;
     p['refreshOnProfileChange'] = refreshOnProfileChange;
     p['startupProfileName'] = startupProfileName;
@@ -35,9 +36,17 @@ abstract class SwitchyOptions extends Plainable {
     p['revertProxyChanges'] = revertProxyChanges;
     
     p['quickSwitchProfiles'] = quickSwitchProfiles;
-    p['profiles'] = _profiles.getValues().map((p) => p.toPlain());
+    
+    var plainProfiles = new Map<String, Object>();
+    _profiles.forEach((name, p) {
+      plainProfiles[name] = p.toPlain();
+    });
+    
+    p['profiles'] = plainProfiles;
     
     p['currentProfileName'] = currentProfileName;
+    
+    return p;
   }
   
   void loadPlain(Map<String, Object> p) {
@@ -49,9 +58,9 @@ abstract class SwitchyOptions extends Plainable {
     
     quickSwitchProfiles = p['quickSwitchProfiles'];
     _profiles = new Map<String, Profile>();
-    for (var pp in p['profiles'] as List<Map<String, Object>>) {
-      _profiles[pp['name']] = new Profile.fromPlain(pp);
-    }
+    (p['profiles'] as Map<String, Map<String, Object>>).forEach((name, prof) {
+      _profiles[name] = new Profile.fromPlain(prof);
+    });
     
     currentProfileName = p['currentProfileName'];
   }
@@ -61,4 +70,16 @@ abstract class SwitchyOptions extends Plainable {
   SwitchyOptions.fromPlain(Object p) {
     this.loadPlain(p);
   }
+  
+  SwitchyOptions.defaults() {
+    confirmDeletion = true;
+    refreshOnProfileChange = true;
+    startupProfileName = '';
+    enableQuickSwitch = false;
+    revertProxyChanges = false;
+    
+    quickSwitchProfiles = [];
+    _profiles = new Map<String, Profile>();
+  }
+  
 }

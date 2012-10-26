@@ -102,6 +102,10 @@ class ObservableSwitchyOptions extends SwitchyOptions {
   ObservableSwitchyOptions.fromPlain(Object p) {
     this.loadPlain(p);
   }
+  
+  ObservableSwitchyOptions.defaults() : super.defaults() {
+    
+  }
 }
 
 class ObservableProfileMap implements Map<String, Profile> {
