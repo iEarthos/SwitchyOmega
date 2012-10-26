@@ -21,7 +21,7 @@
 'use strict';
 var i18nCache = {};
 strings.forEach(function (name) {
-  i18nCache[name] = 'PH' // chrome.i18n.getMessage(name);
+  i18nCache[name] = chrome.i18n.getMessage(name);
 });
 
 // Set the title
