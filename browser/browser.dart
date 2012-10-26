@@ -1,6 +1,8 @@
+part of switchy_browser;
+
 /**
  * Handles communication with the browser and other browser related stuff.
- */ 
+ */
 abstract class Browser {
   AsyncStorage get storage;
   Future applyProfile(Profile profile);

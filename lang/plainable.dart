@@ -1,3 +1,5 @@
+part of lang;
+
 /*!
  * Copyright (C) 2012, The SwitchyOmega Authors. Please see the AUTHORS file
  * for details.
@@ -25,24 +27,24 @@ abstract class Plainable extends JsonSerializable {
   /**
    * Convert this object to a plain data structure.
    * if [p] is not null, the data of this object should be added to [p].
-   * If base is also [Plainable], please call [:super.toPlain(p):] at the 
+   * If base is also [Plainable], please call [:super.toPlain(p):] at the
    * beginning of the implementation.
    */
   Object toPlain([Object p]);
-  
+
   /**
    * Modify this object's current state according to plain data structure [p].
    * If base is also [Plainable], please call [:super.loadPlain(p):] at the
    * beginning of the implementation.
    */
   void loadPlain(Object p);
-  
+
   Object toJson() {
     return this.toPlain();
   }
-  
+
   // Plainable classes should implement the following constructor:
-  
+
   //** Construct an object from the plain data structure [p].
   // * If the constructor is a factory, call the .fromPlain constructors of the
   // * subclasses. Otherwise, just call [:this.fromPlain(p):] to initialize this

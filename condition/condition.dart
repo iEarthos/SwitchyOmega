@@ -1,3 +1,5 @@
+part of switchy_condition;
+
 /*!
  * Copyright (C) 2012, The SwitchyOmega Authors. Please see the AUTHORS file
  * for details.
@@ -23,30 +25,30 @@
  * profile is selected.
  */
 abstract class Condition extends Plainable {
-  String get conditionType();
-  
+  String get conditionType;
+
   /**
    * Returns true if the [url], [host], [scheme] and [datetime] matches this
-   * condition. False otherwise. 
+   * condition. False otherwise.
    */
   bool match(String url, String host, String scheme, Date datetime);
-  
+
   /**
    * Write this condition to [w] as a JavaScript expression.
    */
   void writeTo(CodeWriter w);
-  
+
   Map<String, Object> toPlain([Map<String, Object> p]) {
     if (p == null) p = new Map<String, Object>();
     p['conditionType'] = this.conditionType;
 
     return p;
   }
-  
+
   Condition();
-  
+
   void loadPlain(Object p) {}
-  
+
   factory Condition.fromPlain(Map<String, Object> p) {
     switch (p['conditionType']) {
       case 'BypassCondition':

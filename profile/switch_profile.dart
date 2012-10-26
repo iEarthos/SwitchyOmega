@@ -1,3 +1,5 @@
+part of switchy_profile;
+
 /*!
  * Copyright (C) 2012, The SwitchyOmega Authors. Please see the AUTHORS file
  * for details.
@@ -23,10 +25,10 @@
  * or the [defaultProfile] if no rule matches.
  */
 class SwitchProfile extends InclusiveProfile implements List<Rule> {
-  String get profileType() => 'SwitchProfile';
-  
+  String get profileType => 'SwitchProfile';
+
   List<Rule> _rules;
-  
+
   Map<String, int> _refCount;
 
   void _addReference(String name) {
@@ -41,9 +43,9 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
       _refCount.remove(name);
     }
   }
-  
+
   String _defaultProfileName;
-  String get defaultProfileName() => _defaultProfileName;
+  String get defaultProfileName => _defaultProfileName;
   void set defaultProfile(String value) {
     _refCount.remove(_defaultProfileName);
     _addReference(value);
@@ -53,15 +55,15 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
   bool containsProfileName(String name) {
     return _refCount.containsKey(name);
   }
-  
+
   List<String> getProfileNames() {
     return _refCount.getKeys();
   }
-  
+
   void writeTo(CodeWriter w) {
     w.code('function (url, host, scheme) {');
     w.code("'use strict';");
-    
+
     for (var rule in _rules) {
       w.inline('if (');
       rule.condition.writeTo(w);
@@ -70,7 +72,7 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
       w.code('return ${ip.getScriptName()};')
        .outdent();
     }
-    
+
     IncludableProfile dp = getProfileByName(defaultProfileName);
     w.code('return ${dp.getScriptName()};');
     w.inline('}');
@@ -78,20 +80,21 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
 
   String choose(String url, String host, String scheme, Date datetime) {
     for (var rule in _rules) {
-      if (rule.condition.match(url, host, scheme, datetime))
+      if (rule.condition.match(url, host, scheme, datetime)) {
         return rule.profileName;
+      }
     }
     return defaultProfileName;
   }
-  
+
   Map<String, Object> toPlain([Map<String, Object> p]) {
     p = super.toPlain(p);
     p['defaultProfileName'] = defaultProfileName;
     p['rules'] = this.map((r) => r.toPlain());
-    
+
     return p;
   }
-  
+
   SwitchProfile(String name, String defaultProfileName, ProfileResolver resolver)
       : super(name, resolver) {
     this._refCount = new Map<String, int>();
@@ -99,20 +102,20 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
     _addReference(_defaultProfileName);
     this._rules = <Rule>[];
   }
-  
+
   void loadPlain(Map<String, Object> p) {
     super.loadPlain(p);
     var rl = p['rules'] as List<Map<String, Object>>;
     this.addAll(rl.map((r) => new Rule.fromPlain(r)));
   }
-  
+
   factory SwitchProfile.fromPlain(Map<String, Object> p) {
     var f = new SwitchProfile(p['name'], p['defaultProfileName'], p['resolver']);
     f.loadPlain(p);
     return f;
   }
 
-  int get length() => _rules.length;
+  int get length => _rules.length;
 
   void set length(int newLength) {
     _rules.length = newLength;
@@ -188,7 +191,7 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
     _removeReference(rule.profileName);
     return rule;
   }
-  
+
   Rule last() => _rules.last();
 
   List<Rule> getRange(int start, int length) => _rules.getRange(start, length);
@@ -214,10 +217,10 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
      if (initialValue != null) _addReference(initialValue.profileName);
      _rules.insertRange(start, length);
   }
-  
+
   Dynamic reduce(Dynamic initialValue,
                  Dynamic combine(Dynamic previousValue, Rule element)) {
-    _rules.reduce(initialValue, combine); 
+    _rules.reduce(initialValue, combine);
   }
 }
 

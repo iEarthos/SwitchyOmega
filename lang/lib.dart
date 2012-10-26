@@ -18,7 +18,7 @@
  * along with SwitchyOmega.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#library('lang');
-#source('helper_func.dart');
-#source('json_serializable.dart');
-#source('plainable.dart');
+library lang;
+part 'helper_func.dart';
+part 'json_serializable.dart';
+part 'plainable.dart';

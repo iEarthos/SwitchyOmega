@@ -18,14 +18,14 @@
  * along with SwitchyOmega.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#library('switchy_options');
+library switchy_options;
 
-#import('dart:html');
-#import('../html/lib.dart');
-#import('../utils/communicator.dart');
-#import('../browser/lib.dart');
-#import('../browser/message/lib.dart');
-#import('dart:json');
+import 'dart:html';
+import '../html/lib.dart';
+import '../utils/communicator.dart';
+import '../browser/lib.dart';
+import '../browser/message/lib.dart';
+import 'dart:json';
 
 void handleFixedServerUI() {
   dynamicEvent('change', '.use-same-proxy', function (e, InputElement check) {
@@ -67,7 +67,7 @@ void main() {
   c.send('options.get', null, (Map<String, Object> o, [Function respond]) {
     options = new ObservableSwitchyOptions.fromPlain(o);
   });
-  
+
   handleFixedServerUI();
   handlePacScriptsUI();
   handleRulelistUI();

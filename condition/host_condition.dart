@@ -1,3 +1,5 @@
+part of switchy_condition;
+
 /*!
  * Copyright (C) 2012, The SwitchyOmega Authors. Please see the AUTHORS file
  * for details.
@@ -21,10 +23,10 @@
 abstract class HostCondition extends Condition {
   bool match(String url, String host, String scheme, Date datetime) =>
       matchHost(host);
-  
+
   /**
    * Returns true if the [host] matches this condition.
-   * False otherwise. 
+   * False otherwise.
    */
   bool matchHost(String host);
 }

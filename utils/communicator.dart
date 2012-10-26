@@ -18,11 +18,11 @@
  * along with SwitchyOmega.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#library('communicator');
+library communicator;
 
-#import('dart:html');
-#import('dart:math');
-#import('dart:json');
+import 'dart:html';
+import 'dart:math';
+import 'dart:json';
 
 typedef void CommunicatorCallback(Object value, [Function respond]);
 
@@ -32,7 +32,7 @@ class Communicator {
   Map<String, Map<String, CommunicatorCallback>> _callback_maps;
   Map<String, List<CommunicatorCallback>> _action_handlers;
   Random _random = new Random();
-  
+
   Communicator([this.dest = null, this.source = null]) {
     if (this.source == null) {
       this.source = window;
@@ -41,11 +41,11 @@ class Communicator {
     _action_handlers = new Map<String, List<CommunicatorCallback>>();
     this.source.on.message.add(this._onmessage);
   }
-  
+
   void _postMessage(Window destWin, String action, Object value,
                     CommunicatorCallback callback, [String reply_to = null]) {
     String reqid;
-    
+
     if (callback != null) {
       var map = this._callback_maps[action];
       if (map == null) {
@@ -56,7 +56,7 @@ class Communicator {
       } while (map[reqid] != null);
       map[reqid] = callback;
     }
-    
+
     destWin.postMessage(JSON.stringify({
       'action': action,
       'reqid': reqid,
@@ -64,13 +64,13 @@ class Communicator {
       'value': value
     }), '*');
   }
-  
+
   CommunicatorCallback createResponder(Window source, String action, String reqid) {
     return (Object value, [Function respond]) {
       this._postMessage(source, action, value, respond, reqid);
     };
   }
-  
+
   void _onmessage(MessageEvent e) {
     var data = JSON.parse(e.data) as Map<String, Object>;
     var reply_to = data['reply_to'];
@@ -80,7 +80,7 @@ class Communicator {
         var callback = map[reply_to];
         if (callback != null) {
           map.remove(reply_to);
-          callback(data['value'], 
+          callback(data['value'],
               this.createResponder(e.source, data['action'], data['reqid']));
         }
       }
@@ -95,13 +95,13 @@ class Communicator {
       }
     }
   }
-  
+
   Communicator send(String action, [Object value, CommunicatorCallback callback]) {
     this._postMessage(this.dest, action, value, callback);
-    
+
     return this;
   }
-  
+
   Communicator on(action, CommunicatorCallback callback) {
     if (action is String) {
       var actionString = action as String;
@@ -116,7 +116,7 @@ class Communicator {
         this.on(a, cb);
       });
     }
-    
+
     return this;
   }
 }

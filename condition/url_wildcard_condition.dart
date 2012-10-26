@@ -1,3 +1,5 @@
+part of switchy_condition;
+
 /*!
  * Copyright (C) 2012, The SwitchyOmega Authors. Please see the AUTHORS file
  * for details.
@@ -25,28 +27,28 @@ class UrlWildcardCondition extends UrlCondition {
   final String conditionType = 'UrlWildcardCondition';
 
   String _pattern;
-  String get pattern() => _pattern;
+  String get pattern => _pattern;
   void set pattern(String value) {
     _pattern = value;
     _regex = null;
     _recorder = null;
   }
-  
+
   RegExp _regex;
   CodeWriterRecorder _recorder;
-  
+
   bool matchUrl(String url, scheme) {
     if (_regex == null) _regex = new RegExp(shExp2RegExp(_pattern, trimAsterisk: true));
     return _regex.hasMatch(url);
   }
-  
+
   static final schemeOnlyPattern = const RegExp(r'^(\w+)://\*$');
-  
+
   void writeTo(CodeWriter w) {
     if (_recorder == null) {
       _recorder = new CodeWriterRecorder();
       _recorder.inner = w;
-      
+
       Match m;
       if ((m = schemeOnlyPattern.firstMatch(_pattern)) != null) {
         _recorder.inline('scheme === ${JSON.stringify(m[1])}');
@@ -61,22 +63,22 @@ class UrlWildcardCondition extends UrlCondition {
       _recorder.replay(w);
     }
   }
-  
+
   UrlWildcardCondition([String pattern = '']) {
     this._pattern = pattern;
   }
-  
+
   Map<String, Object> toPlain([Map<String, Object> p]) {
     p = super.toPlain(p);
     p['pattern'] = this.pattern;
     return p;
   }
-  
+
   void loadPlain(Map<String, Object> p) {
     super.loadPlain(p);
     this.pattern = p['pattern'];
   }
-  
+
   factory UrlWildcardCondition.fromPlain(Map<String, Object> p) {
     var c = new UrlWildcardCondition(p['pattern']);
     c.loadPlain(p);

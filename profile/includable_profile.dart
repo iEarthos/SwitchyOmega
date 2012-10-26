@@ -1,3 +1,5 @@
+part of switchy_profile;
+
 /*!
  * Copyright (C) 2012, The SwitchyOmega Authors. Please see the AUTHORS file
  * for details.
@@ -25,21 +27,21 @@
 abstract class IncludableProfile extends Profile {
   /**
    * Convert this profile to an JavaScript expression which can be used in PAC
-   * scripts and write the result to a [CodeWriter]. 
+   * scripts and write the result to a [CodeWriter].
   */
   void writeTo(CodeWriter w);
-  
+
   String _scriptName;
   void set name(String value) {
     _name = value;
     _scriptName = null;
   }
-  
+
   /**
    * This prefix is appended to the script name.
    */
   static final magicPrefix = 'switchy_';
-  
+
   /**
    * Get a quoted and escaped JavaScript string from this profile's [name].
    * This method converts all non-ascii chars to its unicode escaped form.
@@ -63,6 +65,6 @@ abstract class IncludableProfile extends Profile {
     }
     return _scriptName = sb.toString();
   }
-  
+
   IncludableProfile(String name) : super(name);
 }

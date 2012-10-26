@@ -1,3 +1,5 @@
+part of switchy_profile;
+
 /*!
  * Copyright (C) 2012, The SwitchyOmega Authors. Please see the AUTHORS file
  * for details.
@@ -23,47 +25,47 @@
  * If [pacUrl] is not null, the script is downloaded from [pacUrl].
  */
 class PacProfile extends ScriptProfile {
-  String get profileType() => 'PacProfile';
-  
+  String get profileType => 'PacProfile';
+
   String _pacUrl;
-  String get pacUrl() => _pacUrl;
+  String get pacUrl => _pacUrl;
   void set pacUrl(String value) {
     if (value != null && value != _pacUrl) {
       pacScript = null;
     }
     _pacUrl = value;
   }
-  
+
   String pacScript;
 
   String toScript() => this.pacScript;
-  
+
   /**
    * Write a wrapper function around the [pacScript].
    */
   void writeTo(CodeWriter w) {
     w.code('function (url, host) {');
-    
+
     w.newLine().raw(this.pacScript).newLine();
-    
+
     w.code('return FindProxyForURL(url, host);');
     w.inline('}');
   }
 
   Map<String, Object> toPlain([Map<String, Object> p]) {
     p = super.toPlain(p);
-    
+
     if (pacUrl != null) {
       p['pacUrl'] = this.pacUrl;
     } else {
       p['pacScript'] = this.pacScript;
     }
-    
+
     return p;
   }
-  
+
   PacProfile(String name) : super(name);
-  
+
   void loadPlain(Map<String, Object> p) {
     super.loadPlain(p);
     var u = p['pacUrl'];
@@ -73,10 +75,11 @@ class PacProfile extends ScriptProfile {
       this.pacScript = p['pacScript'];
     }
   }
-  
+
   factory PacProfile.fromPlain(Map<String, Object> p) {
-    if (p['profileType'] == 'AutoDectProfile')
+    if (p['profileType'] == 'AutoDectProfile') {
       return new AutoDetectProfile.fromPlain(p);
+    }
     var f = new PacProfile(p['name']);
     f.loadPlain(p);
     return f;

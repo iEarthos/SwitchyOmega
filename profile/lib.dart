@@ -18,27 +18,27 @@
  * along with SwitchyOmega.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#library('switchy_profile');
+library switchy_profile;
 
-#import('dart:core');
-#import('dart:json');
+import 'dart:core';
+import 'dart:json';
 
-#import('../lang/lib.dart');
-#import('../utils/code_writer.dart');
-#import('../condition/lib.dart');
+import '../lang/lib.dart';
+import '../utils/code_writer.dart';
+import '../condition/lib.dart';
 
-#source('profile.dart');
+part 'profile.dart';
 
-#source('includable_profile.dart');
-#source('script_profile.dart');
-#source('inclusive_profile.dart');
+part 'includable_profile.dart';
+part 'script_profile.dart';
+part 'inclusive_profile.dart';
 
-#source('direct_profile.dart');
-#source('system_profile.dart');
-#source('autodetect_profile.dart');
-#source('fixed_profile.dart');
-#source('pac_profile.dart');
-#source('switch_profile.dart');
-#source('rule_list_profile.dart');
+part 'direct_profile.dart';
+part 'system_profile.dart';
+part 'autodetect_profile.dart';
+part 'fixed_profile.dart';
+part 'pac_profile.dart';
+part 'switch_profile.dart';
+part 'rule_list_profile.dart';
 
-#source('profile_collection.dart');
+part 'profile_collection.dart';

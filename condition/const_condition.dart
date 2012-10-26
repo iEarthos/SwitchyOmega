@@ -1,3 +1,5 @@
+part of switchy_condition;
+
 /*!
  * Copyright (C) 2012, The SwitchyOmega Authors. Please see the AUTHORS file
  * for details.
@@ -25,18 +27,18 @@ abstract class ConstCondition extends Condition {
   /**
    * Get the constant value.
    */
-  bool get value();
-  
+  bool get value;
+
   /**
    * Get the constant JavaScript expression.
    */
-  String get expression();  
-  
+  String get expression;
+
   /**
    * Returns [value] at all times.
    */
   bool match(String url, String host, String scheme, Date datetime) => value;
-  
+
   /**
    * Writes [expression] to [w].
    */
@@ -51,20 +53,21 @@ class AlwaysCondition extends ConstCondition {
 
   final value = true;
   final expression = 'true';
-  
+
   static AlwaysCondition _instance = null;
 
   factory AlwaysCondition() {
-    if (_instance != null)
+    if (_instance != null) {
       return _instance;
-    else
+    } else {
       return _instance = new AlwaysCondition._private();
+    }
   }
-  
+
   void loadPlain(Object p) {}
-  
+
   AlwaysCondition._private();
-  
+
   factory AlwaysCondition.fromPlain(Map<String, Object> p)
     => new AlwaysCondition();
 }
@@ -77,20 +80,21 @@ class NeverCondition extends ConstCondition {
 
   final value = false;
   final expression = 'false';
-  
+
   static NeverCondition _instance = null;
 
   factory NeverCondition() {
-    if (_instance != null)
+    if (_instance != null) {
       return _instance;
-    else
+    } else {
       return _instance = new NeverCondition._private();
+    }
   }
-  
+
   void loadPlain(Object p) {}
-  
+
   NeverCondition._private();
-  
+
   factory NeverCondition.fromPlain(Map<String, Object> p)
     => new NeverCondition();
 }

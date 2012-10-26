@@ -1,3 +1,5 @@
+part of switchy_condition;
+
 /*!
  * Copyright (C) 2012, The SwitchyOmega Authors. Please see the AUTHORS file
  * for details.
@@ -19,34 +21,34 @@
  */
 
 /**
- * Matches if the bypass list [pattern] matches the URL. 
+ * Matches if the bypass list [pattern] matches the URL.
  * For the pattern syntax, see
  * <https://code.google.com/chrome/extensions/proxy.html#bypass_list>
  */
 class BypassCondition extends Condition {
   final String conditionType = 'BypassCondition';
-  
+
   String _pattern;
-  String get pattern() => _pattern;
+  String get pattern => _pattern;
   void set pattern(String value) {
     _pattern = value;
     _cached = false;
   }
-  
+
   bool _cached = false;
   HostWildcardCondition _hostWildcard;
   IpCondition _ip;
   String _matchScheme;
   UrlRegexCondition _urlRegex;
-  
+
   /** Cache the charCode of "]" for greater speed. */
   static final int closeSquareBracketCode = 93;
-  
+
   /** A special [pattern] which matches all [localHosts]. */
   static final String localPattern = '<local>';
-  
+
   static final List<String> localHosts = const ["127.0.0.1", "[::1]", "localhost"];
-  
+
   void _parsePattern() {
     var server = _pattern;
     if (server == localPattern) {
@@ -62,7 +64,7 @@ class BypassCondition extends Condition {
     }
     parts = server.split('/');
     if (parts.length > 1) {
-      _ip = new IpCondition(parts[0], parseInt(parts[1]));
+      _ip = new IpCondition(parts[0], int.parse(parts[1]));
       _hostWildcard = null;
     } else {
       _urlRegex = null;
@@ -85,7 +87,7 @@ class BypassCondition extends Condition {
     }
     _cached = true;
   }
-  
+
   bool match(String url, String host, String scheme, Date datetime) {
     if (!_cached) _parsePattern();
     if (pattern == localPattern) return localHosts.indexOf(host) >= 0;
@@ -95,7 +97,7 @@ class BypassCondition extends Condition {
     if (_ip != null && !_ip.matchHost(host)) return false;
     return true;
   }
-  
+
   void writeTo(CodeWriter w) {
     if (!_cached) _parsePattern();
     if (pattern == localPattern) {
@@ -118,24 +120,24 @@ class BypassCondition extends Condition {
       w.inline('true');
     }
   }
-  
+
   Map<String, Object> toPlain([Map<String, Object> p]) {
     p = super.toPlain(p);
     p['pattern'] = this.pattern;
     return p;
   }
-  
+
   void loadPlain(Map<String, Object> p) {
     super.loadPlain(p);
     this.pattern = p['pattern'];
   }
-  
+
   factory BypassCondition.fromPlain(Map<String, Object> p) {
     var c = new BypassCondition(p['pattern']);
     c.loadPlain(p);
     return c;
   }
-  
+
   BypassCondition([String pattern = '']) {
     this._pattern = pattern;
   }

@@ -1,3 +1,5 @@
+part of switchy_profile;
+
 /*!
  * Copyright (C) 2012, The SwitchyOmega Authors. Please see the AUTHORS file
  * for details.
@@ -18,7 +20,7 @@
  * along with SwitchyOmega.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** 
+/**
  * A [InclusiveProfile] can include one or more [IncludableProfiles].
  * It can be converted to a complete PAC script using [toScript].
  */
@@ -28,15 +30,15 @@ abstract class InclusiveProfile extends ScriptProfile {
    * Otherwise, false.
    */
   bool containsProfileName(String name);
-  
+
   /** A function that find profiles by their names. */
   ProfileResolver getProfileByName;
-  
+
   /**
    * Get the names of all result profiles of this profile.
    */
   List<String> getProfileNames();
-  
+
   Map<String, IncludableProfile> getAllReferences() {
     var s = new HashMap<String, IncludableProfile>();
     var queue = new List<String>.from(getProfileNames());
@@ -56,7 +58,7 @@ abstract class InclusiveProfile extends ScriptProfile {
     }
     return s;
   }
-  
+
   /**
    * Convert this profile to a complete PAC script with all included profiles.
    */
@@ -66,7 +68,7 @@ abstract class InclusiveProfile extends ScriptProfile {
       w.indentStr = '';
       w.lineBreak = '';
     }
-    
+
     w.code("var SwitchyOmega = {")
        .code("FindProxyForURL : function (url, host) {")
          .code("'use strict';")
@@ -84,10 +86,10 @@ abstract class InclusiveProfile extends ScriptProfile {
      .code("};")
      .newLine()
      .code("var FindProxyForURL = SwitchyOmega.FindProxyForURL;");
-    
+
     return w.toString();
   }
-  
+
   void _writeAllProfilesTo(CodeWriter w) {
     // Write all included profiles
     for (var p in getAllReferences().getValues()) {
@@ -95,22 +97,22 @@ abstract class InclusiveProfile extends ScriptProfile {
       p.writeTo(w);
       w.code(',');
     }
-    
+
     // Write this profile
     w.inline('${this.getScriptName()} : ');
     this.writeTo(w);
     w.newLine();
   }
-  
+
   /**
    * Select one result profile according to the params and return its name.
    */
   String choose(String url, String host, String scheme, Date datetime);
-  
+
   InclusiveProfile(String name, this.getProfileByName) : super(name);
 }
 
-typedef Profile ProfileResolver(String name); 
+typedef Profile ProfileResolver(String name);
 
 /**
  * Thrown when a circular reference of two [InclusiveProfile]s is detected.
@@ -129,24 +131,24 @@ class CircularReferenceException implements Exception {
 class Rule extends Plainable {
   Condition condition;
   String profileName;
-  
+
   Map<String, Object> toPlain([Map<String, Object> p]) {
     if (p == null) p = new Map<String, Object>();
-    
+
     p['condition'] = this.condition.toPlain();
     p['profileName'] = this.profileName;
-    
+
     return p;
   }
-  
+
   void loadPlain(Map<String, Object> p) {
     this.condition = new Condition.fromPlain(p['condition']);
     this.profileName = p['profileName'];
   }
-  
+
   Rule.fromPlain(Map<String, Object> p) {
     this.loadPlain(p);
   }
-  
+
   Rule(this.condition, this.profileName);
 }

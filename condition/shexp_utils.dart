@@ -18,20 +18,21 @@
  * along with SwitchyOmega.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#library('shexp_utils');
-#import('dart:core');
-#import('dart:json');
+library shexp_utils;
+import 'dart:core';
+import 'dart:json';
 
-#import('../utils/code_writer.dart');
+import '../utils/code_writer.dart';
 
 HashSet<int> _regExpMetaChars = null;
 
 /**
  * The charCodes of all meta-chars which need escaping in regex.
  */
-HashSet<int> get regExpMetaChars() {
-  if (_regExpMetaChars == null)
+HashSet<int> get regExpMetaChars {
+  if (_regExpMetaChars == null) {
     _regExpMetaChars = new HashSet.from(r'[\^$.|?*+(){}'.charCodes());
+  }
   return _regExpMetaChars;
 }
 
@@ -43,15 +44,17 @@ String shExp2RegExp(String pattern, [bool trimAsterisk = false]) {
   var codes = pattern.charCodes();
   var start = 0;
   var end = pattern.length;
-  
+
   if (trimAsterisk) {
-    while (start < end && codes[start] == 42) // '*'
+    while (start < end && codes[start] == 42) { // '*'
       start++;
-    while (start < end && codes[end - 1] == 42)
+    }
+    while (start < end && codes[end - 1] == 42) {
       end--;
+    }
     if (end - start == 1 && codes[start] == 42) return '';
   }
-  
+
   StringBuffer sb = new StringBuffer();
   if (start == 0) sb.add('^');
   for (var i = start; i < end; i++) {
@@ -69,7 +72,7 @@ String shExp2RegExp(String pattern, [bool trimAsterisk = false]) {
     }
   }
   if (end == pattern.length) sb.add(r'$');
-  
+
   return sb.toString();
 }
 

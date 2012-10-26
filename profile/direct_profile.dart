@@ -1,3 +1,5 @@
+part of switchy_profile;
+
 /*!
  * Copyright (C) 2012, The SwitchyOmega Authors. Please see the AUTHORS file
  * for details.
@@ -24,7 +26,7 @@
 class DirectProfile extends IncludableProfile {
   final String profileType = 'DirectProfile';
   final bool predefined = true;
-  
+
   void writeTo(CodeWriter w) {
     w.inline("['DIRECT']");
   }
@@ -35,14 +37,15 @@ class DirectProfile extends IncludableProfile {
 
   static DirectProfile _instance = null;
   factory DirectProfile() {
-    if (_instance != null)
+    if (_instance != null) {
       return _instance;
-    else
+    } else {
       return _instance = new DirectProfile._private();
+    }
   }
-  
+
   void loadPlain(Object p) {}
-  
-  factory DirectProfile.fromPlain(Object p) 
+
+  factory DirectProfile.fromPlain(Object p)
     => new DirectProfile();
 }

@@ -1,3 +1,5 @@
+part of switchy_profile;
+
 /*!
  * Copyright (C) 2012, The SwitchyOmega Authors. Please see the AUTHORS file
  * for details.
@@ -25,24 +27,24 @@
  */
 class FixedProfile extends IncludableProfile {
   final String profileType = 'FixedProfile';
-  
+
   ProxyServer proxyForHttp;
   ProxyServer proxyForHttps;
   ProxyServer proxyForFtp;
   ProxyServer fallbackProxy;
-  
+
   /**
    * When the url matches one of the [BypassConditions],
    * direct connection is used.
    */
   List<BypassCondition> bypassList;
-  
+
   /**
    * Write the proxy servers and [bypassList] to a PAC script.
    * See <https://code.google.com/chrome/extensions/proxy.html> for the logic.
    */
   void writeTo(CodeWriter w) {
-    if (bypassList.length == 0 && proxyForHttp == null && 
+    if (bypassList.length == 0 && proxyForHttp == null &&
         proxyForHttps == null && proxyForFtp == null) {
       if (fallbackProxy != null) {
         w.inline("[${JSON.stringify(fallbackProxy.toPacResult())}]");
@@ -62,7 +64,7 @@ class FixedProfile extends IncludableProfile {
         w.code("false) return ['DIRECT'];").outdent().outdent().newLine();
       }
     }
-    
+
     if (proxyForHttp != null) {
       w.inline("if (scheme === 'http') ")
          .code("return [${JSON.stringify(proxyForHttp.toPacResult())}];");
@@ -82,7 +84,7 @@ class FixedProfile extends IncludableProfile {
     }
     w.inline('}');
   }
-  
+
   /**
    * Get the [ProxyServer] for the [url].
    * Returns [null] if direct connection should be used.
@@ -94,44 +96,52 @@ class FixedProfile extends IncludableProfile {
     if (proxyForHttp != null && scheme == 'http') return proxyForHttp;
     if (proxyForHttps != null && scheme == 'https') return proxyForHttps;
     if (proxyForFtp != null && scheme == 'ftp') return proxyForFtp;
-    
+
     return fallbackProxy;
   }
-  
+
   Map<String, Object> toPlain([Map<String, Object> p]) {
     p = super.toPlain(p);
-    
-    if (this.proxyForHttp != null)
+
+    if (this.proxyForHttp != null) {
       p['proxyForHttp'] = this.proxyForHttp.toPlain();
-    if (this.proxyForHttps != null)
+    }
+    if (this.proxyForHttps != null) {
       p['proxyForHttps'] = this.proxyForHttps.toPlain();
-    if (this.proxyForFtp != null)
+    }
+    if (this.proxyForFtp != null) {
       p['proxyForFtp'] = this.proxyForFtp.toPlain();
-    if (this.fallbackProxy != null)
+    }
+    if (this.fallbackProxy != null) {
       p['fallbackProxy'] = this.fallbackProxy.toPlain();
+    }
     p['bypassList'] = this.bypassList.map((b) => b.toPlain());
     return p;
   }
-  
+
   FixedProfile(String name) : super(name) {
     bypassList = new List<BypassCondition>();
   }
-  
+
   void loadPlain(Map<String, Object> p) {
     super.loadPlain(p);
-    if (p['proxyForHttp'] != null)
+    if (p['proxyForHttp'] != null) {
       proxyForHttp = new ProxyServer.fromPlain(p['proxyForHttp']);
-    if (p['proxyForHttps'] != null)
+    }
+    if (p['proxyForHttps'] != null) {
       proxyForHttps = new ProxyServer.fromPlain(p['proxyForHttps']);
-    if (p['proxyForFtp'] != null)
+    }
+    if (p['proxyForFtp'] != null) {
       proxyForFtp = new ProxyServer.fromPlain(p['proxyForFtp']);
-    if (p['fallbackProxy'] != null)
+    }
+    if (p['fallbackProxy'] != null) {
       fallbackProxy = new ProxyServer.fromPlain(p['fallbackProxy']);
+    }
     var bl = p['bypassList'] as List<Object>;
     bypassList = bl.map((b) => new BypassCondition.fromPlain(b));
   }
-  
-  
+
+
   factory FixedProfile.fromPlain(Map<String, Object> p) {
     var f = new FixedProfile(p['name']);
     f.loadPlain(p);
@@ -146,14 +156,14 @@ class ProxyServer extends Plainable {
   String scheme = 'http';
   String host;
   int port;
-  
+
   /**
    * Converts this ProxyServer to a token of a PAC result string.
    */
   String toPacResult() {
     return '${pacScheme[scheme]} $host:$port';
   }
-  
+
   /**
    * See <https://code.google.com/chrome/extensions/proxy.html>.
    */
@@ -163,37 +173,37 @@ class ProxyServer extends Plainable {
     'socks4' : 1080,
     'socks5': 1080
   };
-  
+
   static final Map<String, String> pacScheme = const {
     'http': 'PROXY',
     'https': 'HTTPS',
     'socks4' : 'SOCKS', //compatibility
     'socks5': 'SOCKS5'
   };
-  
+
   Map<String, Object> toPlain([Map<String, Object> p]) {
     if (p == null) p = new Map<String, Object>();
     p['scheme'] = this.scheme;
     p['host'] = this.host;
     p['port'] = this.port;
-    
+
     return p;
   }
-  
+
   ProxyServer(this.host, [this.scheme = 'http', this.port]) {
     if (this.port == null) this.port = defaultPort[scheme];
   }
-  
+
   void loadPlain(Map<String, Object> p) {
     this.scheme = p['scheme'];
     this.host = p['host'];
     this.port = p['port'];
   }
-  
+
   ProxyServer.fromPlain(Map<String, Object> p) {
     this.loadPlain(p);
   }
-  
+
   factory ProxyServer.parse(String proxyString, String scheme) {
     var match = new RegExp(r':(\d+)$').firstMatch(proxyString);
     if (match != null) {

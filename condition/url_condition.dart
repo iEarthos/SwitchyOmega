@@ -1,3 +1,5 @@
+part of switchy_condition;
+
 /*!
  * Copyright (C) 2012, The SwitchyOmega Authors. Please see the AUTHORS file
  * for details.
@@ -21,10 +23,10 @@
 abstract class UrlCondition extends Condition {
   bool match(String url, String host, String scheme, Date datetime) =>
       matchUrl(url, scheme);
-  
+
   /**
    * Returns true if the [url] matches this condition. False otherwise.
-   * [scheme] is provided for faster speed. 
+   * [scheme] is provided for faster speed.
    */
   bool matchUrl(String url, String scheme);
 }

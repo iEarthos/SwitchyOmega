@@ -1,3 +1,5 @@
+part of switchy_profile;
+
 /*!
  * Copyright (C) 2012, The SwitchyOmega Authors. Please see the AUTHORS file
  * for details.
@@ -26,6 +28,6 @@ abstract class ScriptProfile extends IncludableProfile {
    * Get the PAC script of this profile.
    */
   String toScript();
-  
+
   ScriptProfile(String name) : super(name);
 }

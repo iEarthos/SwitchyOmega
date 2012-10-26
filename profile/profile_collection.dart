@@ -1,3 +1,5 @@
+part of switchy_profile;
+
 /*!
  * Copyright (C) 2012, The SwitchyOmega Authors. Please see the AUTHORS file
  * for details.
@@ -24,33 +26,33 @@
  */
 class ProfileCollection extends Plainable implements Set<Profile> {
   Map<String, Profile> _profiles;
-  
+
   /**
    * Returns the profile by its [name].
    */
   Profile getProfileByName(String name) {
     return _profiles[name];
   }
-  
+
   /**
    * Returns the profile by its [name].
    */
   Profile operator [](String name) {
     return _profiles[name];
   }
-  
+
   void _addPredefined() {
     this.add(new AutoDetectProfile());
     this.add(new DirectProfile());
     this.add(new SystemProfile());
   }
-  
+
   void _setResolver(Profile p) {
     if (p is InclusiveProfile) {
       (p as InclusiveProfile).getProfileByName = this.getProfileByName;
     }
   }
-  
+
   /**
    * Convert this collection to a list of plain profile objects.
    * Predefined profiles will not be included in the result.
@@ -59,10 +61,10 @@ class ProfileCollection extends Plainable implements Set<Profile> {
     if (p == null) p = new List<Object>();
     p.addAll(_profiles.getValues().filter((prof) => !prof.predefined)
         .map((prof) => prof.toPlain()));
-    
+
     return p;
   }
-  
+
   ProfileCollection([Collection<Profile> profiles = null]) {
     _profiles = new Map<String, Profile>();
     _addPredefined();
@@ -71,7 +73,7 @@ class ProfileCollection extends Plainable implements Set<Profile> {
       profiles.forEach(_setResolver);
     }
   }
-  
+
   void loadPlain(List<Object> p) {
     for (Map<String, Object> profile in p) {
       var pp = new Profile.fromPlain(profile);
@@ -79,7 +81,7 @@ class ProfileCollection extends Plainable implements Set<Profile> {
       this.add(pp);
     }
   }
-  
+
   factory ProfileCollection.fromPlain(List<Object> p) {
     var c = new ProfileCollection();
     c.loadPlain(p);
@@ -146,7 +148,7 @@ class ProfileCollection extends Plainable implements Set<Profile> {
     _profiles.clear();
     _addPredefined();
   }
-  
+
   void forEach(void f(Profile element)) {
     _profiles.forEach(void _(String key, Profile value) {
       f(value);
@@ -183,16 +185,16 @@ class ProfileCollection extends Plainable implements Set<Profile> {
     return _profiles.isEmpty();
   }
 
-  int get length() {
+  int get length {
     return _profiles.length;
   }
 
   Iterator<Profile> iterator() {
     return _profiles.getValues().iterator();
   }
-  
+
   Dynamic reduce(Dynamic initialValue,
                  Dynamic combine(Dynamic previousValue, Profile element)) {
-    _profiles.getValues().reduce(initialValue, combine); 
+    _profiles.getValues().reduce(initialValue, combine);
   }
 }

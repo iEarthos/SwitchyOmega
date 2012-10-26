@@ -1,3 +1,5 @@
+part of switchy_profile;
+
 /*!
  * Copyright (C) 2012, The SwitchyOmega Authors. Please see the AUTHORS file
  * for details.
@@ -24,37 +26,37 @@
  */
 abstract class RuleListProfile extends InclusiveProfile {
   String _sourceUrl;
-  String get sourceUrl() => _sourceUrl;
-  
+  String get sourceUrl => _sourceUrl;
+
   void set sourceUrl(String value) {
     _sourceUrl = value;
     _ruleList = null;
     _rules = null;
   }
-  
+
   String matchProfileName;
   String defaultProfileName;
-  
+
   List<Rule> _rules;
-  
+
   String _ruleList;
-  String get ruleList() => _ruleList;
-  
+  String get ruleList => _ruleList;
+
   void set ruleList(String value) {
     _ruleList = value;
     _rules = null;
   }
-  
+
   void writeTo(CodeWriter w) {
     if (_rules == null) _rules = parseRules(ruleList);
     w.code('function (url, host, scheme) {');
     w.code("'use strict';");
-   
+
     IncludableProfile mp = getProfileByName(matchProfileName);
     var matchScriptName = mp.getScriptName();
     IncludableProfile dp = getProfileByName(defaultProfileName);
     var defaultScriptName = dp.getScriptName();
-    
+
     for (var rule in _rules) {
       w.inline('if (');
       rule.condition.writeTo(w);
@@ -65,24 +67,24 @@ abstract class RuleListProfile extends InclusiveProfile {
       w.code('return ${scriptName};')
        .outdent();
     }
-    
+
     w.code('return ${defaultScriptName};');
     w.inline('}');
   }
-  
+
   /**
    * Parse the [rules] and return the results.
    */
   List<Rule> parseRules(String rules);
-  
+
   bool containsProfileName(String name) {
     return matchProfileName == name || defaultProfileName == name;
   }
-  
+
   List<String> getProfileNames() {
     return [matchProfileName, defaultProfileName];
   }
-  
+
   Map<String, Object> toPlain([Map<String, Object> p]) {
     p = super.toPlain(p);
     p['defaultProfileNameName'] = defaultProfileName;
@@ -93,11 +95,11 @@ abstract class RuleListProfile extends InclusiveProfile {
       p['ruleList'] = ruleList;
     }
   }
-  
+
   RuleListProfile(String name, this.defaultProfileName, this.matchProfileName,
       ProfileResolver resolver)
     : super(name, resolver);
-  
+
   void loadPlain(Map<String, Object> p) {
     super.loadPlain(p);
     defaultProfileName = p['defaultProfileNameName'];
@@ -109,10 +111,10 @@ abstract class RuleListProfile extends InclusiveProfile {
       ruleList = p['ruleList'];
     }
   }
-  
+
   factory RuleListProfile.fromPlain(Map<String, Object> p) {
     RuleListProfile f = null; // TODO
-    
+
     return f;
   }
 }

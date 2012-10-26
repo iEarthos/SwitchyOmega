@@ -18,11 +18,11 @@
  * along with SwitchyOmega.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#library('switchy_html');
+library switchy_html;
 
-#import('dart:html');
-#import('../lang/lib.dart');
+import 'dart:html';
+import '../lang/lib.dart';
 
-#source('dynamic_event.dart');
-#source('dom_helpers.dart');
-#source('datalist.dart');
+part 'dynamic_event.dart';
+part 'dom_helpers.dart';
+part 'datalist.dart';

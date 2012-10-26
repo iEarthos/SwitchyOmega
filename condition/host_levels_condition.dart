@@ -1,3 +1,5 @@
+part of switchy_condition;
+
 /*!
  * Copyright (C) 2012, The SwitchyOmega Authors. Please see the AUTHORS file
  * for details.
@@ -27,10 +29,10 @@ class HostLevelsCondition extends HostCondition {
 
   /** Cache the charCode of '.' for greater speed. */
   static final int dotCharCode = 46;
-  
+
   int maxValue = 0;
   int minValue = 0;
-  
+
   bool matchHost(String host) {
     int dotCount = 0;
     for (var i = 0; i < host.length; i++) {
@@ -41,7 +43,7 @@ class HostLevelsCondition extends HostCondition {
     }
     return dotCount >= minValue;
   }
-  
+
   void writeTo(CodeWriter w) {
     if (maxValue == minValue) {
       w.inline("host.split('.').length - 1 === $minValue");
@@ -50,23 +52,23 @@ class HostLevelsCondition extends HostCondition {
              "(host.split('.').length - 1)");
     }
   }
-  
+
   HostLevelsCondition([this.minValue = 0, this.maxValue = 0]);
-  
+
   Map<String, Object> toPlain([Map<String, Object> p]) {
     p = super.toPlain(p);
     p['minValue'] = this.minValue;
     p['maxValue'] = this.maxValue;
     return p;
   }
-  
-  
+
+
   void loadPlain(Map<String, Object> p) {
     super.loadPlain(p);
     this.minValue = p['minValue'];
     this.maxValue = p['maxValue'];
   }
-  
+
   factory HostLevelsCondition.fromPlain(Map<String, Object> p) {
     var c = new HostLevelsCondition(p['minValue'], p['maxValue']);
     c.loadPlain(p);

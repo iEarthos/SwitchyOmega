@@ -1,3 +1,5 @@
+part of switchy_profile;
+
 /*!
  * Copyright (C) 2012, The SwitchyOmega Authors. Please see the AUTHORS file
  * for details.
@@ -32,14 +34,15 @@ class SystemProfile extends Profile {
   static SystemProfile _instance = null;
 
   factory SystemProfile() {
-    if (_instance != null)
+    if (_instance != null) {
       return _instance;
-    else
+    } else {
       return _instance = new SystemProfile._private();
+    }
   }
-  
+
   void loadPlain(Object p) {}
-  
+
   factory SystemProfile.fromPlain(Object p)
     => new SystemProfile();
 }

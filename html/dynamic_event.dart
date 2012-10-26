@@ -1,3 +1,5 @@
+part of switchy_html;
+
 /*!
  * Copyright (C) 2012, The SwitchyOmega Authors. Please see the AUTHORS file
  * for details.
@@ -23,13 +25,13 @@ typedef void DynamicEventCallback(Event e, Element matchedNode);
 Map<String, Map<String, List<DynamicEventCallback>>> _dynamicEventHandlers = null;
 void dynamicEvent(String name, String selector, DynamicEventCallback listener) {
   if (_dynamicEventHandlers == null) {
-    _dynamicEventHandlers = 
+    _dynamicEventHandlers =
         new Map<String, Map<String, List<DynamicEventCallback>>>();
   }
   var h = _dynamicEventHandlers[name];
   List<DynamicEventCallback> l = null;
   if (h == null) {
-    h = _dynamicEventHandlers[name] = 
+    h = _dynamicEventHandlers[name] =
         new Map<String, List<DynamicEventCallback>>();
     document.on[name].add(function (e) {
       var cur = e.target;

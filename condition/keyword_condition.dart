@@ -1,3 +1,5 @@
+part of switchy_condition;
+
 /*!
  * Copyright (C) 2012, The SwitchyOmega Authors. Please see the AUTHORS file
  * for details.
@@ -19,35 +21,35 @@
  */
 
 /**
- * Matches if the scheme of the url is 'http' and the [pattern] is a 
+ * Matches if the scheme of the url is 'http' and the [pattern] is a
  * substring of the [url].
  */
 class KeywordCondition extends UrlCondition {
   final String conditionType = 'KeywordCondition';
 
   String pattern;
-  
+
   bool matchUrl(String url, scheme) {
     return scheme == 'http' && url.contains(pattern);
   }
-  
+
   void writeTo(CodeWriter w) {
     w.inline("scheme === 'http' && url.indexOf(${JSON.stringify(pattern)}) >= 0");
   }
-  
+
   KeywordCondition([this.pattern = '']);
-  
+
   Map<String, Object> toPlain([Map<String, Object> p]) {
     p = super.toPlain(p);
     p['pattern'] = this.pattern;
     return p;
   }
-  
+
   void loadPlain(Map<String, Object> p) {
     super.loadPlain(p);
     this.pattern = p['pattern'];
   }
-  
+
   factory KeywordCondition.fromPlain(Map<String, Object> p) {
     var c = new KeywordCondition(p['pattern']);
     c.loadPlain(p);

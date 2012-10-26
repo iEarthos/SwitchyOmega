@@ -1,3 +1,5 @@
+part of switchy_browser_message;
+
 /**
  * A [MessageBrowser] sends browser requests via a [Communicator], then the
  * requested actions are performed at its target.
@@ -5,7 +7,7 @@
 class MessageBrowser extends Browser {
   Communicator _c;
   MessageStorage _storage;
-  
+
   MessageBrowser([Communicator c = null]) {
     if (c == null) {
       this._c = new Communicator();
@@ -14,9 +16,9 @@ class MessageBrowser extends Browser {
     }
     this.storage = new MessageStorage(this._c);
   }
-  
+
   MessageStorage get storage => _storage;
-  
+
   /**
    * Transform the [profile] to a plain and browser-friendly structure, then
    * send it via the [Communicator].
@@ -29,7 +31,7 @@ class MessageBrowser extends Browser {
     var completer = new Completer();
 
     Map<String, Object> data = {};
-    
+
     if (profile is SystemProfile) {
       data['mode'] = 'system';
     } else if (profile is DirectProfile) {
@@ -48,11 +50,11 @@ class MessageBrowser extends Browser {
     } else {
       throw new UnsupportedOperationException(profile.profileType);
     }
-    
+
     _c.send('proxy.apply', data, (_) {
       completer.complete(null);
     });
-    
+
     return completer.future;
   }
 }
@@ -62,7 +64,7 @@ class MessageBrowser extends Browser {
  */
 class MessageStorage extends AsyncStorage {
   Communicator _c;
-  
+
   MessageStorage([Communicator c = null]) {
     if (c == null) {
       this._c = new Communicator();
@@ -70,15 +72,15 @@ class MessageStorage extends AsyncStorage {
       this._c = c;
     }
   }
-  
+
   Future<Map<String, Object>> retive(List<String> names) {
     var completer = new Completer<Map<String, Object>>();
     _c.send('storage.retive', names, (Map<String, Object> map) {
       completer.complete(map);
     });
     return completer.future;
-  } 
-  
+  }
+
   Future put(Map<String, Object> map) {
     var completer = new Completer();
     _c.send('storage.put', map, (_) {
@@ -86,7 +88,7 @@ class MessageStorage extends AsyncStorage {
     });
     return completer.future;
   }
-  
+
   Future remove(List<String> names) {
     var completer = new Completer();
     _c.send('storage.remove', names, (_) {

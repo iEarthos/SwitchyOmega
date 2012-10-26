@@ -1,3 +1,5 @@
+part of switchy_condition;
+
 /*!
  * Copyright (C) 2012, The SwitchyOmega Authors. Please see the AUTHORS file
  * for details.
@@ -28,26 +30,26 @@ class IpCondition extends HostCondition {
 
   String ip;
   int _prefixLength;
-  int get prefixLength() => _prefixLength;
+  int get prefixLength => _prefixLength;
   void set prefixLength(int value) {
     _prefixLength = value;
     _mask = null;
     _maskValue = null;
   }
-  
+
   String _mask = null;
-  
+
   /**
    * Calculate the net mask of [prefixLength].
    */
-  String get mask() {
+  String get mask {
     if (_mask != null) return mask;
-    
+
     var length = prefixLength;
     var partLen = 8;
     var maxPartCount = 4;
     var sb = new StringBuffer();
-    
+
     var partCount = 0;
     while (length > partLen) {
       length -= partLen;
@@ -71,68 +73,68 @@ class IpCondition extends HostCondition {
       return _mask = sb.toString();
     }
   }
-  
+
   int _maskValue = null;
-  
+
   /**
    * Get the value of the IP address [mask].
    */
-  int get maskValue() {
+  int get maskValue {
     if (_maskValue != null) return _maskValue;
-    
+
     var value = 0;
     var bit = 1 << 32;
     for (var i = 0; i < prefixLength; i++) {
       bit += value;
       value >>= 1;
     }
-    
+
     return _maskValue = value;
   }
-  
+
   /**
-   * Matches an IPv4 literal. It also matches invalid addresses like 
+   * Matches an IPv4 literal. It also matches invalid addresses like
    * '888.888.888.888', but just forget about it.
    */
   static final Ipv4Regex = const RegExp(r"^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$");
-  
+
   /** Get the int value of IP address [host]. */
   int convertAddr(String host) {
     var m = Ipv4Regex.firstMatch(host);
     if (m == null) return null;
-    return (parseInt(m[0]) & 0xff) << 24 +
-        (parseInt(m[1]) & 0xff) << 16 +
-        (parseInt(m[2]) & 0xff) << 8 +
-        (parseInt(m[3]) & 0xff);
+    return (int.parse(m[0]) & 0xff) << 24 +
+        (int.parse(m[1]) & 0xff) << 16 +
+        (int.parse(m[2]) & 0xff) << 8 +
+        (int.parse(m[3]) & 0xff);
   }
-  
+
   bool matchHost(String host) {
     var hostValue = convertAddr(host);
     if (hostValue == null) return false;
     var ipValue = convertAddr(ip);
     return (hostValue & maskValue) == (ipValue & maskValue);
   }
-  
+
   void writeTo(CodeWriter w) {
     w.inline('isInNet(host, ${JSON.stringify(ip)}, ${JSON.stringify(mask)})');
   }
-  
+
   IpCondition([this.ip = '0.0.0.0', int prefixLength = 0]) {
     this._prefixLength = prefixLength;
   }
-  
+
   Map<String, Object> toPlain([Map<String, Object> p]) {
     p = super.toPlain(p);
     p['ip'] = this.ip;
     p['prefixLength'] = this.prefixLength;
   }
-  
+
   void loadPlain(Map<String, Object> p) {
     super.loadPlain(p);
     this.ip = p['ip'];
     this.prefixLength = p['prefixLength'];
   }
-  
+
   factory IpCondition.fromPlain(Map<String, Object> p) {
     var c = new IpCondition(p['ip'], p['prefixLength']);
     c.loadPlain(p);

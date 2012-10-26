@@ -1,3 +1,5 @@
+part of switchy_profile;
+
 /*!
  * Copyright (C) 2012, The SwitchyOmega Authors. Please see the AUTHORS file
  * for details.
@@ -34,14 +36,15 @@ class AutoDetectProfile extends PacProfile {
 
   static AutoDetectProfile _instance = null;
   factory AutoDetectProfile() {
-    if (_instance != null)
+    if (_instance != null) {
       return _instance;
-    else
+    } else {
       return _instance = new AutoDetectProfile._private();
+    }
   }
-  
+
   void loadPlain(Object p) {}
-  
+
   factory AutoDetectProfile.fromPlain(Object p)
     => new AutoDetectProfile();
 }

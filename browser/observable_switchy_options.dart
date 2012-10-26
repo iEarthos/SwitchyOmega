@@ -1,37 +1,39 @@
+part of switchy_browser;
+
 
 abstract class SwitchyOptionsObserver {
   void optionModified(String optionName, Object value);
-  
+
   void profileAddedOrChanged(Profile profile);
   void profileRemoved(String name);
 }
 
 class SwitchyOptionsEmptyObserver implements SwitchyOptionsObserver {
   void optionModified(String optionName, Object value) {}
-  
+
   void profileAddedOrChanged(Profile profile) {}
   void profileRemoved(String name) {}
-  
+
   const SwitchyOptionsEmptyObserver();
 }
 
 class ObservableSwitchyOptions extends SwitchyOptions {
-  
+
   SwitchyOptionsObserver _observer;
   SwitchyOptionsObserver get observer => _observer;
   void set observer(SwitchyOptionsObserver value) {
     _observer = value;
     (profiles as ObservableProfileMap).observer = _observer;
   }
-  
+
   ObservableSwitchyOptions([
       SwitchyOptionsObserver observer = const SwitchyOptionsEmptyObserver()])
       : this._observer = observer {
         this._profiles = new ObservableProfileMap(observer);
       }
-  
+
   bool _confirmDelection;
-  
+
   bool get confirmDeletion => _confirmDelection;
   void set confirmDeletion(bool value) {
     if (_confirmDelection != value) {
@@ -39,7 +41,7 @@ class ObservableSwitchyOptions extends SwitchyOptions {
       observer.optionModified('confirmDeletion', value);
     }
   }
-  
+
   bool _refreshOnProfileChange;
   bool get refreshOnProfileChange => _refreshOnProfileChange;
   void set refreshOnProfileChange(bool value) {
@@ -57,7 +59,7 @@ class ObservableSwitchyOptions extends SwitchyOptions {
       observer.optionModified('startupProfileName', value);
     }
   }
-  
+
   bool _enableQuickSwitch;
   bool get enableQuickSwitch => _enableQuickSwitch;
   void set enableQuickSwitch(bool value) {
@@ -66,7 +68,7 @@ class ObservableSwitchyOptions extends SwitchyOptions {
       observer.optionModified('enableQuickSwitch', value);
     }
   }
-  
+
   bool _revertProxyChanges;
   bool get revertProxyChanges => _revertProxyChanges;
   void set revertProxyChanges(bool value) {
@@ -75,7 +77,7 @@ class ObservableSwitchyOptions extends SwitchyOptions {
       observer.optionModified('revertProxyChanges', value);
     }
   }
-  
+
   List<String> _quickSwitchProfiles;
   List<String> get quickSwitchProfiles => _quickSwitchProfiles;
   void set quickSwitchProfiles(List<String> value) {
@@ -84,7 +86,7 @@ class ObservableSwitchyOptions extends SwitchyOptions {
       observer.optionModified('quickSwitchProfiles', value);
     }
   }
-  
+
   String _currentProfileName;
   String get currentProfileName => _currentProfileName;
   void set currentProfileName(String value) {
@@ -93,25 +95,25 @@ class ObservableSwitchyOptions extends SwitchyOptions {
       observer.optionModified('currentProfileName', value);
     }
   }
-  
+
   void loadPlain(Map<String, Object> p) {
     super.loadPlain(p);
     this._profiles = new ObservableProfileMap(observer, this._profiles);
   }
-  
+
   ObservableSwitchyOptions.fromPlain(Object p) {
     this.loadPlain(p);
   }
-  
+
   ObservableSwitchyOptions.defaults() : super.defaults() {
-    
+
   }
 }
 
 class ObservableProfileMap implements Map<String, Profile> {
   Map<String, Profile> _inner;
   SwitchyOptionsObserver observer;
-  
+
   ObservableProfileMap(this.observer, [Map<String, Profile> inner]) {
     if (inner == null) {
       _inner = new Map<String, Profile>();
@@ -152,7 +154,7 @@ class ObservableProfileMap implements Map<String, Profile> {
     return _inner.isEmpty();
   }
 
-  int get length() {
+  int get length {
     return _inner.length;
   }
 
