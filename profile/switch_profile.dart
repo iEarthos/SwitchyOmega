@@ -162,7 +162,14 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
     _rules.addAll(collection);
   }
 
-  void sort(int compare(Rule a, Rule b)) {
+  bool contains(Rule element) {
+    for (Rule e in this) {
+      if (e == element) return true;
+    }
+    return false;
+  }
+  
+  void sort([Comparator<Rule> compare = Comparable.compare ]) {
     _rules.sort(compare);
   }
 

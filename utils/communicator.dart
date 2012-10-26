@@ -28,7 +28,7 @@ typedef void CommunicatorCallback(Object value, [Function respond]);
 
 class Communicator {
   Window dest;
-  Window source;
+  LocalWindow source;
   Map<String, Map<String, CommunicatorCallback>> _callback_maps;
   Map<String, List<CommunicatorCallback>> _action_handlers;
   Random _random = new Random();
