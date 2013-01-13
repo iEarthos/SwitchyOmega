@@ -27,8 +27,8 @@ import 'dart:json';
 typedef void CommunicatorCallback(Object value, [Function respond]);
 
 class Communicator {
-  Window dest;
-  LocalWindow source;
+  WindowBase dest;
+  Window source;
   Map<String, Map<String, CommunicatorCallback>> _callback_maps;
   Map<String, List<CommunicatorCallback>> _action_handlers;
   Random _random = new Random();
@@ -42,7 +42,7 @@ class Communicator {
     this.source.on.message.add(this._onmessage);
   }
 
-  void _postMessage(Window destWin, String action, Object value,
+  void _postMessage(WindowBase destWin, String action, Object value,
                     CommunicatorCallback callback, [String reply_to = null]) {
     String reqid;
 
@@ -65,7 +65,7 @@ class Communicator {
     }), '*');
   }
 
-  CommunicatorCallback createResponder(Window source, String action, String reqid) {
+  CommunicatorCallback createResponder(WindowBase source, String action, String reqid) {
     return (Object value, [Function respond]) {
       this._postMessage(source, action, value, respond, reqid);
     };

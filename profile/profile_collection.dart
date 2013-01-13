@@ -59,7 +59,7 @@ class ProfileCollection extends Plainable implements Set<Profile> {
    */
   List<Object> toPlain([List<Object> p, Object config]) {
     if (p == null) p = new List<Object>();
-    p.addAll(_profiles.getValues().filter((prof) => !prof.predefined)
+    p.addAll(_profiles.values.filter((prof) => !prof.predefined)
         .map((prof) => prof.toPlain()));
 
     return p;
@@ -127,14 +127,14 @@ class ProfileCollection extends Plainable implements Set<Profile> {
   }
 
   bool containsAll(Collection<Profile> collection) {
-    return collection.every(bool _(Profile value) {
+    return collection.every((Profile value) {
       return contains(value);
     });
   }
 
   Set<Profile> intersection(Collection<Profile> collection) {
     Set<Profile> result = new Set<Profile>();
-    collection.forEach(void _(Profile value) {
+    collection.forEach((Profile value) {
       if (contains(value)) result.add(value);
     });
     return result;
@@ -150,14 +150,14 @@ class ProfileCollection extends Plainable implements Set<Profile> {
   }
 
   void forEach(void f(Profile element)) {
-    _profiles.forEach(void _(String key, Profile value) {
+    _profiles.forEach((String key, Profile value) {
       f(value);
     });
   }
 
   Set map(f(Profile element)) {
     Set result = new Set();
-    _profiles.forEach(void _(String key, Profile value) {
+    _profiles.forEach((String key, Profile value) {
       result.add(f(value));
     });
     return result;
@@ -165,24 +165,24 @@ class ProfileCollection extends Plainable implements Set<Profile> {
 
   Set<Profile> filter(bool f(Profile element)) {
     Set<Profile> result = new Set<Profile>();
-    _profiles.forEach(void _(String key, Profile value) {
+    _profiles.forEach((String key, Profile value) {
       if (f(value)) result.add(value);
     });
     return result;
   }
 
   bool every(bool f(Profile element)) {
-    Collection<Profile> keys = _profiles.getValues();
+    Collection<Profile> keys = _profiles.values;
     return keys.every(f);
   }
 
   bool some(bool f(Profile element)) {
-    Collection<Profile> keys = _profiles.getValues();
+    Collection<Profile> keys = _profiles.values;
     return keys.some(f);
   }
 
-  bool isEmpty() {
-    return _profiles.isEmpty();
+  bool get isEmpty {
+    return _profiles.isEmpty;
   }
 
   int get length {
@@ -190,11 +190,11 @@ class ProfileCollection extends Plainable implements Set<Profile> {
   }
 
   Iterator<Profile> iterator() {
-    return _profiles.getValues().iterator();
+    return _profiles.values.iterator();
   }
 
-  Dynamic reduce(Dynamic initialValue,
-                 Dynamic combine(Dynamic previousValue, Profile element)) {
-    _profiles.getValues().reduce(initialValue, combine);
+  dynamic reduce(dynamic initialValue,
+                 dynamic combine(dynamic previousValue, Profile element)) {
+    _profiles.values.reduce(initialValue, combine);
   }
 }

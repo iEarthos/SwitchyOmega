@@ -42,7 +42,7 @@ class UrlWildcardCondition extends UrlCondition {
     return _regex.hasMatch(url);
   }
 
-  static final schemeOnlyPattern = const RegExp(r'^(\w+)://\*$');
+  static final schemeOnlyPattern = new RegExp(r'^(\w+)://\*$');
 
   void writeTo(CodeWriter w) {
     if (_recorder == null) {

@@ -21,6 +21,6 @@ part of lang;
  */
 
 /** Returns [def] if [test] == null. Otherwise [test]. */
-Dynamic ifNull(Dynamic test, Dynamic def) {
+dynamic ifNull(dynamic test, dynamic def) {
   return test == null ? def : test;
 }

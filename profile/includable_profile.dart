@@ -50,7 +50,7 @@ abstract class IncludableProfile extends Profile {
   String getScriptName() {
     if (_scriptName != null) return _scriptName;
     StringBuffer sb = new StringBuffer();
-    for (var c in JSON.stringify('$magicPrefix$name').charCodes()) {
+    for (var c in JSON.stringify('$magicPrefix$name').charCodes) {
       if (c < 128) {
         sb.addCharCode(c);
       } else {

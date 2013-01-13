@@ -57,7 +57,7 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
   }
 
   List<String> getProfileNames() {
-    return _refCount.getKeys();
+    return _refCount.keys;
   }
 
   void writeTo(CodeWriter w) {
@@ -124,6 +124,8 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
   void forEach(void f(Rule element)) {
     _rules.forEach(f);
   }
+  
+  Rule get first => this[0];
 
   Collection map(f(Rule element)) => _rules.map(f);
 
@@ -133,7 +135,7 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
 
   bool some(bool f(Rule element)) => _rules.some(f);
 
-  bool isEmpty() => _rules.isEmpty();
+  bool get isEmpty => _rules.isEmpty;
 
   Iterator<Rule> iterator() => _rules.iterator();
 
@@ -168,7 +170,7 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
     }
     return false;
   }
-  
+
   void sort([Comparator<Rule> compare = Comparable.compare ]) {
     _rules.sort(compare);
   }
@@ -199,7 +201,7 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
     return rule;
   }
 
-  Rule last() => _rules.last();
+  Rule get last => _rules.last;
 
   List<Rule> getRange(int start, int length) => _rules.getRange(start, length);
 
@@ -225,8 +227,8 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
      _rules.insertRange(start, length);
   }
 
-  Dynamic reduce(Dynamic initialValue,
-                 Dynamic combine(Dynamic previousValue, Rule element)) {
+  dynamic reduce(dynamic initialValue,
+                 dynamic combine(dynamic previousValue, Rule element)) {
     _rules.reduce(initialValue, combine);
   }
 }

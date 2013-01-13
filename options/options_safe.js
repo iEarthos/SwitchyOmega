@@ -57,7 +57,8 @@ c.on({
   	  'profiles': {
   	    'direct' : { 'name': 'direct', 'profileType': 'DirectProfile' },
   	    'system' : { 'name': 'system', 'profileType': 'SystemProfile' }
-  	  }
+  	  },
+  	  'quickSwitchProfiles' : []
   	});
   }
 });

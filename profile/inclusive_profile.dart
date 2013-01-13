@@ -92,7 +92,7 @@ abstract class InclusiveProfile extends ScriptProfile {
 
   void _writeAllProfilesTo(CodeWriter w) {
     // Write all included profiles
-    for (var p in getAllReferences().getValues()) {
+    for (var p in getAllReferences().values) {
       w.inline('${p.getScriptName()} : ');
       p.writeTo(w);
       w.code(',');

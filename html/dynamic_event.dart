@@ -33,7 +33,7 @@ void dynamicEvent(String name, String selector, DynamicEventCallback listener) {
   if (h == null) {
     h = _dynamicEventHandlers[name] =
         new Map<String, List<DynamicEventCallback>>();
-    document.on[name].add(function (e) {
+    document.on[name].add( (e) {
       var cur = e.target;
       do {
         if (cur is Element) {

@@ -47,8 +47,8 @@ abstract class Profile extends Plainable implements Hashable {
   bool get predefined => false;
 
   /** Simply return the hash code of [name]. */
-  int hashCode() {
-    return this.name.hashCode();
+  int get hashCode {
+    return this.name.hashCode;
   }
 
   /** Create a [name]d profile. */
@@ -96,7 +96,7 @@ abstract class Profile extends Plainable implements Hashable {
         profile = new SystemProfile.fromPlain(p);
         break;
       default:
-        throw new UnsupportedOperationException(
+        throw new UnsupportedError(
           'profileType = "${p['profileType']}"');
     }
     return profile;

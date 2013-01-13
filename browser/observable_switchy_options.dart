@@ -97,6 +97,7 @@ class ObservableSwitchyOptions extends SwitchyOptions {
   }
 
   void loadPlain(Map<String, Object> p) {
+    _quickSwitchProfiles = new List<String>();
     super.loadPlain(p);
     this._profiles = new ObservableProfileMap(observer, this._profiles);
   }
@@ -106,7 +107,7 @@ class ObservableSwitchyOptions extends SwitchyOptions {
   }
 
   ObservableSwitchyOptions.defaults() : super.defaults() {
-
+    _quickSwitchProfiles = new List<String>();
   }
 }
 
@@ -123,7 +124,7 @@ class ObservableProfileMap implements Map<String, Profile> {
   }
 
   void clear() {
-    var keys = _inner.getKeys();
+    var keys = _inner.keys;
     _inner.clear();
     keys.forEach((k) {
       observer.profileRemoved(k);
@@ -142,16 +143,16 @@ class ObservableProfileMap implements Map<String, Profile> {
     _inner.forEach(f);
   }
 
-  Collection<String> getKeys() {
-    return _inner.getKeys();
+  Collection<String> get keys {
+    return _inner.keys;
   }
 
-  Collection<Profile> getValues() {
-    return _inner.getValues();
+  Collection<Profile> get values {
+    return _inner.values;
   }
 
-  bool isEmpty() {
-    return _inner.isEmpty();
+  bool get isEmpty {
+    return _inner.isEmpty;
   }
 
   int get length {

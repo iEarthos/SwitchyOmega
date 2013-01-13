@@ -58,7 +58,8 @@ abstract class SwitchyOptions extends Plainable {
     enableQuickSwitch = p['enableQuickSwitch'];
     revertProxyChanges = p['revertProxyChanges'];
 
-    quickSwitchProfiles = p['quickSwitchProfiles'];
+    quickSwitchProfiles.clear();
+    quickSwitchProfiles.addAll(p['quickSwitchProfiles']);
     _profiles = new Map<String, Profile>();
     (p['profiles'] as Map<String, Map<String, Object>>).forEach((name, prof) {
       _profiles[name] = new Profile.fromPlain(prof);
@@ -80,7 +81,7 @@ abstract class SwitchyOptions extends Plainable {
     enableQuickSwitch = false;
     revertProxyChanges = false;
 
-    quickSwitchProfiles = [];
+    quickSwitchProfiles.clear();
     _profiles = new Map<String, Profile>();
   }
 

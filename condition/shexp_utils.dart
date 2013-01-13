@@ -31,7 +31,7 @@ HashSet<int> _regExpMetaChars = null;
  */
 HashSet<int> get regExpMetaChars {
   if (_regExpMetaChars == null) {
-    _regExpMetaChars = new HashSet.from(r'[\^$.|?*+(){}'.charCodes());
+    _regExpMetaChars = new HashSet.from(r'[\^$.|?*+(){}'.charCodes);
   }
   return _regExpMetaChars;
 }
@@ -40,8 +40,8 @@ HashSet<int> get regExpMetaChars {
  * Compiles a wildcard [pattern] to a regular expression.
  * This function encodes [regExpMetaChars] in the [pattern].
  */
-String shExp2RegExp(String pattern, [bool trimAsterisk = false]) {
-  var codes = pattern.charCodes();
+String shExp2RegExp(String pattern, {bool trimAsterisk : false}) {
+  var codes = pattern.charCodes;
   var start = 0;
   var end = pattern.length;
 
@@ -84,5 +84,5 @@ String shExp2RegExp(String pattern, [bool trimAsterisk = false]) {
  */
 void shExpCompile(String pattern, CodeWriter w, [String target = null]) {
   // TODO(catus)
-  throw new NotImplementedException();
+  throw new UnimplementedError();
 }

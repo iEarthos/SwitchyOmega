@@ -96,7 +96,7 @@ class IpCondition extends HostCondition {
    * Matches an IPv4 literal. It also matches invalid addresses like
    * '888.888.888.888', but just forget about it.
    */
-  static final Ipv4Regex = const RegExp(r"^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$");
+  static final Ipv4Regex = new RegExp(r"^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$");
 
   /** Get the int value of IP address [host]. */
   int convertAddr(String host) {

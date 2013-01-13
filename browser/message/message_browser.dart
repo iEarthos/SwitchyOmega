@@ -48,7 +48,7 @@ class MessageBrowser extends Browser {
       data['mode'] = 'pac_script';
       data['pacScript'] = { 'data': (profile as ScriptProfile).toScript() };
     } else {
-      throw new UnsupportedOperationException(profile.profileType);
+      throw new UnsupportedError(profile.profileType);
     }
 
     _c.send('proxy.apply', data, (_) {

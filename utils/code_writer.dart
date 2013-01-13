@@ -111,8 +111,8 @@ class WellFormattedCodeWriter implements CodeWriter {
 
   WellFormattedCodeWriter() {
     _sb = new StringBuffer();
-    indentingSymbols = new HashSet.from('({['.charCodes());
-    outdentingSymbols = new HashSet.from(')}]'.charCodes());
+    indentingSymbols = new HashSet.from('({['.charCodes);
+    outdentingSymbols = new HashSet.from(')}]'.charCodes);
   }
 
   CodeWriter indent() {
@@ -137,7 +137,7 @@ class WellFormattedCodeWriter implements CodeWriter {
       }
       _sb.add(_currentIndent);
     }
-    _sb.add(codeStr).add(lineBreak);
+    _sb..add(codeStr)..add(lineBreak);
     if (autoIndent &&
         indentingSymbols.contains(codeStr.charCodeAt(codeStr.length - 1))) {
       indent();
