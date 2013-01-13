@@ -52,9 +52,41 @@ c.on({
   },
   'options.get': function (data, respond) {
   	respond({
+  	  // The profiles are from the pac_gen_test.
   	  'date': true,
   	  'test': 'fail',
   	  'profiles': {
+  	    'ssh' : {
+  	      "name":"ssh",
+  	      "profileType":"FixedProfile",
+  	      "fallbackProxy":{"scheme":"socks5","port":7070,"host":"127.0.0.1"},
+  	      "bypassList":[
+  	        {"pattern":"127.0.0.1:3333","conditionType":"BypassCondition"},
+  	        {"pattern":"https://www.example.com","conditionType":"BypassCondition"},
+  	        {"pattern":"*:3333","conditionType":"BypassCondition"},
+  	        {"pattern":"<local>","conditionType":"BypassCondition"}
+  	      ],
+  	      "color":"#0000cc",
+  	      "proxyForHttp":{"scheme":"http","port":8080,"host":"127.0.0.1"}
+  	    },
+  	    "http": {
+  	      "name":"http",
+  	      "profileType":"FixedProfile",
+  	      "color":"#0000cc",
+  	      "fallbackProxy":{"scheme":"http","port":8888,"host":"127.0.0.1"},
+  	      "bypassList":[]
+  	    },
+  	    "auto": {
+  	      "name":"auto",
+  	      "profileType":"SwitchProfile",
+  	      "color":"#0000cc",
+  	      "defaultProfileName":"http",
+  	      "rules":[
+  	        {"profileName":"ssh","condition":{"pattern":"*.example.com","conditionType":"HostWildcardCondition"}},
+  	        {"profileName":"direct","condition":{"minValue":0,"conditionType":"HostLevelsCondition","maxValue":0}},
+  	        {"profileName":"ssh","condition":{"pattern":"foo","conditionType":"KeywordCondition"}}
+  	      ]
+  	    },
   	    'direct' : { 'name': 'direct', 'profileType': 'DirectProfile' },
   	    'system' : { 'name': 'system', 'profileType': 'SystemProfile' }
   	  },

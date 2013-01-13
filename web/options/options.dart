@@ -26,6 +26,7 @@ import '../html/lib.dart';
 import "package:switchyomega/browser/lib.dart";
 import "package:switchyomega/browser/message/lib.dart";
 import "package:switchyomega/communicator.dart";
+import 'package:web_ui/watcher.dart' as watchers;
 
 void handleFixedServerUI() {
   dynamicEvent('change', '.use-same-proxy',  (e, InputElement check) {
@@ -63,9 +64,20 @@ void handleRulelistUI() {
 Communicator c = new Communicator(window.top);
 ObservableSwitchyOptions options = null;
 
+Map<String, String> profileIcons = {
+  'FixedProfile': 'icon-globe',
+  'PacProfile': 'icon-tasks',
+  'RulelistProfile': 'icon-list',
+  'SwitchProfile': 'icon-retweet'
+};
+
 void main() {
   c.send('options.get', null, (Map<String, Object> o, [Function respond]) {
     options = new ObservableSwitchyOptions.fromPlain(o);
+    watchers.dispatch();
+    queryAll('[data-workaround-id]').forEach((e) {
+      e.id = e.attributes['data-workaround-id'];
+    });
   });
 
   handleFixedServerUI();

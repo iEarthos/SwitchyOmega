@@ -90,28 +90,20 @@
             </li>
             <li class="divider"></li>
             <li class="nav-header" data-i18n="options_navHeader_profiles"></li>
-            <li>
-              <a href="#profile-example" data-toggle="tab">
-                <i class="icon-globe"></i>
-                <span data-bind="profileName">Example</span>
-              </a>
-            </li>
-            <li>
-              <a href="#profile-pac" data-toggle="tab">
-                <i class="icon-tasks"></i>
-                <span data-bind="profileName">Pac</span>
-              </a>
-            </li>
+            <template instantiate="if options != null">
+              <template iterate="profile in options.profiles.values.filter((p) => !p.predefined)">
+                <li>
+                  <a href="#profile-{{profile.name}}" data-toggle="tab">
+                    <i class="{{profileIcons[profile.profileType]}}"></i>
+                    <span>{{profile.name}}</span>
+                  </a>
+                </li>
+              </template>
+            </template>
             <li>
               <a href="#profile-rulelist" data-toggle="tab">
                 <i class="icon-list"></i>
                 <span data-bind="profileName">Rulelist</span>
-              </a>
-            </li>
-            <li>
-              <a href="#profile-auto" data-toggle="tab">
-                <i class="icon-retweet"></i>
-                <span data-bind="profileName">Auto</span>
               </a>
             </li>
             <li class="divider"></li>
@@ -217,155 +209,141 @@
             </div>
           </section>
         </div>
-        <div class="tab-pane" id="profile-example">
-          <header class="span10 profile-header">
-            <h2>
-              <span data-i18n="options_profileTabPrefix"></span>
-              <span class="profile-name">Example</span>
-            </h2>
-            <div class="profile-toolbar">
-              <a class="profile-delete btn btn-info" data-toggle="modal" href="#modal-profile-rename">
-                <i class="icon-pencil icon-white"></i>
-                <span data-i18n="options_renameProfile"></span>
-              </a>
-              <a class="profile-delete btn btn-danger" data-toggle="modal" href="#modal-profile-delete">
-                <i class="icon-trash icon-white"></i>
-                <span data-i18n="options_deleteProfile"></span>
-              </a>
-            </div>
-            <hr />
-          </header>
-          <section class="settings-group">
-            <h3 data-i18n="options_group_proxyServers"></h3>
-            <table class="fixed-servers table table-bordered table-striped">
-              <tbody>
-                <tr>
-                  <th data-i18n="options_proxy_scheme"></th>
-                  <th data-i18n="options_proxy_protocol"></th>
-                  <th data-i18n="options_proxy_server"></th>
-                  <th data-i18n="options_proxy_port"></th>
-                </tr>
-                <tr data-scheme="(default)">
-                  <td data-i18n="options_scheme_default"></td>
-                  <td>
-                    <select class="input-small">
-                      <option>HTTP</option>
-                      <option>HTTPS</option>
-                      <option>FTP</option>
-                      <option>SOCKS4</option>
-                      <option>SOCKS5</option>
-                    </select>
-                  </td>
-                  <td>
-                    <input type="text" value="127.0.0.1" />
-                  </td>
-                  <td>
-                    <input type="text" value="7070" class="input-small"/>
-                  </td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td colspan="3">
-                    <label class="checkbox">
-                      <input type="checkbox" class="use-same-proxy" checked="checked" />
-                      <span data-i18n="options_proxy_single"></span>
-                    </label>
-                  </td>
-                </tr>
-                <tr data-scheme="HTTP" class="proxy-for-scheme">
-                  <td>http://</td>
-                  <td>
-                    <select class="input-small">
-                      <option>HTTP</option>
-                      <option>HTTPS</option>
-                      <option>FTP</option>
-                      <option>SOCKS4</option>
-                      <option>SOCKS5</option>
-                    </select>
-                  </td>
-                  <td>
-                    <input type="text" value="127.0.0.1" />
-                  </td>
-                  <td>
-                    <input type="text" value="7070" class="input-small"/>
-                  </td>
-                </tr>
-                <tr data-scheme="HTTPS" class="proxy-for-scheme">
-                  <td>https://</td>
-                  <td>
-                    <select class="input-small">
-                      <option>HTTP</option>
-                      <option>HTTPS</option>
-                      <option>FTP</option>
-                      <option>SOCKS4</option>
-                      <option>SOCKS5</option>
-                    </select>
-                  </td>
-                  <td>
-                    <input type="text" value="127.0.0.1" />
-                  </td>
-                  <td>
-                    <input type="text" value="7070" class="input-small"/>
-                  </td>
-                </tr>
-                <tr data-scheme="FTP" class="proxy-for-scheme">
-                  <td>ftp://</td>
-                  <td>
-                    <select class="input-small">
-                      <option>HTTP</option>
-                      <option>HTTPS</option>
-                      <option>FTP</option>
-                      <option>SOCKS4</option>
-                      <option>SOCKS5</option>
-                    </select>
-                  </td>
-                  <td>
-                    <input type="text" value="127.0.0.1" />
-                  </td>
-                  <td>
-                    <input type="text" value="7070" class="input-small"/>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </section>
-          <section class="settings-group">
-            <h3 data-i18n="options_group_bypassList"></h3>
-            <p class="help-block" data-i18n="options_bypassListHelp"></p>
-            <textarea class="bypass-list input-xxlarge">&lt;local&gt;</textarea>
-          </section>
-        </div>
-        <div class="tab-pane" id="profile-pac">
-          <header class="span10 profile-header">
-            <h2>
-              <span data-i18n="options_profileTabPrefix"></span>
-              <span class="profile-name">Pac</span>
-            </h2>
-            <div class="profile-toolbar">
-              <a class="profile-delete btn btn-info" data-toggle="modal" href="#modal-profile-rename">
-                <i class="icon-pencil icon-white"></i>
-                <span data-i18n="options_renameProfile"></span>
-              </a>
-              <a class="profile-delete btn btn-danger" data-toggle="modal" href="#modal-profile-delete">
-                <i class="icon-trash icon-white"></i>
-                <span data-i18n="options_deleteProfile"></span>
-              </a>
-            </div>
-            <hr />
-          </header>
-          <section class="settings-group">
-            <h3 data-i18n="options_group_pacUrl"></h3>
-            <div class="input-append">
-              <input type="url" class="pac-url input-xxlarge" value="http://wpad/wpad.dat" />
-              <a class="add-on clear-input btn">
-                <i class="icon-remove"></i>
-              </a>
-            </div>
-            <p class="help-block" data-i18n="options_pacUrlHelp"></p>
-          </section>
-          <section class="settings-group">
-            <h3 data-i18n="options_group_pacScript"></h3>
-            <textarea class="pac-script input-xxlarge" disabled="disabled">
+        <template instantiate="if options != null">
+          <template iterate="profile in options.profiles.values">
+            <div class="tab-pane" data-workaround-id="profile-{{profile.name}}">
+              <header class="span10 profile-header">
+                <h2>
+                  <span data-i18n="options_profileTabPrefix"></span>
+                  <span class="profile-name">{{profile.name}}</span>
+                </h2>
+                <div class="profile-toolbar">
+                  <a class="profile-delete btn btn-info" data-toggle="modal" href="#modal-profile-rename">
+                    <i class="icon-pencil icon-white"></i>
+                    <span data-i18n="options_renameProfile"></span>
+                  </a>
+                  <a class="profile-delete btn btn-danger" data-toggle="modal" href="#modal-profile-delete">
+                    <i class="icon-trash icon-white"></i>
+                    <span data-i18n="options_deleteProfile"></span>
+                  </a>
+                </div>
+                <hr />
+              </header>
+              <template instantiate="if profile.profileType == 'FixedProfile'">
+                <section class="settings-group">
+                  <h3 data-i18n="options_group_proxyServers"></h3>
+                  <table class="fixed-servers table table-bordered table-striped">
+                    <tbody>
+                      <tr>
+                        <th data-i18n="options_proxy_scheme"></th>
+                        <th data-i18n="options_proxy_protocol"></th>
+                        <th data-i18n="options_proxy_server"></th>
+                        <th data-i18n="options_proxy_port"></th>
+                      </tr>
+                      <tr data-scheme="(default)">
+                        <td data-i18n="options_scheme_default"></td>
+                        <td>
+                          <select class="input-small" value="{{profile.fallbackProxy.scheme}}">
+                            <option value="http">HTTP</option>
+                            <option value="https">HTTPS</option>
+                            <option value="ftp">FTP</option>
+                            <option value="socks4">SOCKS4</option>
+                            <option value="socks5">SOCKS5</option>
+                          </select>
+                        </td>
+                        <td>
+                          <input type="text" value="{{profile.fallbackProxy.host}}" />
+                        </td>
+                        <td>
+                          <input type="text" value="{{profile.fallbackProxy.port.toString()}}" class="input-small"/>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td></td>
+                        <td colspan="3">
+                          <label class="checkbox">
+                            <input type="checkbox" class="use-same-proxy" checked="checked" />
+                            <span data-i18n="options_proxy_single"></span>
+                          </label>
+                        </td>
+                      </tr>
+                      <tr data-scheme="HTTP" class="proxy-for-scheme">
+                        <td>http://</td>
+                        <td>
+                          <select class="input-small">
+                            <option>HTTP</option>
+                            <option>HTTPS</option>
+                            <option>FTP</option>
+                            <option>SOCKS4</option>
+                            <option>SOCKS5</option>
+                          </select>
+                        </td>
+                        <td>
+                          <input type="text" value="127.0.0.1" />
+                        </td>
+                        <td>
+                          <input type="text" value="7070" class="input-small"/>
+                        </td>
+                      </tr>
+                      <tr data-scheme="HTTPS" class="proxy-for-scheme">
+                        <td>https://</td>
+                        <td>
+                          <select class="input-small">
+                            <option>HTTP</option>
+                            <option>HTTPS</option>
+                            <option>FTP</option>
+                            <option>SOCKS4</option>
+                            <option>SOCKS5</option>
+                          </select>
+                        </td>
+                        <td>
+                          <input type="text" value="127.0.0.1" />
+                        </td>
+                        <td>
+                          <input type="text" value="7070" class="input-small"/>
+                        </td>
+                      </tr>
+                      <tr data-scheme="FTP" class="proxy-for-scheme">
+                        <td>ftp://</td>
+                        <td>
+                          <select class="input-small">
+                            <option>HTTP</option>
+                            <option>HTTPS</option>
+                            <option>FTP</option>
+                            <option>SOCKS4</option>
+                            <option>SOCKS5</option>
+                          </select>
+                        </td>
+                        <td>
+                          <input type="text" value="127.0.0.1" />
+                        </td>
+                        <td>
+                          <input type="text" value="7070" class="input-small"/>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </section>
+                <section class="settings-group">
+                  <h3 data-i18n="options_group_bypassList"></h3>
+                  <p class="help-block" data-i18n="options_bypassListHelp"></p>
+                  <textarea class="bypass-list input-xxlarge">&lt;local&gt;</textarea>
+                </section>
+              </template>
+              <template instantiate="if profile.profileType == 'PacProfile'">
+                <section class="settings-group">
+                  <h3 data-i18n="options_group_pacUrl"></h3>
+                  <div class="input-append">
+                    <input type="url" class="pac-url input-xxlarge" value="http://wpad/wpad.dat" />
+                    <a class="add-on clear-input btn">
+                      <i class="icon-remove"></i>
+                    </a>
+                  </div>
+                  <p class="help-block" data-i18n="options_pacUrlHelp"></p>
+                </section>
+                <section class="settings-group">
+                  <h3 data-i18n="options_group_pacScript"></h3>
+                  <textarea class="pac-script input-xxlarge" disabled="disabled">
     var FindProxyForURL = function (url, host) {
       if (host == 'www.example.com') {
         return 'SOCKS5 127.0.0.1:7070';
@@ -375,9 +353,62 @@
       }
       return 'DIRECT';
     };
-            </textarea>
-          </section>
-        </div>
+                  </textarea>
+                </section>
+              </template>
+              <template instantiate="if profile.profileType == 'SwitchProfile'">
+                <section class="settings-group">
+                  <h3 data-i18n="options_group_switchRules"></h3>
+                  <table class="fixed-servers table table-bordered table-condensed">
+                    <tbody>
+                      <tr>
+                        <th data-i18n="options_sort"></th>
+                        <th data-i18n="options_conditionType"></th>
+                        <th data-i18n="options_conditionDetails"></th>
+                        <th data-i18n="options_resultProfile"></th>
+                      </tr>
+                    </tbody>
+                    <tbody class="conditions">
+                      <tr>
+                        <td class="sort-bar">.</td>
+                        <td>
+                          <select data-list="condition-types"></select>
+                        </td>
+                        <td>
+                          <input type="url" class="" value="*.example.com" />
+                        </td>
+                        <td>
+                          <select data-list="profiles"></select>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="sort-bar">.</td>
+                        <td>
+                          <select data-list="condition-types"></select>
+                        </td>
+                        <td>
+                          <input type="url" class="" value="*.example.net" />
+                        </td>
+                        <td>
+                          <select data-list="profiles"></select>
+                        </td>
+                      </tr>
+                    </tbody>
+                    <tbody>
+                      <tr>
+                        <td></td>
+                        <td colspan="2" data-i18n="options_switchDefaultProfile"></td>
+                        <td>
+                          <select data-list="profiles"></select>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </section>
+              </template>
+            </div>
+          </template>
+        </template>
         <div class="tab-pane" id="profile-rulelist">
           <header class="span10 profile-header">
             <h2>
@@ -422,73 +453,6 @@
             <textarea class="rule-list-text input-xxlarge" disabled="disabled">
 example.com
             </textarea>
-          </section>
-        </div>
-        <div class="tab-pane" id="profile-auto">
-          <header class="span10 profile-header">
-            <h2>
-              <span data-i18n="options_profileTabPrefix"></span>
-              <span class="profile-name">Auto</span>
-            </h2>
-            <div class="profile-toolbar">
-              <a class="profile-delete btn btn-info" data-toggle="modal" href="#modal-profile-rename">
-                <i class="icon-pencil icon-white"></i>
-                <span data-i18n="options_renameProfile"></span>
-              </a>
-              <a class="profile-delete btn btn-danger" data-toggle="modal" href="#modal-profile-delete">
-                <i class="icon-trash icon-white"></i>
-                <span data-i18n="options_deleteProfile"></span>
-              </a>
-            </div>
-            <hr />
-          </header>
-          <section class="settings-group">
-            <h3 data-i18n="options_group_switchRules"></h3>
-            <table class="fixed-servers table table-bordered table-condensed">
-              <tbody>
-                <tr>
-                  <th data-i18n="options_sort"></th>
-                  <th data-i18n="options_conditionType"></th>
-                  <th data-i18n="options_conditionDetails"></th>
-                  <th data-i18n="options_resultProfile"></th>
-                </tr>
-              </tbody>
-              <tbody class="conditions">
-                <tr>
-                  <td class="sort-bar">.</td>
-                  <td>
-                    <select data-list="condition-types"></select>
-                  </td>
-                  <td>
-                    <input type="url" class="" value="*.example.com" />
-                  </td>
-                  <td>
-                    <select data-list="profiles"></select>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="sort-bar">.</td>
-                  <td>
-                    <select data-list="condition-types"></select>
-                  </td>
-                  <td>
-                    <input type="url" class="" value="*.example.net" />
-                  </td>
-                  <td>
-                    <select data-list="profiles"></select>
-                  </td>
-                </tr>
-              </tbody>
-              <tbody>
-                <tr>
-                  <td></td>
-                  <td colspan="2" data-i18n="options_switchDefaultProfile"></td>
-                  <td>
-                    <select data-list="profiles"></select>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
           </section>
         </div>
       </div>
