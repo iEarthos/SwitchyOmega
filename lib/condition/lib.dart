@@ -18,11 +18,30 @@
  * along with SwitchyOmega.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-library switchy_html;
+library switchy_condition;
 
-import 'dart:html';
+import 'dart:core';
+import 'dart:uri';
+import 'dart:json';
+import 'dart:math'; // for parseInt
+
 import '../lang/lib.dart';
+import '../code_writer.dart';
+import 'shexp_utils.dart';
 
-part 'dynamic_event.dart';
-part 'dom_helpers.dart';
-part 'datalist.dart';
+part 'condition.dart';
+
+part 'const_condition.dart';
+
+part 'host_condition.dart';
+part 'host_wildcard_condition.dart';
+part 'host_regex_condition.dart';
+part 'host_levels_condition.dart';
+
+part 'url_condition.dart';
+part 'url_wildcard_condition.dart';
+part 'url_regex_condition.dart';
+part 'keyword_condition.dart';
+
+part 'bypass_condition.dart';
+part 'ip_condition.dart';

@@ -18,27 +18,11 @@
  * along with SwitchyOmega.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-library switchy_profile;
+library switchy_html;
 
-import 'dart:core';
-import 'dart:json';
+import 'dart:html';
+import "package:switchyomega/lang/lib.dart";
 
-import '../lang/lib.dart';
-import '../utils/code_writer.dart';
-import '../condition/lib.dart';
-
-part 'profile.dart';
-
-part 'includable_profile.dart';
-part 'script_profile.dart';
-part 'inclusive_profile.dart';
-
-part 'direct_profile.dart';
-part 'system_profile.dart';
-part 'autodetect_profile.dart';
-part 'fixed_profile.dart';
-part 'pac_profile.dart';
-part 'switch_profile.dart';
-part 'rule_list_profile.dart';
-
-part 'profile_collection.dart';
+part 'dynamic_event.dart';
+part 'dom_helpers.dart';
+part 'datalist.dart';

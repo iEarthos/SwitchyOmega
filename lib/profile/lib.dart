@@ -18,30 +18,27 @@
  * along with SwitchyOmega.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-library switchy_condition;
+library switchy_profile;
 
 import 'dart:core';
-import 'dart:uri';
 import 'dart:json';
-import 'dart:math'; // for parseInt
 
 import '../lang/lib.dart';
-import '../utils/code_writer.dart';
-import 'shexp_utils.dart';
+import '../code_writer.dart';
+import '../condition/lib.dart';
 
-part 'condition.dart';
+part 'profile.dart';
 
-part 'const_condition.dart';
+part 'includable_profile.dart';
+part 'script_profile.dart';
+part 'inclusive_profile.dart';
 
-part 'host_condition.dart';
-part 'host_wildcard_condition.dart';
-part 'host_regex_condition.dart';
-part 'host_levels_condition.dart';
+part 'direct_profile.dart';
+part 'system_profile.dart';
+part 'autodetect_profile.dart';
+part 'fixed_profile.dart';
+part 'pac_profile.dart';
+part 'switch_profile.dart';
+part 'rule_list_profile.dart';
 
-part 'url_condition.dart';
-part 'url_wildcard_condition.dart';
-part 'url_regex_condition.dart';
-part 'keyword_condition.dart';
-
-part 'bypass_condition.dart';
-part 'ip_condition.dart';
+part 'profile_collection.dart';

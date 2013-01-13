@@ -18,9 +18,9 @@
  * along with SwitchyOmega.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import 'profile/lib.dart';
-import 'condition/lib.dart';
 import 'dart:json';
+import "package:switchyomega/profile/lib.dart";
+import "package:switchyomega/condition/lib.dart";
 
 void main() {
   var d = new FixedProfile('http');

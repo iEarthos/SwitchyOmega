@@ -21,11 +21,11 @@
 library switchy_options;
 
 import 'dart:html';
-import '../html/lib.dart';
-import '../utils/communicator.dart';
-import '../browser/lib.dart';
-import '../browser/message/lib.dart';
 import 'dart:json';
+import '../html/lib.dart';
+import "package:switchyomega/browser/lib.dart";
+import "package:switchyomega/browser/message/lib.dart";
+import "package:switchyomega/communicator.dart";
 
 void handleFixedServerUI() {
   dynamicEvent('change', '.use-same-proxy',  (e, InputElement check) {
