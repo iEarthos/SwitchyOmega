@@ -2,8 +2,12 @@
 ### DartEditor
 .children
 .project
+.buildlog
 
 ## Compiled files
 ### dart2js
 *.dart.js
 *.dart.js.map
+
+# Pub Package Manager
+packages/

@@ -1,0 +1,3 @@
+name: switchy_omega
+dependencies:
+  web_ui: any
