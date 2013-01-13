@@ -8,6 +8,8 @@
 ### dart2js
 *.dart.js
 *.dart.js.map
+### dwc
+out
 
-# Pub Package Manager
-packages/
+## Pub Package Manager
+packages
