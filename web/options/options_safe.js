@@ -76,6 +76,22 @@ c.on({
   	      "fallbackProxy":{"scheme":"http","port":8888,"host":"127.0.0.1"},
   	      "bypassList":[]
   	    },
+  	    "script" : {
+  	      "name":"script",
+  	      "profileType":"PacProfile",
+  	      "color":"#0000cc",
+  	      "pacUrl":"http://example.com/proxy.pac",
+  	      "pacScript":"\
+		    var FindProxyForURL = function (url, host) {\n\
+		      if (host == 'www.example.com') {\n\
+		        return 'SOCKS5 127.0.0.1:7070';\n\
+		      }\n\
+		      if (host == 'www2.example.com') {\n\
+		        return 'PROXY 127.0.0.1:8888';\n\
+		      }\n\
+		      return 'DIRECT';\n\
+		    };"
+  	    },
   	    "auto": {
   	      "name":"auto",
   	      "profileType":"SwitchProfile",

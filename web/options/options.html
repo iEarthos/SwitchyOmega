@@ -56,6 +56,13 @@
         <option data-i18n="condition_always"></option>
         <option data-i18n="condition_never"></option>
       </datalist>
+      <datalist id="proxy-schemes">
+        <option value="http">HTTP</option>
+        <option value="https">HTTPS</option>
+        <option value="ftp">FTP</option>
+        <option value="socks4">SOCKS4</option>
+        <option value="socks5">SOCKS5</option>
+      </datalist>
     </div>
     <header class="span2" id="options-nav">
       <div class="nav-wrapper">
@@ -243,82 +250,44 @@
                       <tr data-scheme="(default)">
                         <td data-i18n="options_scheme_default"></td>
                         <td>
-                          <select class="input-small" value="{{profile.fallbackProxy.scheme}}">
-                            <option value="http">HTTP</option>
-                            <option value="https">HTTPS</option>
-                            <option value="ftp">FTP</option>
-                            <option value="socks4">SOCKS4</option>
-                            <option value="socks5">SOCKS5</option>
-                          </select>
+                          <select class="input-small" data-list="proxy-schemes"
+                              value="{{profile.fallbackProxy.scheme}}"></select>
                         </td>
                         <td>
-                          <input type="text" value="{{profile.fallbackProxy.host}}" />
+                          <input type="text" bind-value="profile.fallbackProxy.host" />
                         </td>
                         <td>
-                          <input type="text" value="{{profile.fallbackProxy.port.toString()}}" class="input-small"/>
+                          <!-- TODO(catus): Dart Web UI does not support two-way binding of integers now. -->
+                          <input type="number" min="1" value="{{profile.fallbackProxy.port.toString()}}" class="input-small"/>
                         </td>
                       </tr>
                       <tr>
                         <td></td>
                         <td colspan="3">
                           <label class="checkbox">
-                            <input type="checkbox" class="use-same-proxy" checked="checked" />
+                            <input type="checkbox" class="use-same-proxy"
+                                checked="{{isSameProxyUsed(profile)}}" />
                             <span data-i18n="options_proxy_single"></span>
                           </label>
                         </td>
                       </tr>
-                      <tr data-scheme="HTTP" class="proxy-for-scheme">
-                        <td>http://</td>
+                    </tbody>
+                    <tbody template="template"
+                        iterate="scheme in proxySchemesOf(profile)"
+                        style="display : {{isSameProxyUsed(profile) ? 'none' : 'table-row-group'}};">
+                      <tr data-scheme="{{scheme['name']}}" class="proxy-for-scheme">
                         <td>
-                          <select class="input-small">
-                            <option>HTTP</option>
-                            <option>HTTPS</option>
-                            <option>FTP</option>
-                            <option>SOCKS4</option>
-                            <option>SOCKS5</option>
-                          </select>
+                          {{scheme['name'].toLowerCase()}}://
                         </td>
                         <td>
-                          <input type="text" value="127.0.0.1" />
+                          <select class="input-small" data-list="proxy-schemes"
+                              value="{{scheme['proxy'] == null ? '' : scheme['proxy'].scheme}}"></select>
                         </td>
                         <td>
-                          <input type="text" value="7070" class="input-small"/>
-                        </td>
-                      </tr>
-                      <tr data-scheme="HTTPS" class="proxy-for-scheme">
-                        <td>https://</td>
-                        <td>
-                          <select class="input-small">
-                            <option>HTTP</option>
-                            <option>HTTPS</option>
-                            <option>FTP</option>
-                            <option>SOCKS4</option>
-                            <option>SOCKS5</option>
-                          </select>
+                          <input type="text" value="{{scheme['proxy'] == null ? '' : scheme['proxy'].host}}" />
                         </td>
                         <td>
-                          <input type="text" value="127.0.0.1" />
-                        </td>
-                        <td>
-                          <input type="text" value="7070" class="input-small"/>
-                        </td>
-                      </tr>
-                      <tr data-scheme="FTP" class="proxy-for-scheme">
-                        <td>ftp://</td>
-                        <td>
-                          <select class="input-small">
-                            <option>HTTP</option>
-                            <option>HTTPS</option>
-                            <option>FTP</option>
-                            <option>SOCKS4</option>
-                            <option>SOCKS5</option>
-                          </select>
-                        </td>
-                        <td>
-                          <input type="text" value="127.0.0.1" />
-                        </td>
-                        <td>
-                          <input type="text" value="7070" class="input-small"/>
+                          <input type="number" min="1" value="{{scheme['proxy'] == null ? '' : scheme['proxy'].port.toString()}}" class="input-small"/>
                         </td>
                       </tr>
                     </tbody>
@@ -327,14 +296,14 @@
                 <section class="settings-group">
                   <h3 data-i18n="options_group_bypassList"></h3>
                   <p class="help-block" data-i18n="options_bypassListHelp"></p>
-                  <textarea class="bypass-list input-xxlarge">&lt;local&gt;</textarea>
+                  <textarea class="bypass-list input-xxlarge">{{Strings.join(profile.bypassList.map((b) => b.pattern), '\n')}}</textarea>
                 </section>
               </template>
               <template instantiate="if profile.profileType == 'PacProfile'">
                 <section class="settings-group">
                   <h3 data-i18n="options_group_pacUrl"></h3>
                   <div class="input-append">
-                    <input type="url" class="pac-url input-xxlarge" value="http://wpad/wpad.dat" />
+                    <input type="url" class="pac-url input-xxlarge" bind-value="profile.pacUrl" />
                     <a class="add-on clear-input btn">
                       <i class="icon-remove"></i>
                     </a>
@@ -343,17 +312,7 @@
                 </section>
                 <section class="settings-group">
                   <h3 data-i18n="options_group_pacScript"></h3>
-                  <textarea class="pac-script input-xxlarge" disabled="disabled">
-    var FindProxyForURL = function (url, host) {
-      if (host == 'www.example.com') {
-        return 'SOCKS5 127.0.0.1:7070';
-      }
-      if (host == 'www2.example.com') {
-        return 'PROXY 127.0.0.1:8888';
-      }
-      return 'DIRECT';
-    };
-                  </textarea>
+                  <textarea class="pac-script input-xxlarge" disabled="disabled" bind-value="profile.pacScript"></textarea>
                 </section>
               </template>
               <template instantiate="if profile.profileType == 'SwitchProfile'">

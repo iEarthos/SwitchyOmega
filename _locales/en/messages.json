@@ -152,7 +152,7 @@
     "message": "Scheme"
   },
   "options_proxy_protocol": {
-    "message": "Scheme"
+    "message": "Protocol"
   },
   "options_proxy_server": {
     "message": "Server"

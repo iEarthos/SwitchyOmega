@@ -31,7 +31,7 @@ class PacProfile extends ScriptProfile {
   String get pacUrl => _pacUrl;
   void set pacUrl(String value) {
     if (value != null && value != _pacUrl) {
-      pacScript = null;
+      pacScript = "";
     }
     _pacUrl = value;
   }
@@ -71,9 +71,8 @@ class PacProfile extends ScriptProfile {
     var u = p['pacUrl'];
     if (u != null) {
       this.pacUrl = u;
-    } else {
-      this.pacScript = p['pacScript'];
     }
+    this.pacScript = p['pacScript'];
   }
 
   factory PacProfile.fromPlain(Map<String, Object> p) {

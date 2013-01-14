@@ -279,10 +279,6 @@ td select, td textarea, td input {
   width: auto;
 }
 
-.proxy-for-scheme {
-  display: none;
-}
-
 .bypass-list {
   min-height: 150px;
 }

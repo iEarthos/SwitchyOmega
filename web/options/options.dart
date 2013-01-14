@@ -23,20 +23,14 @@ library switchy_options;
 import 'dart:html';
 import 'dart:json';
 import '../html/lib.dart';
+import "package:switchyomega/profile/lib.dart";
 import "package:switchyomega/browser/lib.dart";
 import "package:switchyomega/browser/message/lib.dart";
 import "package:switchyomega/communicator.dart";
 import 'package:web_ui/watcher.dart' as watchers;
 
 void handleFixedServerUI() {
-  dynamicEvent('change', '.use-same-proxy',  (e, InputElement check) {
-    var proxies = closestElement(check, '.fixed-servers').queryAll('.proxy-for-scheme');
-    if (check.checked) {
-      proxies.forEach((p) { p.style.display = 'none'; });
-    } else {
-      proxies.forEach((p) { p.style.display = 'table-row'; });
-    }
-  });
+  
 }
 
 void handlePacScriptsUI() {
@@ -70,6 +64,22 @@ Map<String, String> profileIcons = {
   'RulelistProfile': 'icon-list',
   'SwitchProfile': 'icon-retweet'
 };
+
+bool isSameProxyUsed(FixedProfile profile) {
+  return profile.proxyForHttp == null &&
+      profile.proxyForHttps == null && 
+      profile.proxyForFtp == null;
+}
+
+List<Map<String, Object>> proxySchemesOf(FixedProfile profile) {
+  return [
+    { 'name': 'HTTP', 'proxy': profile.proxyForHttp },
+    { 'name': 'HTTPS', 'proxy': profile.proxyForHttps },
+    { 'name': 'FTP', 'proxy': profile.proxyForFtp }
+  ];
+}
+
+String test = "fail";
 
 void main() {
   c.send('options.get', null, (Map<String, Object> o, [Function respond]) {
