@@ -79,7 +79,13 @@ List<Map<String, Object>> proxySchemesOf(FixedProfile profile) {
   ];
 }
 
-String test = "fail";
+// This is only for testing.
+void exportPac() {
+  ProfileCollection col = new ProfileCollection();
+  col.addAll(options.profiles.values);
+  var auto = col.getProfileByName('auto') as InclusiveProfile;
+  print(auto.toScript());
+}
 
 void main() {
   c.send('options.get', null, (Map<String, Object> o, [Function respond]) {
