@@ -251,14 +251,14 @@
                         <td data-i18n="options_scheme_default"></td>
                         <td>
                           <select class="input-small" data-list="proxy-schemes"
-                              value="{{profile.fallbackProxy.scheme}}"></select>
+                              bind-value="profile.fallbackProxy.scheme"></select>
                         </td>
                         <td>
                           <input type="text" bind-value="profile.fallbackProxy.host" />
                         </td>
                         <td>
-                          <!-- TODO(catus): Dart Web UI does not support two-way binding of integers now. -->
-                          <input type="number" min="1" value="{{profile.fallbackProxy.port.toString()}}" class="input-small"/>
+                          <input type="number" min="1" class="input-small"
+                              bind-value="convert.fromInt[() => profile.fallbackProxy.port][(v) => profile.fallbackProxy.port = v]"/>
                         </td>
                       </tr>
                       <tr>
@@ -281,13 +281,14 @@
                         </td>
                         <td>
                           <select class="input-small" data-list="proxy-schemes"
-                              value="{{scheme['proxy'] == null ? '' : scheme['proxy'].scheme}}"></select>
+                              bind-value="scheme['proxy'].scheme"></select>
                         </td>
                         <td>
-                          <input type="text" value="{{scheme['proxy'] == null ? '' : scheme['proxy'].host}}" />
+                          <input type="text" bind-value="scheme['proxy'].host" />
                         </td>
                         <td>
-                          <input type="number" min="1" value="{{scheme['proxy'] == null ? '' : scheme['proxy'].port.toString()}}" class="input-small"/>
+                          <input type="number" min="1" class="input-small"
+                             bind-value="convert.fromInt[() => scheme['proxy'].port][(v) => scheme['proxy'].port = v]"/>
                         </td>
                       </tr>
                     </tbody>

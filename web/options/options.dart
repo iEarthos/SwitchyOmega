@@ -23,6 +23,7 @@ library switchy_options;
 import 'dart:html';
 import 'dart:json';
 import '../html/lib.dart';
+import '../html/converters.dart' as convert;
 import "package:switchyomega/profile/lib.dart";
 import "package:switchyomega/browser/lib.dart";
 import "package:switchyomega/browser/message/lib.dart";
@@ -72,6 +73,18 @@ bool isSameProxyUsed(FixedProfile profile) {
 }
 
 List<Map<String, Object>> proxySchemesOf(FixedProfile profile) {
+  if (profile.fallbackProxy == null) {
+    profile.fallbackProxy = new ProxyServer('', '', null);
+  }
+  if (profile.proxyForHttp == null) {
+    profile.proxyForHttp = new ProxyServer('', '', null);
+  }
+  if (profile.proxyForHttps == null) {
+    profile.proxyForHttps = new ProxyServer('', '', null);
+  }
+  if (profile.proxyForFtp == null) {
+    profile.proxyForFtp = new ProxyServer('', '', null);
+  }
   return [
     { 'name': 'HTTP', 'proxy': profile.proxyForHttp },
     { 'name': 'HTTPS', 'proxy': profile.proxyForHttps },
