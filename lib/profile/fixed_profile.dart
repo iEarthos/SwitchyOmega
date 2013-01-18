@@ -153,7 +153,7 @@ class FixedProfile extends IncludableProfile {
  * A [ProxyServer].
  */
 class ProxyServer extends Plainable {
-  String scheme = 'http';
+  String protocol = 'http';
   String host;
   int port;
 
@@ -161,7 +161,7 @@ class ProxyServer extends Plainable {
    * Converts this ProxyServer to a token of a PAC result string.
    */
   String toPacResult() {
-    return '${pacScheme[scheme]} $host:$port';
+    return '${pacScheme[protocol]} $host:$port';
   }
 
   /**
@@ -183,19 +183,19 @@ class ProxyServer extends Plainable {
 
   Map<String, Object> toPlain([Map<String, Object> p]) {
     if (p == null) p = new Map<String, Object>();
-    p['scheme'] = this.scheme;
+    p['scheme'] = this.protocol;
     p['host'] = this.host;
     p['port'] = this.port;
 
     return p;
   }
 
-  ProxyServer(this.host, [this.scheme = 'http', this.port]) {
-    if (this.port == null) this.port = defaultPort[scheme];
+  ProxyServer(this.host, [this.protocol = 'http', this.port]) {
+    if (this.port == null) this.port = defaultPort[protocol];
   }
 
   void loadPlain(Map<String, Object> p) {
-    this.scheme = p['scheme'];
+    this.protocol = p['scheme'];
     this.host = p['host'];
     this.port = p['port'];
   }
