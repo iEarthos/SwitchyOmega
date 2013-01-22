@@ -78,6 +78,6 @@ void autoBindToDataList(Element root) {
   ob.observe(root,
       childList: true,
       attributes: true,
-      subtree: true);
-      //attributeFilter: [autoBindToDataListAttrName]);
+      subtree: true,
+      attributeFilter: [autoBindToDataListAttrName]);
 }
