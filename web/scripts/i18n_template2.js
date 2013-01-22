@@ -25,18 +25,18 @@
  *
  * It currently supports three handlers:
  *
- *   * i18n-content which sets the textContent of the element.
+ *   * data-i18n which sets the textContent of the element.
  *
- *     <span i18n-content="myContent"></span>
+ *     <span data-i18n="myContent"></span>
  *
- *   * i18n-options which generates <option> elements for a <select>.
+ *   * data-i18n-options which generates <option> elements for a <select>.
  *
- *     <select i18n-options="myOptionList"></select>
+ *     <select data-i18n-options="myOptionList"></select>
  *
- *   * i18n-values is a list of attribute-value or property-value pairs.
+ *   * data-i18n-values is a list of attribute-value or property-value pairs.
  *     Properties are prefixed with a '.' and can contain nested properties.
  *
- *     <span i18n-values="title:myTitle;.style.fontSize:fontSize"></span>
+ *     <span data-i18n-values="title:myTitle;.style.fontSize:fontSize"></span>
  *
  * This file is a copy of i18n_template.js, with minor tweaks to support using
  * load_time_data.js. It should replace i18n_template.js eventually.
