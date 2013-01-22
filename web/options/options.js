@@ -60,11 +60,29 @@
   var i18n = null;
   c.send('i18n.cache', null, function (cache) {
     i18n = new i18nDict(cache);
-    document.addEventListener('DOMNodeInserted', function (e) {
-      if (e.target instanceof Element) {
-        i18nTemplate.process(e.target, i18n);
-      }
-    }, false);
+    var MutationObserver = window.MutationObserver ||
+                           window.WebKitMutationObserver;
+    var ob = new MutationObserver(function (mutations) {
+      mutations.forEach(function (record) {
+        switch (record.type) {
+          case 'attributes':
+            i18nTemplate.process(record.target, i18n);
+            break;
+          case 'childList':
+            for (var i = 0; i < record.addedNodes.length; i++) {
+		      if (record.addedNodes[i] instanceof Element) {
+		        i18nTemplate.process(record.addedNodes[i], i18n);
+		      }
+            }
+            break;
+        }
+      });
+    });
+    ob.observe(document, {
+        childList: true,
+        attributes: true,
+        subtree: true
+    });
     i18nTemplate.process(document, i18n);
   });
 
