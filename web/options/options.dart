@@ -24,10 +24,12 @@ import 'dart:html';
 import 'dart:json';
 import '../html/lib.dart';
 import '../html/converters.dart' as convert;
+import 'editors.dart';
 import "package:switchyomega/profile/lib.dart";
 import "package:switchyomega/browser/lib.dart";
 import "package:switchyomega/browser/message/lib.dart";
 import "package:switchyomega/communicator.dart";
+import "package:switchyomega/lang/lib.dart";
 import 'package:web_ui/watcher.dart' as watchers;
 
 void handleFixedServerUI() {
@@ -66,31 +68,8 @@ Map<String, String> profileIcons = {
   'SwitchProfile': 'icon-retweet'
 };
 
-bool isSameProxyUsed(FixedProfile profile) {
-  return profile.proxyForHttp == null &&
-      profile.proxyForHttps == null && 
-      profile.proxyForFtp == null;
-}
-
-List<Map<String, Object>> proxySchemesOf(FixedProfile profile) {
-  if (profile.fallbackProxy == null) {
-    profile.fallbackProxy = new ProxyServer('', '', null);
-  }
-  if (profile.proxyForHttp == null) {
-    profile.proxyForHttp = new ProxyServer('', '', null);
-  }
-  if (profile.proxyForHttps == null) {
-    profile.proxyForHttps = new ProxyServer('', '', null);
-  }
-  if (profile.proxyForFtp == null) {
-    profile.proxyForFtp = new ProxyServer('', '', null);
-  }
-  return [
-    { 'name': 'HTTP', 'proxy': profile.proxyForHttp },
-    { 'name': 'HTTPS', 'proxy': profile.proxyForHttps },
-    { 'name': 'FTP', 'proxy': profile.proxyForFtp }
-  ];
-}
+Map<FixedProfile, FixedProfileEditor> fixedProfileEditors =
+    new Map<FixedProfile, FixedProfileEditor>();
 
 // This is only for testing.
 void exportPac() {

@@ -195,7 +195,8 @@ class ProxyServer extends Plainable {
     return p;
   }
 
-  ProxyServer(this.host, [this.protocol = 'http', this.port]) {
+  ProxyServer(this.host, [this.protocol = null, this.port = null]) {
+    if (this.protocol == null) this.protocol = defaultProtocol;
     if (this.port == null) this.port = defaultPort[protocol];
   }
 

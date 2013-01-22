@@ -56,13 +56,6 @@
         <option data-i18n="condition_always"></option>
         <option data-i18n="condition_never"></option>
       </datalist>
-      <datalist id="proxy-schemes">
-        <option value="http">HTTP</option>
-        <option value="https">HTTPS</option>
-        <option value="ftp">FTP</option>
-        <option value="socks4">SOCKS4</option>
-        <option value="socks5">SOCKS5</option>
-      </datalist>
     </div>
     <header class="span2" id="options-nav">
       <div class="nav-wrapper">
@@ -247,48 +240,33 @@
                         <th data-i18n="options_proxy_server"></th>
                         <th data-i18n="options_proxy_port"></th>
                       </tr>
-                      <tr data-scheme="(default)">
-                        <td data-i18n="options_scheme_default"></td>
-                        <td>
-                          <select class="input-small" data-list="proxy-schemes"
-                              bind-value="profile.fallbackProxy.protocol"></select>
-                        </td>
-                        <td>
-                          <input type="text" bind-value="profile.fallbackProxy.host" />
-                        </td>
-                        <td>
-                          <input type="number" min="1" class="input-small"
-                              bind-value="convert.fromInt[() => profile.fallbackProxy.port][(v) => profile.fallbackProxy.port = v]"/>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td></td>
-                        <td colspan="3">
-                          <label class="checkbox">
-                            <input type="checkbox" class="use-same-proxy"
-                                checked="{{isSameProxyUsed(profile)}}" />
-                            <span data-i18n="options_proxy_single"></span>
-                          </label>
-                        </td>
-                      </tr>
                     </tbody>
                     <tbody template="template"
-                        iterate="scheme in proxySchemesOf(profile)"
-                        style="display : {{isSameProxyUsed(profile) ? 'none' : 'table-row-group'}};">
-                      <tr data-scheme="{{scheme['name']}}" class="proxy-for-scheme">
+                        iterate="proxy in fixedProfileEditors.putIfAbsent(profile, () => new FixedProfileEditor(profile)).proxies">
+                      <tr>
                         <td>
-                          {{scheme['name'].toLowerCase()}}://
+                          <span instantiate="if proxy.scheme == '' " data-i18n="options_scheme_default"></span>
+                          <span instantiate="if proxy.scheme != '' ">{{proxy.scheme}}://</span>
                         </td>
                         <td>
-                          <select class="input-small" data-list="proxy-schemes"
-                              bind-value="scheme['proxy'].protocol"></select>
+                          <select class="input-medium" data-list="proxy-schemes"
+                              bind-value="proxy.protocol">
+                            <!-- TODO(catus): the '(use default)' string should be localized. -->
+                            <option value="">{{proxy.isDefault ? 'DIRECT' : '(use default)'}}</option>
+                            <option value="http">HTTP</option>
+                            <option value="https">HTTPS</option>
+                            <option value="socks4">SOCKS4</option>
+                            <option value="socks5">SOCKS5</option>
+                          </select>
                         </td>
                         <td>
-                          <input type="text" bind-value="scheme['proxy'].host" />
+                          <input type="text" bind-value="proxy.host"
+                              placeholder="{{proxy.isDefault ? '' : proxy.profileEditor[''].host}}" />
                         </td>
                         <td>
                           <input type="number" min="1" class="input-small"
-                             bind-value="convert.fromInt[() => scheme['proxy'].port][(v) => scheme['proxy'].port = v]"/>
+                              bind-value="proxy.portAsString"
+                              placeholder="{{ifNull(proxy.defaultPort, '').toString()}}" />
                         </td>
                       </tr>
                     </tbody>
