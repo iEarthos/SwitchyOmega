@@ -153,7 +153,7 @@ class FixedProfile extends IncludableProfile {
  * A [ProxyServer].
  */
 class ProxyServer extends Plainable {
-  String protocol = 'http';
+  String protocol = defaultProtocol;
   String host;
   int port;
 
@@ -163,6 +163,11 @@ class ProxyServer extends Plainable {
   String toPacResult() {
     return '${pacScheme[protocol]} $host:$port';
   }
+  
+  /**
+   * See <https://code.google.com/chrome/extensions/proxy.html>.
+   */
+  static final String defaultProtocol = 'http';
 
   /**
    * See <https://code.google.com/chrome/extensions/proxy.html>.
