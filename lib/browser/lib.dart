@@ -1,6 +1,7 @@
 library switchy_browser;
 
 import 'dart:core';
+import 'dart:async';
 
 import '../profile/lib.dart';
 import '../lang/lib.dart';

@@ -23,7 +23,7 @@ part of switchy_profile;
 /**
  * A profile is a proxy mode that can be applied manually or automatically.
  */
-abstract class Profile extends Plainable implements Hashable {
+abstract class Profile extends Plainable {
   String _name;
   /** The name of the profile. This is used as a key. */
   String get name => _name;

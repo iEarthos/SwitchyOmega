@@ -21,7 +21,7 @@
 library switchy_options;
 
 import 'dart:html';
-import 'dart:json';
+import 'dart:json' as JSON;
 import '../html/lib.dart';
 import '../html/converters.dart' as convert;
 import 'editors.dart';

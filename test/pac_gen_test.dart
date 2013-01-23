@@ -18,7 +18,7 @@
  * along with SwitchyOmega.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import 'dart:json';
+import 'dart:json' as JSON;
 import "package:switchyomega/profile/lib.dart";
 import "package:switchyomega/condition/lib.dart";
 

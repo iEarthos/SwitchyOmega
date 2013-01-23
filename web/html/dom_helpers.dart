@@ -22,7 +22,7 @@ part of switchy_html;
 
 Element closestElement(Element ref, String selector) {
   while (ref != null) {
-    if (ref.matchesSelector(selector)) {
+    if (ref.matches(selector)) {
       return ref;
     }
     ref = ref.parent;

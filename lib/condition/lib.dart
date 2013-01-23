@@ -22,7 +22,7 @@ library switchy_condition;
 
 import 'dart:core';
 import 'dart:uri';
-import 'dart:json';
+import 'dart:json' as JSON;
 import 'dart:math'; // for parseInt
 
 import '../lang/lib.dart';

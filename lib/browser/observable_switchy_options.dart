@@ -143,11 +143,11 @@ class ObservableProfileMap implements Map<String, Profile> {
     _inner.forEach(f);
   }
 
-  Collection<String> get keys {
+  Iterable<String> get keys {
     return _inner.keys;
   }
 
-  Collection<Profile> get values {
+  Iterable<Profile> get values {
     return _inner.values;
   }
 

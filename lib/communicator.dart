@@ -22,7 +22,7 @@ library communicator;
 
 import 'dart:html';
 import 'dart:math';
-import 'dart:json';
+import 'dart:json' as JSON;
 
 typedef void CommunicatorCallback(Object value, [Function respond]);
 

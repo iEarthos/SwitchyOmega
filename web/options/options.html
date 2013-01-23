@@ -91,7 +91,7 @@
             <li class="divider"></li>
             <li class="nav-header" data-i18n="options_navHeader_profiles"></li>
             <template instantiate="if options != null">
-              <template iterate="profile in options.profiles.values.filter((p) => !p.predefined)">
+              <template iterate="profile in options.profiles.values.where((p) => !p.predefined).toList()">
                 <li>
                   <a href="#profile-{{profile.name}}" data-toggle="tab">
                     <i class="{{profileIcons[profile.profileType]}}"></i>
@@ -210,7 +210,7 @@
           </section>
         </div>
         <template instantiate="if options != null">
-          <template iterate="profile in options.profiles.values">
+          <template iterate="profile in options.profiles.values.toList()">
             <div class="tab-pane" data-workaround-id="profile-{{profile.name}}">
               <header class="span10 profile-header">
                 <h2>
@@ -275,7 +275,7 @@
                 <section class="settings-group">
                   <h3 data-i18n="options_group_bypassList"></h3>
                   <p class="help-block" data-i18n="options_bypassListHelp"></p>
-                  <textarea class="bypass-list input-xxlarge">{{Strings.join(profile.bypassList.map((b) => b.pattern), '\n')}}</textarea>
+                  <textarea class="bypass-list input-xxlarge">{{profile.bypassList.mappedBy((b) => b.pattern).join('\n')}}</textarea>
                 </section>
               </template>
               <template instantiate="if profile.profileType == 'PacProfile'">

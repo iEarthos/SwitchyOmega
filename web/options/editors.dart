@@ -18,7 +18,7 @@ class FixedProfileEditor {
   
   Map<String, ProxyServerEditor> _proxies;
   
-  Collection<ProxyServerEditor> get proxies => _proxies.values;
+  List<ProxyServerEditor> get proxies => _proxies.values.toList();
   
   ProxyServerEditor operator [](String scheme) {
     return _proxies[scheme];

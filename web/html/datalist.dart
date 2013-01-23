@@ -30,7 +30,8 @@ void bindToDataList(Element target, [DataListElement datalist]) {
   }
   
   target.nodes.clear();
-  target.nodes.addAll(datalist.queryAll('option').map((o) => o.clone(true)));
+  target.nodes.addAll(
+      datalist.queryAll('option').mappedBy((o) => o.clone(true)));
   
   // When the datalist changes, update the target Element.
   MutationObserver ob = new MutationObserver(
@@ -39,7 +40,7 @@ void bindToDataList(Element target, [DataListElement datalist]) {
           // Perhaps this can be done in a more efficient way.
           target.nodes.clear();
           target.nodes.addAll(
-              datalist.queryAll('option').map((o) => o.clone(true)));
+              datalist.queryAll('option').mappedBy((o) => o.clone(true)));
         });
       });
   ob.observe(datalist,

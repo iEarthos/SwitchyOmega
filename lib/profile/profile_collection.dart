@@ -24,7 +24,8 @@ part of switchy_profile;
  * A set of profiles. Predefined profiles are pre-added to the set,
  * but they are not converted to plain.
  */
-class ProfileCollection extends Plainable implements Set<Profile> {
+class ProfileCollection extends Collection<Profile>
+    implements Set<Profile>, Plainable {
   Map<String, Profile> _profiles;
 
   /**
@@ -59,8 +60,8 @@ class ProfileCollection extends Plainable implements Set<Profile> {
    */
   List<Object> toPlain([List<Object> p, Object config]) {
     if (p == null) p = new List<Object>();
-    p.addAll(_profiles.values.filter((prof) => !prof.predefined)
-        .map((prof) => prof.toPlain()));
+    p.addAll(_profiles.values.where((prof) => !prof.predefined)
+        .mappedBy((prof) => prof.toPlain()));
 
     return p;
   }
@@ -104,42 +105,7 @@ class ProfileCollection extends Plainable implements Set<Profile> {
     if (value.predefined) return false;
     _profiles.remove(value.name);
   }
-
-  void addAll(Collection<Profile> collection) {
-    for (var p in collection) {
-      _profiles[p.name] = p;
-      _setResolver(p);
-    }
-  }
-
-  /**
-   * Remove all profiles of [collection] from this profile, expect
-   * the predefined ones.
-   */
-  void removeAll(Collection<Profile> collection) {
-    for (var p in collection) {
-      if (!p.predefined) _profiles.remove(p.name);
-    }
-  }
-
-  bool isSubsetOf(Collection<Profile> other) {
-    return new Set<Profile>.from(other).containsAll(this);
-  }
-
-  bool containsAll(Collection<Profile> collection) {
-    return collection.every((Profile value) {
-      return contains(value);
-    });
-  }
-
-  Set<Profile> intersection(Collection<Profile> collection) {
-    Set<Profile> result = new Set<Profile>();
-    collection.forEach((Profile value) {
-      if (contains(value)) result.add(value);
-    });
-    return result;
-  }
-
+  
   /**
    * This method doesn't really clear all profiles, because predefined
    * profiles cannot be removed.
@@ -149,52 +115,27 @@ class ProfileCollection extends Plainable implements Set<Profile> {
     _addPredefined();
   }
 
-  void forEach(void f(Profile element)) {
-    _profiles.forEach((String key, Profile value) {
-      f(value);
-    });
-  }
-
-  Set map(f(Profile element)) {
-    Set result = new Set();
-    _profiles.forEach((String key, Profile value) {
-      result.add(f(value));
-    });
-    return result;
-  }
-
-  Set<Profile> filter(bool f(Profile element)) {
-    Set<Profile> result = new Set<Profile>();
-    _profiles.forEach((String key, Profile value) {
-      if (f(value)) result.add(value);
-    });
-    return result;
-  }
-
-  bool every(bool f(Profile element)) {
-    Collection<Profile> keys = _profiles.values;
-    return keys.every(f);
-  }
-
-  bool some(bool f(Profile element)) {
-    Collection<Profile> keys = _profiles.values;
-    return keys.some(f);
-  }
-
-  bool get isEmpty {
-    return _profiles.isEmpty;
-  }
-
   int get length {
     return _profiles.length;
   }
 
-  Iterator<Profile> iterator() {
-    return _profiles.values.iterator();
+  Iterator<Profile> get iterator {
+    return _profiles.values.iterator;
   }
 
-  dynamic reduce(dynamic initialValue,
-                 dynamic combine(dynamic previousValue, Profile element)) {
-    _profiles.values.reduce(initialValue, combine);
+  bool isSubsetOf(Collection<Profile> collection) {
+    return new Set<Profile>.from(collection).containsAll(this);
+  }
+  
+  bool containsAll(Collection<Profile> collection) {
+    return collection.every((e) => this.contains(e));
+  }
+  
+  Set<Profile> intersection(Collection<Profile> collection) {
+    return new Set<Profile>.from(collection.where((e) => this.contains(e)));
+  }
+  
+  Object toJson() {
+    return this.toPlain();
   }
 }

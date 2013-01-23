@@ -1,6 +1,7 @@
 library switchy_browser_message;
 
 import 'dart:core';
+import 'dart:async';
 
 import '../lib.dart';
 import '../../profile/lib.dart';
