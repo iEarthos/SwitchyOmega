@@ -15,15 +15,15 @@ class FixedProfileEditor {
         'ftp': new ProxyServerEditor(this, 'ftp', profile.proxyForFtp)
     };
   }
-  
+
   Map<String, ProxyServerEditor> _proxies;
-  
+
   List<ProxyServerEditor> get proxies => _proxies.values.toList();
-  
+
   ProxyServerEditor operator [](String scheme) {
     return _proxies[scheme];
   }
-  
+
   void _update(String scheme) {
     switch(scheme) {
       case '':
@@ -40,7 +40,7 @@ class FixedProfileEditor {
         break;
     }
   }
-  
+
 }
 
 class ProxyServerEditor {
@@ -51,7 +51,7 @@ class ProxyServerEditor {
   FixedProfileEditor profileEditor = null;
   final String scheme;
   bool get isDefault => scheme == '';
-  
+
   ProxyServerEditor(this.profileEditor, this.scheme,
       [ProxyServer proxy = null]) {
     if (proxy != null) {
@@ -61,16 +61,16 @@ class ProxyServerEditor {
       _isEmpty = false;
     }
   }
-  
+
   bool _isEmpty = true;
   bool get isEmpty => _isEmpty;
-  
+
   void _applyDefaults() {
     if (_protocol == null) _protocol = defaultProtocol;
     if (_host == '') _host = 'proxy.example.com';
-    if (_port == null) _port = defaultPort; 
+    if (_port == null) _port = defaultPort;
   }
-  
+
   String _protocol = defaultProtocol;
   String get protocol => _isEmpty ? '' : _protocol;
   void set protocol(String value) {
@@ -83,7 +83,7 @@ class ProxyServerEditor {
     }
     profileEditor._update(scheme);
   }
-  
+
   String _host;
   String get host => _isEmpty ? '' : _host;
   void set host(String value) {
@@ -92,7 +92,7 @@ class ProxyServerEditor {
     if (!_isEmpty) _applyDefaults();
     profileEditor._update(scheme);
   }
-  
+
   int _port = null;
   String get portAsString => _isEmpty ? '' : _port.toString();
   void set portAsString(String value) {
@@ -111,7 +111,7 @@ class ProxyServerEditor {
   }
 
   static String get defaultProtocol => ProxyServer.defaultProtocol;
-  
+
   int get defaultPort {
     if (!this.isEmpty) {
       return ProxyServer.defaultPort[this.protocol];

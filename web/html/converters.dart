@@ -11,9 +11,9 @@ typedef V Setter<V>(V value);
  * Besides calling [convert] and [convertBack] directly, the expression
  * [:converter[getter][setter]:] can also be used to get and set the
  * converted value.
- * When evaluating [:converter[getter][setter]:], the getter is called and the 
+ * When evaluating [:converter[getter][setter]:], the getter is called and the
  * [convert]ed result is returned.
- * When assigning to [:converter[getter][setter]:], the setter is called with 
+ * When assigning to [:converter[getter][setter]:], the setter is called with
  * the result of the [convertBack] value.
  * In this way, [:converter[getter][setter]:] acts like an assignable variable,
  * which can be useful in bindings.
@@ -36,15 +36,15 @@ class ConverterGetter<From, To> {
   Converter<From, To> converter;
   Getter<From> getter;
   ConverterGetter(this.converter, this.getter);
-  
+
   To operator [](Setter<From> setter) {
     return converter.convert(this.getter());
   }
-  
+
   void operator []=(Setter<From> setter, To value) {
     setter(converter.convertBack(value));
   }
-  
+
 }
 
 /**

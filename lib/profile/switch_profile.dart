@@ -44,7 +44,7 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
       _refCount.remove(name);
     }
   }
-  
+
   void _flushReference() {
     _refCount.clear();
     _addReference(_defaultProfileName);
@@ -135,62 +135,62 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
       _removeReference(rule.profileName);
     }
   }
-  
+
   Iterator<Rule> get iterator => this._rules.iterator;
-  
+
   List<Rule> toList() => this._rules.toList();
-  
+
   Set<Rule> toSet() => this._rules.toSet();
-  
+
   Rule operator [](int i) => this._rules[i];
-  
+
   void operator []=(int i, Rule rule) {
     _removeReference(this[i].profileName);
     this._rules[i] = rule;
     _addReference(rule.profileName);
   }
-  
+
   void add(Rule rule) {
     this._rules.add(rule);
     _addReference(rule.profileName);
   }
-  
+
   void addLast(Rule rule) {
     this._rules.addLast(rule);
     _addReference(rule.profileName);
   }
-  
+
   void addAll(Iterable<Rule> rules) {
     this._rules.addAll(rules);
     rules.forEach((r) => _addReference(r.profileName));
   }
-  
+
   int indexOf(Rule rule, [int start = 0]) => this._rules.indexOf(rule, start);
-  
-  int lastIndexOf(Rule rule, [int start]) => 
+
+  int lastIndexOf(Rule rule, [int start]) =>
       this._rules.lastIndexOf(rule, start);
-  
+
   void clear() {
     this._rules.clear();
     _flushReference();
   }
-  
+
   Rule removeAt(int i) {
     var rule = this._rules.removeAt(i);
     if (rule != null) _removeReference(rule.profileName);
     return rule;
   }
-  
+
   Rule removeLast() {
     var rule = this._rules.removeLast();
     if (rule != null) _removeReference(rule.profileName);
     return rule;
   }
-  
+
   List<Rule> getRange(int start, int length) {
     return this._rules.getRange(start, length);
   }
-  
+
   void setRange(int start, int length, List<Rule> from, [int startFrom]) {
     for (var i = start; i < start + length; i++) {
       _removeReference(this._rules[i].profileName);
@@ -207,7 +207,7 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
     }
     this._rules.removeRange(start, length);
   }
-  
+
   void insertRange(int start, int length, [Rule fill]) {
     if (fill != null) {
       for (var i = 0; i < length; i++) {
@@ -216,39 +216,39 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
     }
     this._rules.insertRange(start, length, fill);
   }
-  
+
   void removeAll(Iterable<Rule> elementsToRemove) {
     this._rules.removeAll(elementsToRemove);
     _flushReference();
   }
-  
+
   bool contains(Rule rule) {
     return this._rules.contains(rule);
   }
-  
+
   bool get isEmpty => this.length > 0;
 
   Rule get first => this._rules.first;
-  
+
   Rule get last => this._rules.last;
-  
+
   Rule elementAt(int index) => this[index];
-  
+
   // Implementation using IterableMixinWorkaround:
-  
+
   void forEach(void f(Rule o)) => IterableMixinWorkaround.forEach(this, f);
 
   bool any(bool f(Rule o)) => IterableMixinWorkaround.any(this, f);
-  
+
   bool every(bool f(Rule o)) => IterableMixinWorkaround.every(this, f);
-  
+
   dynamic reduce(initialValue, combine(previousValue, Rule element)) =>
     IterableMixinWorkaround.reduce(this, initialValue, combine);
 
   void retainAll(Iterable<Rule> elementsToRetain) {
     IterableMixinWorkaround.retainAll(this, elementsToRetain);
   }
-  
+
   void removeMatching(bool test(Rule element)) {
     IterableMixinWorkaround.removeMatching(this, test);
   }
@@ -256,45 +256,45 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
   void retainMatching(bool test(Rule element)) {
     IterableMixinWorkaround.retainMatching(this, test);
   }
-  
+
   Rule min([int compare(Rule a, Rule b)]) =>
       IterableMixinWorkaround.min(this, compare);
-      
+
   Rule max([int compare(Rule a, Rule b)]) =>
       IterableMixinWorkaround.max(this, compare);
-  
+
   Rule get single => IterableMixinWorkaround.single(this);
-  
-  Rule firstMatching(bool test(Rule value), {orElse()}) => 
+
+  Rule firstMatching(bool test(Rule value), {orElse()}) =>
       IterableMixinWorkaround.firstMatching(this, test, orElse);
-  
+
   Rule lastMatching(bool test(Rule value), {orElse()}) =>
       IterableMixinWorkaround.lastMatchingInList(this, test, orElse);
-  
-  Rule singleMatching(bool test(Rule value)) => 
+
+  Rule singleMatching(bool test(Rule value)) =>
       IterableMixinWorkaround.singleMatching(this, test);
-  
+
   String join([String separator]) =>
       IterableMixinWorkaround.joinList(this, separator);
-  
+
   Iterable<Rule> where(bool f(Rule element)) =>
       IterableMixinWorkaround.where(this, f);
-  
+
   List mappedBy(f(Rule element)) =>
       IterableMixinWorkaround.mappedByList(this, f);
-  
+
   List<Rule> take(int n) =>
       IterableMixinWorkaround.takeList(this, n);
-  
+
   Iterable takeWhile(bool test(Rule value)) =>
       IterableMixinWorkaround.takeWhile(this, test);
-  
+
   List<Rule> skip(int n) =>
       IterableMixinWorkaround.skipList(this, n);
-  
+
   Iterable<Rule> skipWhile(bool test(value)) =>
       IterableMixinWorkaround.skipWhile(this, test);
-  
+
   void sort([int compare(Rule a, Rule b)]) {
     IterableMixinWorkaround.sortList(this, compare);
   }

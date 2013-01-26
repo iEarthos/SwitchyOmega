@@ -28,11 +28,11 @@ void bindToDataList(Element target, [DataListElement datalist]) {
     datalist = target.document.query('#$datalist_id');
     if (datalist == null) return;
   }
-  
+
   target.nodes.clear();
   target.nodes.addAll(
       datalist.queryAll('option').mappedBy((o) => o.clone(true)));
-  
+
   // When the datalist changes, update the target Element.
   MutationObserver ob = new MutationObserver(
       (List<MutationRecord> mutations, MutationObserver _) {
@@ -55,7 +55,7 @@ void autoBindToDataList(Element root) {
       (target) {
         bindToDataList(target);
       });
-  
+
   MutationObserver ob = new MutationObserver(
       (List<MutationRecord> mutations, MutationObserver _) {
         mutations.forEach((MutationRecord record) {

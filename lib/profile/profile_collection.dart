@@ -105,7 +105,7 @@ class ProfileCollection extends Collection<Profile>
     if (value.predefined) return false;
     _profiles.remove(value.name);
   }
-  
+
   /**
    * This method doesn't really clear all profiles, because predefined
    * profiles cannot be removed.
@@ -126,15 +126,15 @@ class ProfileCollection extends Collection<Profile>
   bool isSubsetOf(Collection<Profile> collection) {
     return new Set<Profile>.from(collection).containsAll(this);
   }
-  
+
   bool containsAll(Collection<Profile> collection) {
     return collection.every((e) => this.contains(e));
   }
-  
+
   Set<Profile> intersection(Collection<Profile> collection) {
     return new Set<Profile>.from(collection.where((e) => this.contains(e)));
   }
-  
+
   Object toJson() {
     return this.toPlain();
   }

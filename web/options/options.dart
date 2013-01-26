@@ -33,7 +33,7 @@ import "package:switchyomega/lang/lib.dart";
 import 'package:web_ui/watcher.dart' as watchers;
 
 void handleFixedServerUI() {
-  
+
 }
 
 void handlePacScriptsUI() {

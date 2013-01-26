@@ -163,7 +163,7 @@ class ProxyServer extends Plainable {
   String toPacResult() {
     return '${pacScheme[protocol]} $host:$port';
   }
-  
+
   /**
    * See <https://code.google.com/chrome/extensions/proxy.html>.
    */
