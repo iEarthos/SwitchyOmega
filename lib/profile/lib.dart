@@ -21,12 +21,11 @@
 library switchy_profile;
 
 import 'dart:core';
+import 'dart:collection';
 import 'dart:json' as JSON;
-import 'dart:collection-dev'; // Is this legal? I just want the helper
-                              // iterators for my Iterable<E> implementation...
-import '../lang/lib.dart';
 import '../code_writer.dart';
 import '../condition/lib.dart';
+import '../lang/lib.dart';
 
 part 'profile.dart';
 

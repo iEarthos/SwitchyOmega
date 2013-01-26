@@ -37,11 +37,18 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
 
   void _removeReference(String name) {
     var c = _refCount[name];
+    if (c == null) return;
     if (c > 1) {
       _refCount[name] = c - 1;
     } else {
       _refCount.remove(name);
     }
+  }
+  
+  void _flushReference() {
+    _refCount.clear();
+    _addReference(_defaultProfileName);
+    this._rules.forEach((rule) => _addReference(rule.profileName));
   }
 
   String _defaultProfileName;
@@ -68,12 +75,12 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
       w.inline('if (');
       rule.condition.writeTo(w);
       w.code(')').indent();
-      IncludableProfile ip = getProfileByName(rule.profileName);
+      var ip = getProfileByName(rule.profileName);
       w.code('return ${ip.getScriptName()};')
        .outdent();
     }
 
-    IncludableProfile dp = getProfileByName(defaultProfileName);
+    var dp = getProfileByName(defaultProfileName);
     w.code('return ${dp.getScriptName()};');
     w.inline('}');
   }
@@ -118,355 +125,177 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
   int get length => _rules.length;
 
   void set length(int newLength) {
-    _rules.length = newLength;
+    this._rules.length = newLength;
   }
 
-  void forEach(void f(Rule element)) {
-    _rules.forEach(f);
-  }
-  
-  Rule get first => this[0];
-
-  Iterable<Rule> mappedBy(f(Rule element)) => _rules.mappedBy(f);
-
-  Iterable<Rule> where(bool f(Rule element))  => _rules.where(f);
-
-  bool every(bool f(Rule element)) => _rules.every(f);
-
-  bool any(bool f(Rule element)) => _rules.any(f);
-
-  bool get isEmpty => _rules.isEmpty;
-
-  Iterator<Rule> get iterator => _rules.iterator;
-
-  Rule operator [](int index) => _rules[index];
-
-  void operator []=(int index, Rule value) {
-    _addReference(value.profileName);
-    if (index < _rules.length) _removeReference(_rules[index].profileName);
-    _rules[index] = value;
-  }
-
-  void add(Rule value) {
-    _addReference(value.profileName);
-    _rules.add(value);
-  }
-
-  void addLast(Rule value) {
-    _addReference(value.profileName);
-    _rules.addLast(value);
-  }
-
-  void addAll(Collection<Rule> collection) {
-    for (var rule in collection) {
-      _addReference(rule.profileName);
-    }
-    _rules.addAll(collection);
-  }
-
-  bool contains(Rule element) {
-    for (Rule e in this) {
-      if (e == element) return true;
-    }
-    return false;
-  }
-
-  void sort([Comparator<Rule> compare]) {
-    _rules.sort(compare);
-  }
-
-  int indexOf(Rule element, [int start = 0]) {
-    return _rules.indexOf(element, start);
-  }
-
-  int lastIndexOf(Rule element, [int start]) {
-    _rules.lastIndexOf(element, start);
-  }
-
-  void clear() {
-    _rules.clear();
-    _refCount.clear();
-    _addReference(defaultProfileName);
-  }
-
-  Rule removeLast() {
-    var rule = _rules.removeLast();
-    _removeReference(rule.profileName);
-    return rule;
-  }
-
-  Rule removeAt(int index) {
-    var rule = _rules.removeAt(index);
-    _removeReference(rule.profileName);
-    return rule;
-  }
-
-  Rule get last => _rules.last;
-
-  List<Rule> getRange(int start, int length) => _rules.getRange(start, length);
-
-  void setRange(int start, int length, List<Rule> from, [int startFrom = 0]) {
-    for(var rule in _rules.getRange(start, length)) {
+  void remove(Rule rule) {
+    int old_length = this._rules.length;
+    this._rules.remove(rule);
+    if (this._rules.length < old_length) {
       _removeReference(rule.profileName);
     }
-    for (var i = startFrom; i < from.length; i++) {
-      _addReference(from[i].profileName);
+  }
+  
+  Iterator<Rule> get iterator => this._rules.iterator;
+  
+  List<Rule> toList() => this._rules.toList();
+  
+  Set<Rule> toSet() => this._rules.toSet();
+  
+  Rule operator [](int i) => this._rules[i];
+  
+  void operator []=(int i, Rule rule) {
+    _removeReference(this[i].profileName);
+    this._rules[i] = rule;
+    _addReference(rule.profileName);
+  }
+  
+  void add(Rule rule) {
+    this._rules.add(rule);
+    _addReference(rule.profileName);
+  }
+  
+  void addLast(Rule rule) {
+    this._rules.addLast(rule);
+    _addReference(rule.profileName);
+  }
+  
+  void addAll(Iterable<Rule> rules) {
+    this._rules.addAll(rules);
+    rules.forEach((r) => _addReference(r.profileName));
+  }
+  
+  int indexOf(Rule rule, [int start = 0]) => this._rules.indexOf(rule, start);
+  
+  int lastIndexOf(Rule rule, [int start]) => 
+      this._rules.lastIndexOf(rule, start);
+  
+  void clear() {
+    this._rules.clear();
+    _flushReference();
+  }
+  
+  Rule removeAt(int i) {
+    var rule = this._rules.removeAt(i);
+    if (rule != null) _removeReference(rule.profileName);
+    return rule;
+  }
+  
+  Rule removeLast() {
+    var rule = this._rules.removeLast();
+    if (rule != null) _removeReference(rule.profileName);
+    return rule;
+  }
+  
+  List<Rule> getRange(int start, int length) {
+    return this._rules.getRange(start, length);
+  }
+  
+  void setRange(int start, int length, List<Rule> from, [int startFrom]) {
+    for (var i = start; i < start + length; i++) {
+      _removeReference(this._rules[i].profileName);
     }
-    _rules.setRange(start, length, from, startFrom);
+    this._rules.setRange(start, length, from, startFrom);
+    for (var i = start; i < start + length; i++) {
+      _addReference(this._rules[i].profileName);
+    }
   }
 
   void removeRange(int start, int length) {
-    for(var rule in _rules.getRange(start, length)) {
-      _removeReference(rule.profileName);
+    for (var i = start; i < start + length; i++) {
+      _removeReference(this._rules[i].profileName);
     }
-    _rules.removeRange(start, length);
-  }
-
-  void insertRange(int start, int length, [Rule initialValue]) {
-     if (initialValue != null) _addReference(initialValue.profileName);
-     _rules.insertRange(start, length);
-  }
-
-  dynamic reduce(dynamic initialValue,
-                 dynamic combine(dynamic previousValue, Rule element)) {
-    _rules.reduce(initialValue, combine);
+    this._rules.removeRange(start, length);
   }
   
-  void remove(Rule r) {
-    this.removeMatching((e) => e == r);
+  void insertRange(int start, int length, [Rule fill]) {
+    if (fill != null) {
+      for (var i = 0; i < length; i++) {
+        _addReference(fill.profileName);
+      }
+    }
+    this._rules.insertRange(start, length, fill);
   }
   
-  void removeAll(Iterable<dynamic> w) {
-    
+  void removeAll(Iterable<Rule> elementsToRemove) {
+    this._rules.removeAll(elementsToRemove);
+    _flushReference();
   }
-  void retainAll(Iterable<dynamic> d) {}
+  
+  bool contains(Rule rule) {
+    return this._rules.contains(rule);
+  }
+  
+  bool get isEmpty => this.length > 0;
+
+  Rule get first => this._rules.first;
+  
+  Rule get last => this._rules.last;
+  
+  Rule elementAt(int index) => this[index];
+  
+  // Implementation using IterableMixinWorkaround:
+  
+  void forEach(void f(Rule o)) => IterableMixinWorkaround.forEach(this, f);
+
+  bool any(bool f(Rule o)) => IterableMixinWorkaround.any(this, f);
+  
+  bool every(bool f(Rule o)) => IterableMixinWorkaround.every(this, f);
+  
+  dynamic reduce(initialValue, combine(previousValue, Rule element)) =>
+    IterableMixinWorkaround.reduce(this, initialValue, combine);
+
+  void retainAll(Iterable<Rule> elementsToRetain) {
+    IterableMixinWorkaround.retainAll(this, elementsToRetain);
+  }
   
   void removeMatching(bool test(Rule element)) {
-    for (var i = 0; i < this.length; i++) {
-      if (test(this[i])) {
-        this.removeAt(i);
-        return;
-      }
-    }
+    IterableMixinWorkaround.removeMatching(this, test);
   }
-  
+
   void retainMatching(bool test(Rule element)) {
-    this.removeMatching((e) => !test(e));
+    IterableMixinWorkaround.retainMatching(this, test);
   }
   
-  // Note: The following members are copied from dart:core because I know no
-  // better way to implement all the members.
-
-  /**
-   * Convert each element to a [String] and concatenate the strings.
-   *
-   * Converts each element to a [String] by calling [Object.toString] on it.
-   * Then concatenates the strings, optionally separated by the [separator]
-   * string.
-   */
-  String join([String separator]) {
-    Iterator<Rule> iterator = this.iterator;
-    if (!iterator.moveNext()) return "";
-    StringBuffer buffer = new StringBuffer();
-    if (separator == null || separator == "") {
-      do {
-        buffer.add("${iterator.current}");
-      } while (iterator.moveNext());
-    } else {
-      buffer.add("${iterator.current}");
-      while (iterator.moveNext()) {
-        buffer.add(separator);
-        buffer.add("${iterator.current}");
-      }
-    }
-    return buffer.toString();
-  }
-
-  List<Rule> toList() => new List<Rule>.from(this);
-  Set<Rule> toSet() => new Set<Rule>.from(this);
-
-  /**
-   * Find the least element in the iterable.
-   *
-   * Returns null if the iterable is empty.
-   * Otherwise returns an element [:x:] of this [Iterable] so that
-   * [:x:] is not greater than [:y:] (that is, [:compare(x, y) <= 0:]) for all
-   * other elements [:y:] in the iterable.
-   *
-   * The [compare] function must be a proper [Comparator<T>]. If a function is
-   * not provided, [compare] defaults to [Comparable.compare].
-   */
-  Rule min([int compare(Rule a, Rule b)]) {
-    if (compare == null) throw new ArgumentError("compare must be provided.");
-    Iterator it = iterator;
-    if (!it.moveNext()) return null;
-    Rule min = it.current;
-    while (it.moveNext()) {
-      Rule current = it.current;
-      if (compare(min, current) > 0) min = current;
-    }
-    return min;
-  }
-
-  /**
-   * Find the largest element in the iterable.
-   *
-   * Returns null if the iterable is empty.
-   * Otherwise returns an element [:x:] of this [Iterable] so that
-   * [:x:] is not smaller than [:y:] (that is, [:compare(x, y) >= 0:]) for all
-   * other elements [:y:] in the iterable.
-   *
-   * The [compare] function must be a proper [Comparator<T>]. If a function is
-   * not provided, [compare] defaults to [Comparable.compare].
-   */
-  Rule max([int compare(Rule a, Rule b)]) {
-    if (compare == null) throw new ArgumentError("compare must be provided.");
-    Iterator it = iterator;
-    if (!it.moveNext()) return null;
-    Rule max = it.current;
-    while (it.moveNext()) {
-      Rule current = it.current;
-      if (compare(max, current) < 0) max = current;
-    }
-    return max;
-  }
-
-  /**
-   * Returns an [Iterable] with at most [n] elements.
-   *
-   * The returned [Iterable] may contain fewer than [n] elements, if [this]
-   * contains fewer than [n] elements.
-   */
-  Iterable<Rule> take(int n) {
-    return new TakeIterable<Rule>(this, n);
-  }
-
-  /**
-   * Returns an [Iterable] that stops once [test] is not satisfied anymore.
-   *
-   * The filtering happens lazily. Every new [Iterator] of the returned
-   * [Iterable] will start iterating over the elements of [this].
-   * When the iterator encounters an element [:e:] that does not satisfy [test],
-   * it discards [:e:] and moves into the finished state. That is, it will not
-   * ask or provide any more elements.
-   */
-  Iterable<Rule> takeWhile(bool test(Rule value)) {
-    return new TakeWhileIterable<Rule>(this, test);
-  }
-
-  /**
-   * Returns an [Iterable] that skips the first [n] elements.
-   *
-   * If [this] has fewer than [n] elements, then the resulting [Iterable] will
-   * be empty.
-   */
-  Iterable<Rule> skip(int n) {
-    return new SkipIterable<Rule>(this, n);
-  }
-
-  /**
-   * Returns an [Iterable] that skips elements while [test] is satisfied.
-   *
-   * The filtering happens lazily. Every new [Iterator] of the returned
-   * [Iterable] will iterate over all elements of [this].
-   * As long as the iterator's elements do not satisfy [test] they are
-   * discarded. Once an element satisfies the [test] the iterator stops testing
-   * and uses every element unconditionally.
-   */
-  Iterable<Rule> skipWhile(bool test(Rule value)) {
-    return new SkipWhileIterable<Rule>(this, test);
-  }
-
-  /**
-   * Returns the single element in [this].
-   *
-   * If [this] is empty or has more than one element throws a [StateError].
-   */
-  Rule get single {
-    Iterator it = iterator;
-    if (!it.moveNext()) throw new StateError("No elements");
-    Rule result = it.current;
-    if (it.moveNext()) throw new StateError("More than one element");
-    return result;
-  }
-
-  /**
-   * Returns the first element that satisfies the given predicate [f].
-   *
-   * If none matches, the result of invoking the [orElse] function is
-   * returned. By default, when [orElse] is `null`, a [StateError] is
-   * thrown.
-   */
-  Rule firstMatching(bool test(Rule value), { Rule orElse() }) {
-    // TODO(floitsch): check that arguments are of correct type?
-    for (Rule element in this) {
-      if (test(element)) return element;
-    }
-    if (orElse != null) return orElse();
-    throw new StateError("No matching element");
-  }
-
-  /**
-   * Returns the last element that satisfies the given predicate [f].
-   *
-   * If none matches, the result of invoking the [orElse] function is
-   * returned. By default, when [orElse] is [:null:], a [StateError] is
-   * thrown.
-   */
-  Rule lastMatching(bool test(Rule value), {Rule orElse()}) {
-    // TODO(floitsch): check that arguments are of correct type?
-    Rule result = null;
-    bool foundMatching = false;
-    for (Rule element in this) {
-      if (test(element)) {
-        result = element;
-        foundMatching = true;
-      }
-    }
-    if (foundMatching) return result;
-    if (orElse != null) return orElse();
-    throw new StateError("No matching element");
-  }
-
-  /**
-   * Returns the single element that satisfies [f]. If no or more than one
-   * element match then a [StateError] is thrown.
-   */
-  Rule singleMatching(bool test(Rule value)) {
-    // TODO(floitsch): check that argument is of correct type?
-    Rule result = null;
-    bool foundMatching = false;
-    for (Rule element in this) {
-      if (test(element)) {
-        if (foundMatching) {
-          throw new StateError("More than one matching element");
-        }
-        result = element;
-        foundMatching = true;
-      }
-    }
-    if (foundMatching) return result;
-    throw new StateError("No matching element");
-  }
-
-  /**
-   * Returns the [index]th element.
-   *
-   * If [this] [Iterable] has fewer than [index] elements throws a
-   * [RangeError].
-   *
-   * Note: if [this] does not have a deterministic iteration order then the
-   * function may simply return any element without any iteration if there are
-   * at least [index] elements in [this].
-   */
-  Rule elementAt(int index) {
-    if (index is! int || index < 0) throw new RangeError.value(index);
-    int remaining = index;
-    for (Rule element in this) {
-      if (remaining == 0) return element;
-      remaining--;
-    }
-    throw new RangeError.value(index);
+  Rule min([int compare(Rule a, Rule b)]) =>
+      IterableMixinWorkaround.min(this, compare);
+      
+  Rule max([int compare(Rule a, Rule b)]) =>
+      IterableMixinWorkaround.max(this, compare);
+  
+  Rule get single => IterableMixinWorkaround.single(this);
+  
+  Rule firstMatching(bool test(Rule value), {orElse()}) => 
+      IterableMixinWorkaround.firstMatching(this, test, orElse);
+  
+  Rule lastMatching(bool test(Rule value), {orElse()}) =>
+      IterableMixinWorkaround.lastMatchingInList(this, test, orElse);
+  
+  Rule singleMatching(bool test(Rule value)) => 
+      IterableMixinWorkaround.singleMatching(this, test);
+  
+  String join([String separator]) =>
+      IterableMixinWorkaround.joinList(this, separator);
+  
+  Iterable<Rule> where(bool f(Rule element)) =>
+      IterableMixinWorkaround.where(this, f);
+  
+  List mappedBy(f(Rule element)) =>
+      IterableMixinWorkaround.mappedByList(this, f);
+  
+  List<Rule> take(int n) =>
+      IterableMixinWorkaround.takeList(this, n);
+  
+  Iterable takeWhile(bool test(Rule value)) =>
+      IterableMixinWorkaround.takeWhile(this, test);
+  
+  List<Rule> skip(int n) =>
+      IterableMixinWorkaround.skipList(this, n);
+  
+  Iterable<Rule> skipWhile(bool test(value)) =>
+      IterableMixinWorkaround.skipWhile(this, test);
+  
+  void sort([int compare(Rule a, Rule b)]) {
+    IterableMixinWorkaround.sortList(this, compare);
   }
 }
-
