@@ -26,14 +26,28 @@ import '../html/lib.dart';
 import '../html/converters.dart' as convert;
 import 'editors.dart';
 import "package:switchyomega/profile/lib.dart";
+import "package:switchyomega/condition/lib.dart";
 import "package:switchyomega/browser/lib.dart";
 import "package:switchyomega/browser/message/lib.dart";
 import "package:switchyomega/communicator.dart";
 import "package:switchyomega/lang/lib.dart";
 import 'package:web_ui/watcher.dart' as watchers;
 
-void handleFixedServerUI() {
+String bypassListToText(List<BypassCondition> list) =>
+  list.mappedBy((b) => b.pattern).join('\n');
 
+void handleFixedServerUI() {
+  dynamicEvent('change', '.bypass-list',  (e, TextAreaElement bypassList) {
+    var profile_name = closestElement(bypassList, '.tab-pane')
+        .attributes['data-profile'];
+    var profile = options.profiles[profile_name] as FixedProfile;
+    profile.bypassList = bypassList.value.split('\n')
+        .mappedBy((l) => l.trim()).where((l) => !l.isEmpty)
+        .mappedBy((l) => new BypassCondition(l))
+        .toList();
+    // Update the text in the textarea.
+    bypassList.value = bypassListToText(profile.bypassList);
+  });
 }
 
 void handlePacScriptsUI() {

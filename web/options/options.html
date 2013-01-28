@@ -211,7 +211,7 @@
         </div>
         <template instantiate="if options != null">
           <template iterate="profile in options.profiles.values.toList()">
-            <div class="tab-pane" data-workaround-id="profile-{{profile.name}}">
+            <div class="tab-pane" data-workaround-id="profile-{{profile.name}}" data-profile="{{profile.name}}">
               <header class="span10 profile-header">
                 <h2>
                   <span data-i18n="options_profileTabPrefix"></span>
@@ -274,7 +274,7 @@
                 <section class="settings-group">
                   <h3 data-i18n="options_group_bypassList"></h3>
                   <p class="help-block" data-i18n="options_bypassListHelp"></p>
-                  <textarea class="bypass-list input-xxlarge">{{profile.bypassList.mappedBy((b) => b.pattern).join('\n')}}</textarea>
+                  <textarea class="bypass-list input-xxlarge">{{bypassListToText(profile.bypassList)}}</textarea>
                 </section>
               </template>
               <template instantiate="if profile.profileType == 'PacProfile'">
