@@ -245,14 +245,13 @@
                         iterate="proxy in fixedProfileEditors.putIfAbsent(profile, () => new FixedProfileEditor(profile)).proxies">
                       <tr>
                         <td>
-                          <span instantiate="if proxy.scheme == '' " data-i18n="options_scheme_default"></span>
-                          <span instantiate="if proxy.scheme != '' ">{{proxy.scheme}}://</span>
+                          <span template="template" instantiate="if proxy.scheme == '' " data-i18n="options_scheme_default"></span>
+                          <span template="template" instantiate="if proxy.scheme != '' ">{{proxy.scheme}}://</span>
                         </td>
                         <td>
                           <select class="input-medium" data-list="proxy-schemes"
                               bind-value="proxy.protocol">
-                            <!-- TODO(catus): the '(use default)' string should be localized. -->
-                            <option value="">{{proxy.isDefault ? 'DIRECT' : '(use default)'}}</option>
+                            <option value="" data-i18n="{{proxy.isDefault ? 'options_protocol_direct' : 'options_protocol_useDefault'}}"></option>
                             <option value="http">HTTP</option>
                             <option value="https">HTTPS</option>
                             <option value="socks4">SOCKS4</option>

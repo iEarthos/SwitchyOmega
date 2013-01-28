@@ -3,7 +3,7 @@
     "message": "SwitchyOmega",
     "description": "A short name of the application."
   },
-  
+
   "manifest_app_name": {
     "message": "Proxy SwitchyOmega",
     "description": "Displayed as the name of the extension."
@@ -16,7 +16,7 @@
     "message": "Loading...",
     "description": "Displayed when the background page is loading."
   },
-  
+
   "condition_hostWildcard" : {
     "message": "Host wildcard"
   },
@@ -41,14 +41,14 @@
   "condition_never" : {
     "message": "Never"
   },
-  
+
   "dialog_close": {
     "message": "Close"
   },
   "dialog_save": {
     "message": "Save changes"
   },
-  
+
   "options_title": {
     "message": "SwitchyOmega Options"
   },
@@ -163,6 +163,12 @@
   "options_scheme_default": {
     "message": "(default)"
   },
+  "options_protocol_direct": {
+    "message": "DIRECT"
+  },
+  "options_protocol_useDefault": {
+    "message": "(use default)"
+  },
   "options_proxy_single": {
     "message": "Use the proxy above for all protocols."
   },
@@ -226,10 +232,10 @@
   "options_deleteProfileConfirm": {
     "message": "Do you really want to delete the following profile?"
   },
-  
+
   "popup_title": {
     "message": "SwitchyOmega Popup",
     "description": "The page title of the popup. Normally you won't see it."
   }
-  
+
 }
