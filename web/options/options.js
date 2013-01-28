@@ -46,17 +46,6 @@
     }
   };
 
-  if (location.hash) {
-    showTab(location.hash);
-    location.hash = '';
-  } else {
-    c.send('tab.get', null, function (hash) {
-      if (hash) {
-        showTab(hash);
-      }
-    });
-  }
-
   var i18n = null;
   c.send('i18n.cache', null, function (cache) {
     i18n = new i18nDict(cache);
@@ -84,6 +73,21 @@
         subtree: true
     });
     i18nTemplate.process(document, i18n);
+  });
+  
+  c.on({
+    'options.init': function () {
+	  if (location.hash) {
+	    showTab(location.hash);
+	    location.hash = '';
+	  } else {
+	    c.send('tab.get', null, function (hash) {
+	      if (hash) {
+	        showTab(hash);
+	      }
+	    });
+	  }
+	}
   });
 
   $(document).ready(function () {
@@ -116,7 +120,7 @@
     }).disableSelection();
     
     // Memorize Tab
-    $('#options-nav a[data-toggle="tab"]').on('shown', function (e) {
+    $('#options-nav').on('shown', 'a[data-toggle="tab"]', function (e) {
       var tabHash = e.target.getAttribute('href');
       c.send('tab.set', tabHash);
     });

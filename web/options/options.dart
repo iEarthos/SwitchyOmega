@@ -59,6 +59,7 @@ void handleRulelistUI() {
 }
 
 Communicator c = new Communicator(window.top);
+Communicator js = new Communicator(window);
 ObservableSwitchyOptions options = null;
 
 Map<String, String> profileIcons = {
@@ -86,6 +87,7 @@ void main() {
     queryAll('[data-workaround-id]').forEach((e) {
       e.id = e.attributes['data-workaround-id'];
     });
+    js.send('options.init');
   });
 
   handleFixedServerUI();
