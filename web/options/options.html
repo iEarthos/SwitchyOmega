@@ -38,23 +38,18 @@
   </head>
   <body class="container-fluid">
     <div>
-      <datalist id="profiles">
-        <option>Example</option>
-        <option>Pac</option>
-        <option>Rulelist</option>
-        <option>Auto</option>
-        <option>System</option>
-        <option>Direct</option>
+      <datalist id="profiles" template="template" iterate="name in options != null ? options.profiles.keys.toList() : []">
+        <option>{{name}}</option>
       </datalist>
       <datalist id="condition-types">
-        <option data-i18n="condition_hostWildcard"></option>
-        <option data-i18n="condition_hostRegex"></option>
-        <option data-i18n="condition_hostLevels"></option>
-        <option data-i18n="condition_urlWildcard"></option>
-        <option data-i18n="condition_urlRegex"></option>
-        <option data-i18n="condition_keyword"></option>
-        <option data-i18n="condition_always"></option>
-        <option data-i18n="condition_never"></option>
+        <option data-i18n="condition_hostWildcard" value="HostWildcardCondition"></option>
+        <option data-i18n="condition_hostRegex" value="HostRegexCondition"></option>
+        <option data-i18n="condition_hostLevels" value="HostLevelsCondition"></option>
+        <option data-i18n="condition_urlWildcard" value="UrlWildcardCondition"></option>
+        <option data-i18n="condition_urlRegex" value="UrlRegexCondition"></option>
+        <option data-i18n="condition_keyword" value="KeywordCondition"></option>
+        <option data-i18n="condition_always" value="AlwaysCondition"></option>
+        <option data-i18n="condition_never" value="NeverCondition"></option>
       </datalist>
     </div>
     <header class="span2" id="options-nav">
@@ -233,14 +228,14 @@
                 <section class="settings-group">
                   <h3 data-i18n="options_group_proxyServers"></h3>
                   <table class="fixed-servers table table-bordered table-striped">
-                    <tbody>
+                    <thead>
                       <tr>
                         <th data-i18n="options_proxy_scheme"></th>
                         <th data-i18n="options_proxy_protocol"></th>
                         <th data-i18n="options_proxy_server"></th>
                         <th data-i18n="options_proxy_port"></th>
                       </tr>
-                    </tbody>
+                    </thead>
                     <tbody template="template"
                         iterate="proxy in fixedProfileEditors.putIfAbsent(profile, () => new FixedProfileEditor(profile)).proxies">
                       <tr>
@@ -297,37 +292,34 @@
                 <section class="settings-group">
                   <h3 data-i18n="options_group_switchRules"></h3>
                   <table class="fixed-servers table table-bordered table-condensed">
-                    <tbody>
+                    <thead>
                       <tr>
                         <th data-i18n="options_sort"></th>
                         <th data-i18n="options_conditionType"></th>
                         <th data-i18n="options_conditionDetails"></th>
                         <th data-i18n="options_resultProfile"></th>
                       </tr>
-                    </tbody>
-                    <tbody class="conditions">
+                    </thead>
+                    <tbody class="conditions" template="template" iterate="rule in profile.mappedBy((r) => ruleEditors.putIfAbsent(r, () => new RuleEditor(r))).toList()">
                       <tr>
                         <td class="sort-bar">.</td>
                         <td>
-                          <select data-list="condition-types"></select>
+                          <select data-list="condition-types" bind-value="rule.conditionType" data-later-value="{{rule.conditionType}}"></select>
                         </td>
                         <td>
-                          <input type="url" class="" value="*.example.com" />
+                          <template instantiate="if rule.isPatternBased">
+                            <input type="url" class="" bind-value="rule.pattern" />
+                          </template>
+                          <template instantiate="if rule.conditionType == 'HostLevelsCondition'">
+                            <input type="number" min="1" class="input-small"
+                                bind-value="convert.fromInt[() => rule.condition.minValue][(v) => rule.condition.minValue = v]" />
+                            &lt;= (host levels) &lt;=
+                            <input type="number" min="{{rule.condition.minValue.toString()}}" class="input-small"
+                                bind-value="convert.fromInt[() => rule.condition.maxValue][(v) => rule.condition.maxValue = v]" />
+                          </template>
                         </td>
                         <td>
-                          <select data-list="profiles"></select>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td class="sort-bar">.</td>
-                        <td>
-                          <select data-list="condition-types"></select>
-                        </td>
-                        <td>
-                          <input type="url" class="" value="*.example.net" />
-                        </td>
-                        <td>
-                          <select data-list="profiles"></select>
+                          <select data-list="profiles" bind-value="rule.rule.profileName" data-later-value="{{rule.rule.profileName}}"></select>
                         </td>
                       </tr>
                     </tbody>

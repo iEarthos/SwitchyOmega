@@ -2,8 +2,10 @@ library switchy_options_editors;
 
 import 'dart:json';
 import '../html/converters.dart' as convert;
-import "package:switchyomega/profile/lib.dart";
-import "package:switchyomega/lang/lib.dart";
+import 'package:switchyomega/profile/lib.dart';
+import 'package:switchyomega/condition/lib.dart';
+import 'package:switchyomega/lang/lib.dart';
+import 'package:switchyomega/condition/shexp_utils.dart';
 
 class FixedProfileEditor {
   FixedProfile profile;
@@ -121,4 +123,148 @@ class ProxyServerEditor {
       return ifNull(default_proxy._port, default_proxy.defaultPort);
     }
   }
+}
+
+class RuleEditor {
+  Rule rule;
+
+  Condition get condition => rule.condition;
+
+  RuleEditor(this.rule) {
+    if (isRegex) {
+      _regex = (rule.condition as PatternBasedCondition).pattern;
+    } else if (isPatternBased) {
+      _pattern = (rule.condition as PatternBasedCondition).pattern;
+    } else {
+      _pattern = '';
+    }
+  }
+
+  bool get isPatternBased => rule.condition is PatternBasedCondition;
+  bool get isRegex => rule.condition is RegexCondition;
+
+  void _setPattern() {
+    if (isRegex) {
+      (rule.condition as RegexCondition).pattern = _regex;
+    } else if (isPatternBased) {
+      (rule.condition as PatternBasedCondition).pattern = _pattern;
+    }
+  }
+
+  static String convertPattern(PatternBasedCondition from, String toType) {
+    if (toType.contains('Regex')) {
+      String regex = null;
+      if (from is HostWildcardCondition) {
+        regex = (from as HostWildcardCondition).magicRegex();
+        if (toType == 'UrlRegexCondition') {
+          var host = regex.replaceFirst(r'(^|\.)', r'([^/.]+\.)*')
+              .replaceAll(r'$', '/');
+          regex = '://$host';
+        }
+        return regex;
+      } else if (from is KeywordCondition) {
+        return shExp2RegExp('*${from.pattern}*', trimAsterisk: true);
+      } else if (from is UrlWildcardCondition) {
+        regex = (from as UrlWildcardCondition).convert2Regex();
+      }
+      if (from is UrlWildcardCondition || from is UrlRegexCondition &&
+          toType == 'HostRegexCondition') {
+        // Try to parse URL regex like ".*://HOST_PART/.*"
+        var r = new RegExp(r'^(\.\*)?://(.*)/(\.\*)?$');
+        var match = r.firstMatch(from.pattern);
+        if (match != null) {
+          return match[2];
+        }
+      }
+      return regex;
+    } else {
+      if (from is HostWildcardCondition &&
+          toType == 'UrlWildcardCondition') {
+        // Well, not exactly when pattern contain wildcards.
+        return '*://${from.pattern}/*';
+      } else if (from is UrlWildcardCondition &&
+          toType == 'HostWildcardCondition') {
+        // Try to parse host wildcard like "*://HOST_PART/*"
+        var r = new RegExp(r'^\*://(.*)/\*$');
+        var match = r.firstMatch(from.pattern);
+        if (match != null) {
+          return match[1];
+        }
+      } else if (from is KeywordCondition) {
+        return '*${from.pattern}*';
+      } else if (toType == 'KeywordCondition') {
+        if (from is RegexCondition) {
+          // Try to parse regex like ".*KEYWORD.*"
+          var r = new RegExp(
+              r'^(\.\*)?([^\[\\\^\$\.\|\?\*\+\(\)\{\}]*)(\.\*)?$');
+          var match = r.firstMatch(from.pattern);
+          if (match != null) {
+            return match[2];
+          }
+        } else {
+          // Try to parse wildcard like "*KEYWORD*"
+          var r = new RegExp(r'^\*([^\*\?]*)\*$');
+          var match = r.firstMatch(from.pattern);
+          if (match != null) {
+            return match[1];
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  String get conditionType => rule.condition.conditionType;
+
+  void set conditionType(String value) {
+    var converted_pattern = '';
+    // Try converting some known conditions.
+    if (condition is PatternBasedCondition) {
+      converted_pattern = ifNull(convertPattern(
+          condition as PatternBasedCondition,
+          value), '');
+    }
+
+    rule.condition = new Condition.fromPlain({
+      'conditionType': value,
+      'pattern': converted_pattern
+    });
+
+    if (converted_pattern.length > 0) {
+      if (isRegex) {
+        _regex = converted_pattern;
+      } else {
+        _pattern = converted_pattern;
+      }
+    } else {
+      // Keep the pattern so that the user can edit it.
+      if (rule.condition is RegexCondition) {
+        _pattern = _pattern.length > 0 ? _pattern : _regex;
+      } else if (rule.condition is PatternBasedCondition) {
+        _regex = _regex.length > 0 ? _regex : _pattern;
+      }
+    }
+    _setPattern();
+  }
+
+  String _pattern = '';
+  String _regex = '';
+
+  String get pattern {
+    if (isRegex) return _regex;
+    if (isPatternBased) return _pattern;
+    return '';
+  }
+
+  void set pattern(String value) {
+    if (isRegex) {
+      _regex = value;
+      _pattern = '';
+    } else {
+      _pattern = value;
+      _regex = '';
+    }
+    _setPattern();
+  }
+
 }

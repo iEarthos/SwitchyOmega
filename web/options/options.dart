@@ -86,6 +86,8 @@ Map<String, String> profileIcons = {
 Map<FixedProfile, FixedProfileEditor> fixedProfileEditors =
     new Map<FixedProfile, FixedProfileEditor>();
 
+Map<Rule, RuleEditor> ruleEditors = new Map<Rule, RuleEditor>();
+
 // This is only for testing.
 void exportPac() {
   ProfileCollection col = new ProfileCollection();
@@ -97,7 +99,27 @@ void exportPac() {
 void main() {
   c.send('options.get', null, (Map<String, Object> o, [Function respond]) {
     options = new ObservableSwitchyOptions.fromPlain(o);
+
     watchers.dispatch();
+
+    // Setting select.value by binding will not have any effect
+    // at the moment because the selects are empty.
+    // The templating engine set select.value before iterating its
+    // options, and the data list binding script (which works by
+    // MutationObserver) is invoked even later. Both are too late.
+    // We must add the options manually and then set the value again.
+    window.requestLayoutFrame(() {
+      queryAll('select[data-later-value]').forEach((SelectElement s) {
+        if (s.nodes.length == 0) {
+          // In case that the datalist binding script has not been invoked.
+          var id = s.attributes[autoBindToDataListAttrName];
+          var options = queryAll('#$id option');
+          s.nodes.addAll(options.mappedBy((n) => n.clone(true)));
+        }
+        s.value = s.attributes['data-later-value'];
+      });
+    });
+
     queryAll('[data-workaround-id]').forEach((e) {
       e.id = e.attributes['data-workaround-id'];
     });
