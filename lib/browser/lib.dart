@@ -1,10 +1,10 @@
 library switchy_browser;
 
-import 'dart:core';
 import 'dart:async';
-
-import '../profile/lib.dart';
+import 'dart:core';
 import '../lang/lib.dart';
+import '../profile/lib.dart';
+
 
 part 'browser.dart';
 

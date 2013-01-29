@@ -22,16 +22,16 @@ library switchy_options;
 
 import 'dart:html';
 import 'dart:json' as JSON;
-import '../html/lib.dart';
-import '../html/converters.dart' as convert;
-import 'editors.dart';
-import "package:switchyomega/profile/lib.dart";
-import "package:switchyomega/condition/lib.dart";
-import "package:switchyomega/browser/lib.dart";
-import "package:switchyomega/browser/message/lib.dart";
-import "package:switchyomega/communicator.dart";
-import "package:switchyomega/lang/lib.dart";
+import 'package:switchyomega/browser/lib.dart';
+import 'package:switchyomega/browser/message/lib.dart';
+import 'package:switchyomega/communicator.dart';
+import 'package:switchyomega/condition/lib.dart';
+import 'package:switchyomega/lang/lib.dart';
+import 'package:switchyomega/profile/lib.dart';
 import 'package:web_ui/watcher.dart' as watchers;
+import '../html/converters.dart' as convert;
+import '../html/lib.dart';
+import 'editors.dart';
 
 String bypassListToText(List<BypassCondition> list) =>
   list.mappedBy((b) => b.pattern).join('\n');

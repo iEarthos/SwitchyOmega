@@ -21,7 +21,7 @@
 library switchy_html;
 
 import 'dart:html';
-import "package:switchyomega/lang/lib.dart";
+import 'package:switchyomega/lang/lib.dart';
 
 part 'dynamic_event.dart';
 part 'dom_helpers.dart';

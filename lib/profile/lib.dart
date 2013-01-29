@@ -20,8 +20,8 @@
 
 library switchy_profile;
 
-import 'dart:core';
 import 'dart:collection';
+import 'dart:core';
 import 'dart:json' as JSON;
 import '../code_writer.dart';
 import '../condition/lib.dart';

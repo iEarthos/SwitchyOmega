@@ -19,8 +19,8 @@
  */
 
 import 'dart:json' as JSON;
-import "package:switchyomega/profile/lib.dart";
-import "package:switchyomega/condition/lib.dart";
+import 'package:switchyomega/condition/lib.dart';
+import 'package:switchyomega/profile/lib.dart';
 
 void main() {
   var d = new FixedProfile('http');

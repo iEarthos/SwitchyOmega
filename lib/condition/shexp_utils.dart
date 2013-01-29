@@ -21,8 +21,8 @@
 library shexp_utils;
 import 'dart:core';
 import 'dart:json';
-
 import '../code_writer.dart';
+
 
 HashSet<int> _regExpMetaChars = null;
 
