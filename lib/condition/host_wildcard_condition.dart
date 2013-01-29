@@ -25,7 +25,8 @@ part of switchy_condition;
  * Magic happens to the [pattern], see
  * <https://github.com/FelisCatus/SwitchyOmega/wiki/Host-wildcard-condition>.
  */
-class HostWildcardCondition extends HostCondition {
+class HostWildcardCondition extends HostCondition
+    implements PatternBasedCondition {
   final String conditionType = 'HostWildcardCondition';
 
   String _pattern;

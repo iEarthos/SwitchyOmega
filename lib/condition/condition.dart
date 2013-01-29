@@ -71,6 +71,18 @@ abstract class Condition extends Plainable {
         return new UrlRegexCondition.fromPlain(p);
       case 'UrlWildcardCondition':
         return new UrlWildcardCondition.fromPlain(p);
+      default:
+        throw new UnsupportedError("Unsupported conditionType.");
     }
   }
+}
+
+abstract class PatternBasedCondition {
+  String get pattern;
+  void set pattern(String value);
+}
+
+abstract class RegexCondition extends PatternBasedCondition {
+  RegExp get regex;
+  void set regex(RegExp value);
 }

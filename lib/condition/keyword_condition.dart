@@ -24,7 +24,7 @@ part of switchy_condition;
  * Matches if the scheme of the url is 'http' and the [pattern] is a
  * substring of the [url].
  */
-class KeywordCondition extends UrlCondition {
+class KeywordCondition extends UrlCondition implements PatternBasedCondition {
   final String conditionType = 'KeywordCondition';
 
   String pattern;

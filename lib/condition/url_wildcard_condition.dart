@@ -23,7 +23,8 @@ part of switchy_condition;
 /**
  * Matches when the url matches the wildcard [pattern].
  */
-class UrlWildcardCondition extends UrlCondition {
+class UrlWildcardCondition extends UrlCondition
+    implements PatternBasedCondition {
   final String conditionType = 'UrlWildcardCondition';
 
   String _pattern;
@@ -37,8 +38,16 @@ class UrlWildcardCondition extends UrlCondition {
   RegExp _regex;
   CodeWriterRecorder _recorder;
 
+  /**
+   * Return the result of the [pattern] wildcard converted to regex.
+   */
+  String convert2Regex() {
+    if (_regex != null) return _regex.pattern;
+    return shExp2RegExp(_pattern, trimAsterisk: true);
+  }
+
   bool matchUrl(String url, scheme) {
-    if (_regex == null) _regex = new RegExp(shExp2RegExp(_pattern, trimAsterisk: true));
+    if (_regex == null) _regex = new RegExp(convert2Regex());
     return _regex.hasMatch(url);
   }
 
@@ -54,9 +63,8 @@ class UrlWildcardCondition extends UrlCondition {
         _recorder.inline('scheme === ${JSON.stringify(m[1])}');
       } else {
         // TODO(catus): use shExpCompile
-        var regex = shExp2RegExp(_pattern, trimAsterisk: true);
-        w.inline('new RegExp(${JSON.stringify(regex)}).test(url)');
         // shExpCompile(_pattern, _recorder, target: 'url');
+        w.inline('new RegExp(${JSON.stringify(convert2Regex())}).test(url)');
       }
       _recorder.inner = null;
     } else {

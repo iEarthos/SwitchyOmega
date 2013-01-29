@@ -23,7 +23,8 @@ part of switchy_condition;
 /**
  * Matches when the host matches the [regex] [pattern].
  */
-class HostRegexCondition extends HostCondition {
+class HostRegexCondition extends HostCondition
+    implements PatternBasedCondition, RegexCondition {
   final String conditionType = 'HostRegexCondition';
 
   RegExp regex;
