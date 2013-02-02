@@ -76,7 +76,7 @@ void removeRule(SwitchProfile profile, Rule rule) {
   watchers.dispatch();
 }
 
-List<IncludableProfile> validResultProfilesFor(SwitchProfile profile) {
+List<Profile> validResultProfilesFor(InclusiveProfile profile) {
   return options.profiles.values.where((p) {
     if (p is! IncludableProfile || p == profile) return false;
     if (p is InclusiveProfile) {
