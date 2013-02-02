@@ -111,8 +111,8 @@ class WellFormattedCodeWriter implements CodeWriter {
 
   WellFormattedCodeWriter() {
     _sb = new StringBuffer();
-    indentingSymbols = new HashSet.from('({['.charCodes);
-    outdentingSymbols = new HashSet.from(')}]'.charCodes);
+    indentingSymbols = new Set.from('({['.charCodes);
+    outdentingSymbols = new Set.from(')}]'.charCodes);
   }
 
   CodeWriter indent() {

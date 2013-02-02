@@ -98,7 +98,7 @@
             <li>
               <a href="#profile-rulelist" data-toggle="tab">
                 <i class="icon-list"></i>
-                <span data-bind="profileName">Rulelist</span>
+                <span>Rulelist</span>
               </a>
             </li>
             <li class="divider"></li>
@@ -151,7 +151,7 @@
               <h4 data-i18n="options_cycledProfiles"></h4>
               <p class="help-block" data-i18n="options_cycledProfilesHelp"></p>
               <ul id="cycle-enabled" class="cycle-profile-container">
-                <li><div class="profile-color" style="background-color: blue;"></div><span data-bind="profile-name">Example</span></li>
+                <li><div class="profile-color" style="background-color: blue;"></div><span>Example</span></li>
               </ul>
               <p></p>
               <h4 data-i18n="options_notCycledProfiles"></h4>
@@ -276,7 +276,7 @@
                 <section class="settings-group">
                   <h3 data-i18n="options_group_pacUrl"></h3>
                   <div class="input-append">
-                    <input type="url" class="pac-url input-xxlarge" bind-value="profile.pacUrl" />
+                    <input type="url" class="pac-url input-xxlarge" bind-value="profile.pacUrl" on-change="$event.target.dispatchEvent(new Event('input'));"/>
                     <a class="add-on clear-input btn">
                       <i class="icon-remove"></i>
                     </a>
@@ -285,24 +285,27 @@
                 </section>
                 <section class="settings-group">
                   <h3 data-i18n="options_group_pacScript"></h3>
-                  <textarea class="pac-script input-xxlarge" disabled="disabled" bind-value="profile.pacScript"></textarea>
+                  <textarea class="pac-script input-xxlarge" disabled="{{!profile.pacUrl.isEmpty}}" bind-value="profile.pacScript"></textarea>
                 </section>
               </template>
               <template instantiate="if profile.profileType == 'SwitchProfile'">
                 <section class="settings-group">
                   <h3 data-i18n="options_group_switchRules"></h3>
-                  <table class="fixed-servers table table-bordered table-condensed">
+                  <table class="switch-table table table-bordered table-condensed">
                     <thead>
                       <tr>
                         <th data-i18n="options_sort"></th>
                         <th data-i18n="options_conditionType"></th>
                         <th data-i18n="options_conditionDetails"></th>
                         <th data-i18n="options_resultProfile"></th>
+                        <th data-i18n="options_conditionActions"></th>
                       </tr>
                     </thead>
                     <tbody class="conditions" template="template" iterate="rule in profile.mappedBy((r) => ruleEditors.putIfAbsent(r, () => new RuleEditor(r))).toList()">
                       <tr>
-                        <td class="sort-bar">.</td>
+                        <td class="sort-bar">
+                          <i class="icon-resize-vertical"></i>
+                        </td>
                         <td>
                           <select data-list="condition-types" bind-value="rule.conditionType" data-later-value="{{rule.conditionType}}"></select>
                         </td>
@@ -311,15 +314,26 @@
                             <input type="url" class="" bind-value="rule.pattern" />
                           </template>
                           <template instantiate="if rule.conditionType == 'HostLevelsCondition'">
-                            <input type="number" min="1" class="input-small"
+                            <input type="number" min="1" max="99" class="input-small"
                                 bind-value="convert.fromInt[() => rule.condition.minValue][(v) => rule.condition.minValue = v]" />
-                            &lt;= (host levels) &lt;=
-                            <input type="number" min="{{rule.condition.minValue.toString()}}" class="input-small"
+                            <span data-i18n="options_hostLevelsBetween"></span>
+                            <input type="number" min="{{rule.condition.minValue.toString()}}" max="99" class="input-small"
                                 bind-value="convert.fromInt[() => rule.condition.maxValue][(v) => rule.condition.maxValue = v]" />
                           </template>
                         </td>
                         <td>
                           <select data-list="profiles" bind-value="rule.rule.profileName" data-later-value="{{rule.rule.profileName}}"></select>
+                        </td>
+                        <td>
+                          <a on-click="removeRule(profile, rule.rule); $event.preventDefault();" href="#"><i class="icon-trash"></i></a>
+                        </td>
+                      </tr>
+                    </tbody>
+                    <tbody>
+                      <tr>
+                        <td style="border-right: none;"></td>
+                        <td style="border-left: none;" colspan="4">
+                          <a on-click="addRule(profile); $event.preventDefault()" href="#"><i class="icon-plus"></i> <span data-i18n="options_addCondition"></span></a>
                         </td>
                       </tr>
                     </tbody>
@@ -328,7 +342,10 @@
                         <td></td>
                         <td colspan="2" data-i18n="options_switchDefaultProfile"></td>
                         <td>
-                          <select data-list="profiles"></select>
+                          <select data-list="profiles" bind-value="profile.defaultProfileName" data-later-value="{{profile.defaultProfileName}}"></select>
+                        </td>
+                        <td>
+                          <a on-click="setResultsOfAllRules(profile); $event.preventDefault()" href="#"><i class="icon-chevron-up"></i></a>
                         </td>
                       </tr>
                     </tbody>
@@ -408,7 +425,7 @@ example.com
       </div>
       <div class="modal-body">
         <p data-i18n="options_deleteProfileConfirm"></p>
-        <div class="well"><div class="profile-color" style="background-color: blue;"></div><span data-bind="profile-name">Example</span></div>
+        <div class="well"><div class="profile-color" style="background-color: blue;"></div><span>Example</span></div>
       </div>
       <div class="modal-footer">
         <a href="#" class="btn" data-dismiss="modal" data-i18n="dialog_close"></a>

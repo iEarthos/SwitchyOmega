@@ -21,36 +21,44 @@ part of switchy_html;
  */
 
 final String autoBindToDataListAttrName = "data-list";
+final String valueLaterDataListAttrName = "data-later-value";
 
-void bindToDataList(Element target, [DataListElement datalist]) {
-  if (datalist == null) {
-    var datalist_id = target.attributes[autoBindToDataListAttrName];
-    datalist = target.document.query('#$datalist_id');
-    if (datalist == null) return;
-  }
-
+void copyFromDataList(Element target, DataListElement datalist) {
   target.nodes.clear();
   target.nodes.addAll(
       datalist.queryAll('option').mappedBy((o) => o.clone(true)));
 
+  var value = target.attributes[valueLaterDataListAttrName];
+  if (value != null) {
+    // Let's just assume target has a value setter.
+    (target as dynamic).value = value;
+  }
+}
+
+MutationObserver bindToDataList(Element target, [DataListElement datalist]) {
+  if (datalist == null) {
+    var datalist_id = target.attributes[autoBindToDataListAttrName];
+    datalist = target.document.query('#$datalist_id');
+    if (datalist == null) return null;
+  }
+
+  copyFromDataList(target, datalist);
+
   // When the datalist changes, update the target Element.
   MutationObserver ob = new MutationObserver(
       (List<MutationRecord> mutations, MutationObserver _) {
-        mutations.forEach((MutationRecord record) {
-          // Perhaps this can be done in a more efficient way.
-          target.nodes.clear();
-          target.nodes.addAll(
-              datalist.queryAll('option').mappedBy((o) => o.clone(true)));
-        });
+        copyFromDataList(target, datalist);
       });
   ob.observe(datalist,
       childList: true,
       attributes: true,
       subtree: true,
       characterData: true);
+
+  return ob;
 }
 
-void autoBindToDataList(Element root) {
+MutationObserver autoBindToDataList(Element root) {
   root.queryAll('[$autoBindToDataListAttrName]').forEach(
       (target) {
         bindToDataList(target);
@@ -81,4 +89,6 @@ void autoBindToDataList(Element root) {
       attributes: true,
       subtree: true,
       attributeFilter: [autoBindToDataListAttrName]);
+
+  return ob;
 }

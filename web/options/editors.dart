@@ -243,6 +243,10 @@ class RuleEditor {
       } else if (rule.condition is PatternBasedCondition) {
         _regex = _regex.length > 0 ? _regex : _pattern;
       }
+      if (rule.condition is HostLevelsCondition) {
+        var cond = rule.condition as HostLevelsCondition;
+        cond.minValue = cond.maxValue = 1;
+      }
     }
     _setPattern();
   }

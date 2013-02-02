@@ -51,25 +51,48 @@ void handleFixedServerUI() {
 }
 
 void handlePacScriptsUI() {
-  dynamicEvent('change', '.pac-url',  (e, InputElement pacUrl) {
-    var pacScript = closestElement(pacUrl, '.tab-pane').query('.pac-script');
-    if (pacUrl.value != '') {
-      pacScript.attributes['disabled'] = 'disabled';
-    } else {
-      pacScript.attributes.remove('disabled');
-    }
+//  dynamicEvent('change', '.pac-url',  (e, InputElement pacUrl) {
+//    pacUrl.dispatchEvent(new Event('input'));
+//  });
+}
+
+void handleSwitchProfileUI() {
+  new EventStreamProvider('x-sort').forTarget(document).listen((Event e) {
+    var target = e.target as Element;
+    var profile_name = closestElement(target, '.tab-pane')
+        .attributes['data-profile'];
+    var profile = options.profiles[profile_name] as SwitchProfile;
+    var index_old = int.parse(target.attributes['data-index-old']);
+    var index_new = int.parse(target.attributes['data-index-new']);
+    var rule = profile.removeAt(index_old);
+    profile.insertRange(index_new, 1, rule);
+    watchers.dispatch();
+  });
+}
+
+void removeRule(SwitchProfile profile, Rule rule) {
+  profile.remove(rule);
+  ruleEditors.remove(rule);
+  watchers.dispatch();
+}
+
+void addRule(SwitchProfile profile) {
+  var condition = new HostWildcardCondition('*.example.com');
+  var profileName = profile.length > 0 ?
+      profile.last.profileName : profile.defaultProfileName;
+
+  profile.addLast(new Rule(condition, profileName));
+  watchers.dispatch();
+}
+
+void setResultsOfAllRules(SwitchProfile profile) {
+  profile.forEach((rule) {
+    rule.profileName = profile.defaultProfileName;
   });
 }
 
 void handleRulelistUI() {
-  dynamicEvent('change', '.rule-list-url',  (e, InputElement rulelistUrl) {
-    var rulelistText = closestElement(rulelistUrl, '.tab-pane').query('.rule-list-text');
-    if (rulelistUrl.value != '') {
-      rulelistText.attributes['disabled'] = 'disabled';
-    } else {
-      rulelistText.attributes.remove('disabled');
-    }
-  });
+
 }
 
 Communicator c = new Communicator(window.top);
@@ -102,24 +125,6 @@ void main() {
 
     watchers.dispatch();
 
-    // Setting select.value by binding will not have any effect
-    // at the moment because the selects are empty.
-    // The templating engine set select.value before iterating its
-    // options, and the data list binding script (which works by
-    // MutationObserver) is invoked even later. Both are too late.
-    // We must add the options manually and then set the value again.
-    window.requestLayoutFrame(() {
-      queryAll('select[data-later-value]').forEach((SelectElement s) {
-        if (s.nodes.length == 0) {
-          // In case that the datalist binding script has not been invoked.
-          var id = s.attributes[autoBindToDataListAttrName];
-          var options = queryAll('#$id option');
-          s.nodes.addAll(options.mappedBy((n) => n.clone(true)));
-        }
-        s.value = s.attributes['data-later-value'];
-      });
-    });
-
     queryAll('[data-workaround-id]').forEach((e) {
       e.id = e.attributes['data-workaround-id'];
     });
@@ -128,6 +133,7 @@ void main() {
 
   handleFixedServerUI();
   handlePacScriptsUI();
+  handleSwitchProfileUI();
   handleRulelistUI();
   autoBindToDataList(document.documentElement);
 }

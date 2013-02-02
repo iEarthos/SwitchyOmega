@@ -220,8 +220,17 @@
   "options_resultProfile": {
     "message": "Profile"
   },
+  "options_conditionActions": {
+    "message": "Actions"
+  },
+  "options_addCondition": {
+    "message": "Add condition"
+  },
   "options_switchDefaultProfile": {
     "message": "Default"
+  },
+  "options_hostLevelsBetween": {
+    "message": "\u2264 host levels \u2264"
   },
   "options_modalHeader_renameProfile": {
     "message": "Rename Profile"

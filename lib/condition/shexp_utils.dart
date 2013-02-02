@@ -24,14 +24,14 @@ import 'dart:json';
 import '../code_writer.dart';
 
 
-HashSet<int> _regExpMetaChars = null;
+Set<int> _regExpMetaChars = null;
 
 /**
  * The charCodes of all meta-chars which need escaping in regex.
  */
-HashSet<int> get regExpMetaChars {
+Set<int> get regExpMetaChars {
   if (_regExpMetaChars == null) {
-    _regExpMetaChars = new HashSet.from(r'[\^$.|?*+(){}'.charCodes);
+    _regExpMetaChars = new Set.from(r'[\^$.|?*+(){}'.charCodes);
   }
   return _regExpMetaChars;
 }

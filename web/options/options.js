@@ -51,7 +51,7 @@
     i18n = new i18nDict(cache);
     var MutationObserver = window.MutationObserver ||
                            window.WebKitMutationObserver;
-    var ob = new MutationObserver(function (mutations) {
+    new MutationObserver(function (mutations) {
       mutations.forEach(function (record) {
         switch (record.type) {
           case 'attributes':
@@ -59,15 +59,14 @@
             break;
           case 'childList':
             for (var i = 0; i < record.addedNodes.length; i++) {
-		      if (record.addedNodes[i] instanceof Element) {
-		        i18nTemplate.process(record.addedNodes[i], i18n);
-		      }
+              if (record.addedNodes[i] instanceof Element) {
+                i18nTemplate.process(record.addedNodes[i], i18n);
+              }
             }
             break;
         }
       });
-    });
-    ob.observe(document, {
+    }).observe(document, {
         childList: true,
         attributes: true,
         subtree: true
@@ -77,17 +76,17 @@
   
   c.on({
     'options.init': function () {
-	  if (location.hash) {
-	    showTab(location.hash);
-	    location.hash = '';
-	  } else {
-	    c.send('tab.get', null, function (hash) {
-	      if (hash) {
-	        showTab(hash);
-	      }
-	    });
-	  }
-	}
+      if (location.hash) {
+        showTab(location.hash);
+        location.hash = '';
+      } else {
+        c.send('tab.get', null, function (hash) {
+          if (hash) {
+            showTab(hash);
+          }
+        });
+      }
+    }
   });
 
   $(document).ready(function () {
@@ -112,12 +111,49 @@
     });
     
     // Conditions Sort
-    var conditions = $('.conditions');
-    conditions.sortable({
-      change: function () {
-        // onFieldModified(false);
-      }
-    }).disableSelection();
+    var MutationObserver = window.MutationObserver ||
+                           window.WebKitMutationObserver;
+    new MutationObserver(function (mutations) {
+      mutations.forEach(function (record) {
+        switch (record.type) {
+          case 'childList':
+            for (var i = 0; i < record.addedNodes.length; i++) {
+              if (record.addedNodes[i] instanceof Element) {
+                $('.conditions', record.addedNodes[i]).each(function (_, e) {
+                  var tb = $(e);
+                  tb.disableSelection().sortable({
+                    handle: '.sort-bar',
+                    tolerance: 'pointer',
+                    axis: 'y',
+                    forceHelperSize: true,
+                    forcePlaceholderSize: true,
+                    containment: 'parent',
+                    start: function (e, ui) {
+                      ui.item.data('index-old', ui.item.index());
+                    },
+                    update: function (e, ui) {
+                      ui.item.attr('data-index-old',
+                          ui.item.data('index-old'));
+                      ui.item.attr('data-index-new', ui.item.index());
+                      
+                      var evt = document.createEvent('CustomEvent');
+                      evt.initCustomEvent('x-sort', true, false, null);
+                      ui.item[0].dispatchEvent(evt);
+                      
+                      ui.item.removeAttr('data-index-old');
+                      ui.item.removeAttr('data-index-new');
+                    }
+                  });
+                });
+              }
+            }
+            break;
+        }
+      });
+    }).observe(document, {
+        childList: true,
+        subtree: true
+    });
     
     // Memorize Tab
     $('#options-nav').on('shown', 'a[data-toggle="tab"]', function (e) {
@@ -125,8 +161,12 @@
       c.send('tab.set', tabHash);
     });
     
-    var fireChangeEvent = function (target) {
+    var fireInputAndChangeEvent = function (target) {
       var evt = document.createEvent('HTMLEvents');
+      evt.initEvent('input', true, false);
+      target.dispatchEvent(evt);
+      
+      evt = document.createEvent('HTMLEvents');
       evt.initEvent('change', true, true);
       target.dispatchEvent(evt);
     };
@@ -137,7 +177,7 @@
       var input = button.prev('input');
       if (button.hasClass('revert')) {
         input.val(input.attr('data-restore'));
-        fireChangeEvent(input[0]);
+        fireInputAndChangeEvent(input[0]);
         button.removeClass('revert');
         button.find('i').removeClass('icon-repeat').addClass('icon-remove');
       } else {
@@ -145,7 +185,7 @@
         if (v) {
           input.attr('data-restore', v);
           input.val('');
-          fireChangeEvent(input[0]);
+          fireInputAndChangeEvent(input[0]);
           button.addClass('revert');
           button.find('i').removeClass('icon-remove').addClass('icon-repeat');
           var handler = function () {

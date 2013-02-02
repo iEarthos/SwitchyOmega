@@ -30,7 +30,7 @@ class PacProfile extends ScriptProfile {
   String _pacUrl;
   String get pacUrl => _pacUrl;
   void set pacUrl(String value) {
-    if (value != null && value != _pacUrl) {
+    if (value != null && value != '' && value != _pacUrl) {
       pacScript = "";
     }
     _pacUrl = value;

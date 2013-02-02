@@ -234,6 +234,8 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
 
   Rule elementAt(int index) => this[index];
 
+  List<Rule> get reversed => _rules.reversed;
+
   // Implementation using IterableMixinWorkaround:
 
   void forEach(void f(Rule o)) => IterableMixinWorkaround.forEach(this, f);

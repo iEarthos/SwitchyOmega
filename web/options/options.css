@@ -19,7 +19,7 @@
  */
 
 body {
-  
+
 }
 
 #options-nav {
@@ -100,22 +100,22 @@ header > hr {
   .nav-wrapper {
     position: static !important;
   }
-  
+
   #main {
     float: left;
   }
-  
+
   .navbar {
     margin-bottom: 10px;
     margin-top: 0;
   }
-  
+
   .collapse-target {
     height: 0;
     position: relative;
     overflow: hidden;
   }
-  
+
   h1 {
     padding-right: 10px;
     padding-left: 10px;
@@ -128,7 +128,7 @@ header > hr {
     line-height: 1;
     color: #999;
   }
-  
+
   .navbar-effect {
     min-height: 40px;
     padding-right: 20px;
@@ -148,16 +148,16 @@ header > hr {
     -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1);
   }
-  
+
   .width-holder {
     display: none;
   }
-  
+
   .tab-pane {
     max-height: none;
     padding-top: 0px;
   }
-  
+
   .tab-pane header {
     position: static;
     margin-bottom: 10px;
@@ -182,6 +182,12 @@ header > hr {
 input[type="file"] {
   visibility:hidden;
   position:absolute;
+}
+
+input[type="number"] {
+  /* Let browsers set the preferred size according to min and max. */
+  width: initial;
+  width: -moz-initial;
 }
 
 .h-control {
@@ -224,7 +230,7 @@ input[type="file"] {
     display: block;
     margin-bottom: 10px;
   }
-  
+
   header > hr {
     float: left;
   }
@@ -295,3 +301,18 @@ td select, td textarea, td input {
   min-height: 500px;
 }
 
+/* Switch profile */
+.switch-table {
+  vertical-align: middle;
+  width: auto;
+}
+
+.switch-table td {
+  vertical-align: middle;
+  width: auto;
+}
+
+.switch-table .btn {
+  padding-left: 4px;
+  padding-right: 4px;
+}

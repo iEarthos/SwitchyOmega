@@ -69,7 +69,8 @@ class HostWildcardCondition extends HostCondition
       _recorder.inner = w;
 
       // TODO(catus): use shExpCompile
-      w.inline('new RegExp(${JSON.stringify(magicRegex())}).test(host)');
+      _recorder.inline(
+          'new RegExp(${JSON.stringify(magicRegex())}).test(host)');
       // shExpCompile(_pattern, _recorder, target: 'host');
 
       _recorder.inner = null;
