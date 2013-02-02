@@ -128,9 +128,22 @@ class CircularReferenceException implements Exception {
                        'references Profile "${parent.name}", directly or indirectly.';
 }
 
+typedef void RuleProfileNameChangeCallback(Rule rule, String oldProfileName);
+
 class Rule extends Plainable {
   Condition condition;
-  String profileName;
+
+  String _profileName;
+  String get profileName => _profileName;
+  set profileName(String value) {
+    String old = _profileName;
+    _profileName = value;
+    if (onProfileNameChange != null && old != value) {
+      onProfileNameChange(this, old);
+    }
+  }
+
+  Function onProfileNameChange = null;
 
   Map<String, Object> toPlain([Map<String, Object> p]) {
     if (p == null) p = new Map<String, Object>();
@@ -150,5 +163,5 @@ class Rule extends Plainable {
     this.loadPlain(p);
   }
 
-  Rule(this.condition, this.profileName);
+  Rule(this.condition, this._profileName);
 }

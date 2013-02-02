@@ -289,6 +289,10 @@
                 </section>
               </template>
               <template instantiate="if profile.profileType == 'SwitchProfile'">
+                <datalist data-workaround-id="profiles-avaliable-to-{{profile.name}}" template="template"
+                    iterate="pf in options.profiles.values.where((p) => (p is! InclusiveProfile || !p.containsProfileName(profile.name)) && p != profile).toList()">
+                  <option>{{pf.name}}</option>
+                </datalist>
                 <section class="settings-group">
                   <h3 data-i18n="options_group_switchRules"></h3>
                   <table class="switch-table table table-bordered table-condensed">
@@ -322,7 +326,7 @@
                           </template>
                         </td>
                         <td>
-                          <select data-list="profiles" bind-value="rule.rule.profileName" data-later-value="{{rule.rule.profileName}}"></select>
+                          <select data-list="profiles-avaliable-to-{{profile.name}}" bind-value="rule.rule.profileName" data-later-value="{{rule.rule.profileName}}"></select>
                         </td>
                         <td>
                           <a on-click="removeRule(profile, rule.rule); $event.preventDefault();" href="#"><i class="icon-trash"></i></a>

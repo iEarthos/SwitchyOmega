@@ -51,6 +51,11 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
     this._rules.forEach((rule) => _addReference(rule.profileName));
   }
 
+  void _onRuleProfileNameChange(Rule rule, String oldProfileName) {
+    _removeReference(oldProfileName);
+    _addReference(rule.profileName);
+  }
+
   String _defaultProfileName;
   String get defaultProfileName => _defaultProfileName;
   void set defaultProfile(String value) {
@@ -148,21 +153,27 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
     _removeReference(this[i].profileName);
     this._rules[i] = rule;
     _addReference(rule.profileName);
+    rule.onProfileNameChange = this._onRuleProfileNameChange;
   }
 
   void add(Rule rule) {
     this._rules.add(rule);
     _addReference(rule.profileName);
+    rule.onProfileNameChange = this._onRuleProfileNameChange;
   }
 
   void addLast(Rule rule) {
     this._rules.addLast(rule);
     _addReference(rule.profileName);
+    rule.onProfileNameChange = this._onRuleProfileNameChange;
   }
 
   void addAll(Iterable<Rule> rules) {
     this._rules.addAll(rules);
-    rules.forEach((r) => _addReference(r.profileName));
+    rules.forEach((r) {
+      _addReference(r.profileName);
+      r.onProfileNameChange = this._onRuleProfileNameChange;
+    });
   }
 
   int indexOf(Rule rule, [int start = 0]) => this._rules.indexOf(rule, start);
@@ -198,6 +209,7 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
     this._rules.setRange(start, length, from, startFrom);
     for (var i = start; i < start + length; i++) {
       _addReference(this._rules[i].profileName);
+      _rules[i].onProfileNameChange = this._onRuleProfileNameChange;
     }
   }
 
@@ -212,6 +224,7 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
     if (fill != null) {
       for (var i = 0; i < length; i++) {
         _addReference(fill.profileName);
+        fill.onProfileNameChange = this._onRuleProfileNameChange;
       }
     }
     this._rules.insertRange(start, length, fill);
