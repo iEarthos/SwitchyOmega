@@ -59,6 +59,17 @@ abstract class InclusiveProfile extends ScriptProfile {
     return s;
   }
 
+  void checkReferenceTo(String name) {
+    if (getProfileByName != null) {
+      var profile = getProfileByName(name);
+      if (profile is InclusiveProfile) {
+        if (profile.containsProfileName(this.name)) {
+          throw new CircularReferenceException(this, profile);
+        }
+      }
+    }
+  }
+
   /**
    * Convert this profile to a complete PAC script with all included profiles.
    */

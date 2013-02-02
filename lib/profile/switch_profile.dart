@@ -32,6 +32,7 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
   Map<String, int> _refCount;
 
   void _addReference(String name) {
+    checkReferenceTo(name);
     _refCount[name] = ifNull(_refCount[name], 0) + 1;
   }
 

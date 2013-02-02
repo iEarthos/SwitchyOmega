@@ -290,8 +290,8 @@
               </template>
               <template instantiate="if profile.profileType == 'SwitchProfile'">
                 <datalist data-workaround-id="profiles-avaliable-to-{{profile.name}}" template="template"
-                    iterate="pf in options.profiles.values.where((p) => (p is! InclusiveProfile || !p.containsProfileName(profile.name)) && p != profile).toList()">
-                  <option>{{pf.name}}</option>
+                    iterate="p in validResultProfilesFor(profile)">
+                  <option>{{p.name}}</option>
                 </datalist>
                 <section class="settings-group">
                   <h3 data-i18n="options_group_switchRules"></h3>

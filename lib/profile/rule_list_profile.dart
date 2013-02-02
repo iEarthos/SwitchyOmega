@@ -34,8 +34,19 @@ abstract class RuleListProfile extends InclusiveProfile {
     _rules = null;
   }
 
-  String matchProfileName;
-  String defaultProfileName;
+  String _matchProfileName;
+  String get matchProfileName => _matchProfileName;
+  void set matchProfileName(String value) {
+    checkReferenceTo(value);
+    _matchProfileName = value;
+  }
+
+  String _defaultProfileName;
+  String get defaultProfileName => _defaultProfileName;
+  void set defaultProfileName(String value) {
+    checkReferenceTo(value);
+    _defaultProfileName = value;
+  }
 
   List<Rule> _rules;
 
@@ -96,8 +107,8 @@ abstract class RuleListProfile extends InclusiveProfile {
     }
   }
 
-  RuleListProfile(String name, this.defaultProfileName, this.matchProfileName,
-      ProfileResolver resolver)
+  RuleListProfile(String name, this._defaultProfileName,
+                  this._matchProfileName, ProfileResolver resolver)
     : super(name, resolver);
 
   void loadPlain(Map<String, Object> p) {

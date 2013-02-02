@@ -76,6 +76,16 @@ void removeRule(SwitchProfile profile, Rule rule) {
   watchers.dispatch();
 }
 
+List<IncludableProfile> validResultProfilesFor(SwitchProfile profile) {
+  return options.profiles.values.where((p) {
+    if (p is! IncludableProfile || p == profile) return false;
+    if (p is InclusiveProfile) {
+      if (p.containsProfileName(profile.name)) return false;
+    }
+    return true;
+  }).toList();
+}
+
 void addRule(SwitchProfile profile) {
   var condition = new HostWildcardCondition('*.example.com');
   var profileName = profile.length > 0 ?
