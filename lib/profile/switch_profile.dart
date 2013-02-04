@@ -29,48 +29,38 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
 
   List<Rule> _rules;
 
-  Map<String, int> _refCount;
-
-  void _addReference(String name) {
-    checkReferenceTo(name);
-    _refCount[name] = ifNull(_refCount[name], 0) + 1;
-  }
-
-  void _removeReference(String name) {
-    var c = _refCount[name];
-    if (c == null) return;
-    if (c > 1) {
-      _refCount[name] = c - 1;
-    } else {
-      _refCount.remove(name);
+  void _onRuleProfileNameChange(Rule rule, String oldProfileName) {
+    if (tracker != null) {
+      tracker.removeReferenceByName(this, oldProfileName);
+      tracker.addReferenceByName(this, rule.profileName);
     }
   }
 
-  void _flushReference() {
-    _refCount.clear();
-    _addReference(_defaultProfileName);
-    this._rules.forEach((rule) => _addReference(rule.profileName));
+  void initTracker(ProfileTracker tracker) {
+    tracker.addReferenceByName(this, defaultProfileName);
+    _rules.forEach((rule) {
+      tracker.addReferenceByName(this, rule.profileName);
+    });
   }
 
-  void _onRuleProfileNameChange(Rule rule, String oldProfileName) {
-    _removeReference(oldProfileName);
-    _addReference(rule.profileName);
+  void _track(Rule r) {
+    if (tracker != null) tracker.addReferenceByName(this, r.profileName);
+    r.onProfileNameChange = _onRuleProfileNameChange;
+  }
+
+  void _untrack(Rule r) {
+    if (tracker != null) tracker.removeReferenceByName(this, r.profileName);
+    r.onProfileNameChange = null;
   }
 
   String _defaultProfileName;
   String get defaultProfileName => _defaultProfileName;
   void set defaultProfile(String value) {
-    _refCount.remove(_defaultProfileName);
-    _addReference(value);
+    if (tracker != null) {
+      tracker.removeReferenceByName(this, _defaultProfileName);
+      tracker.addReferenceByName(this, value);
+    }
     _defaultProfileName = value;
-  }
-
-  bool containsProfileName(String name) {
-    return _refCount.containsKey(name);
-  }
-
-  List<String> getProfileNames() {
-    return _refCount.keys.toList();
   }
 
   void writeTo(CodeWriter w) {
@@ -81,12 +71,12 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
       w.inline('if (');
       rule.condition.writeTo(w);
       w.code(')').indent();
-      var ip = getProfileByName(rule.profileName);
+      var ip = tracker.getProfileByName(rule.profileName);
       w.code('return ${ip.getScriptName()};')
        .outdent();
     }
 
-    var dp = getProfileByName(defaultProfileName);
+    var dp = tracker.getProfileByName(defaultProfileName);
     w.code('return ${dp.getScriptName()};');
     w.inline('}');
   }
@@ -108,12 +98,10 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
     return p;
   }
 
-  SwitchProfile(String name, String defaultProfileName, ProfileResolver resolver)
-      : super(name, resolver) {
-    this._refCount = new Map<String, int>();
+  SwitchProfile(String name, String defaultProfileName) : super(name) {
+    if (tracker != null) tracker.addReferenceByName(this, defaultProfileName);
     this._defaultProfileName = defaultProfileName;
-    _addReference(_defaultProfileName);
-    this._rules = <Rule>[];
+    this._rules = new List<Rule>();
   }
 
   void loadPlain(Map<String, Object> p) {
@@ -123,7 +111,7 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
   }
 
   factory SwitchProfile.fromPlain(Map<String, Object> p) {
-    var f = new SwitchProfile(p['name'], p['defaultProfileName'], p['resolver']);
+    var f = new SwitchProfile(p['name'], p['defaultProfileName']);
     f.loadPlain(p);
     return f;
   }
@@ -132,14 +120,6 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
 
   void set length(int newLength) {
     this._rules.length = newLength;
-  }
-
-  void remove(Rule rule) {
-    int old_length = this._rules.length;
-    this._rules.remove(rule);
-    if (this._rules.length < old_length) {
-      _removeReference(rule.profileName);
-    }
   }
 
   Iterator<Rule> get iterator => this._rules.iterator;
@@ -151,30 +131,32 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
   Rule operator [](int i) => this._rules[i];
 
   void operator []=(int i, Rule rule) {
-    _removeReference(this[i].profileName);
+    _untrack(this[i]);
+    _track(rule);
     this._rules[i] = rule;
-    _addReference(rule.profileName);
-    rule.onProfileNameChange = this._onRuleProfileNameChange;
   }
 
   void add(Rule rule) {
+    _track(rule);
     this._rules.add(rule);
-    _addReference(rule.profileName);
-    rule.onProfileNameChange = this._onRuleProfileNameChange;
+  }
+
+  void remove(Rule rule) {
+    var index = this._rules.indexOf(rule);
+    if (index > 0) {
+      _untrack(rule);
+      this._rules.remove(rule);
+    }
   }
 
   void addLast(Rule rule) {
+    _track(rule);
     this._rules.addLast(rule);
-    _addReference(rule.profileName);
-    rule.onProfileNameChange = this._onRuleProfileNameChange;
   }
 
   void addAll(Iterable<Rule> rules) {
+    rules.forEach(_track);
     this._rules.addAll(rules);
-    rules.forEach((r) {
-      _addReference(r.profileName);
-      r.onProfileNameChange = this._onRuleProfileNameChange;
-    });
   }
 
   int indexOf(Rule rule, [int start = 0]) => this._rules.indexOf(rule, start);
@@ -183,19 +165,19 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
       this._rules.lastIndexOf(rule, start);
 
   void clear() {
+    this._rules.forEach(_untrack);
     this._rules.clear();
-    _flushReference();
   }
 
   Rule removeAt(int i) {
     var rule = this._rules.removeAt(i);
-    if (rule != null) _removeReference(rule.profileName);
+    if (rule != null) _untrack(rule);
     return rule;
   }
 
   Rule removeLast() {
     var rule = this._rules.removeLast();
-    if (rule != null) _removeReference(rule.profileName);
+    if (rule != null) _untrack(rule);
     return rule;
   }
 
@@ -203,37 +185,45 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
     return this._rules.getRange(start, length);
   }
 
-  void setRange(int start, int length, List<Rule> from, [int startFrom]) {
+  void setRange(int start, int length, List<Rule> from, [int startFrom = 0]) {
+    if (tracker != null) {
+      for (var i = start; i < start + length; i++) {
+        tracker.removeReferenceByName(this, this._rules[i].profileName);
+      }
+      for (var i = startFrom; i < length; i++) {
+        tracker.addReferenceByName(this, from[start + i].profileName);
+      }
+    }
     for (var i = start; i < start + length; i++) {
-      _removeReference(this._rules[i].profileName);
+      _rules[i].onProfileNameChange = null;
     }
     this._rules.setRange(start, length, from, startFrom);
     for (var i = start; i < start + length; i++) {
-      _addReference(this._rules[i].profileName);
       _rules[i].onProfileNameChange = this._onRuleProfileNameChange;
     }
   }
 
   void removeRange(int start, int length) {
     for (var i = start; i < start + length; i++) {
-      _removeReference(this._rules[i].profileName);
+      _untrack(this._rules[i]);
     }
     this._rules.removeRange(start, length);
   }
 
   void insertRange(int start, int length, [Rule fill]) {
-    if (fill != null) {
+    if (fill != null && tracker != null) {
       for (var i = 0; i < length; i++) {
-        _addReference(fill.profileName);
-        fill.onProfileNameChange = this._onRuleProfileNameChange;
+        tracker.addReferenceByName(this, fill.profileName);
       }
     }
     this._rules.insertRange(start, length, fill);
+    fill.onProfileNameChange = this._onRuleProfileNameChange;
   }
 
   void removeAll(Iterable<Rule> elementsToRemove) {
-    this._rules.removeAll(elementsToRemove);
-    _flushReference();
+    for (var rule in elementsToRemove) {
+      this.remove(rule);
+    }
   }
 
   bool contains(Rule rule) {

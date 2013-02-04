@@ -77,13 +77,7 @@ void removeRule(SwitchProfile profile, Rule rule) {
 }
 
 List<Profile> validResultProfilesFor(InclusiveProfile profile) {
-  return options.profiles.values.where((p) {
-    if (p is! IncludableProfile || p == profile) return false;
-    if (p is InclusiveProfile) {
-      if (p.containsProfileName(profile.name)) return false;
-    }
-    return true;
-  }).toList();
+  throw new UnimplementedError();
 }
 
 void addRule(SwitchProfile profile) {

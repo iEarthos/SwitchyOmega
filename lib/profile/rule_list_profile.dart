@@ -37,14 +37,20 @@ abstract class RuleListProfile extends InclusiveProfile {
   String _matchProfileName;
   String get matchProfileName => _matchProfileName;
   void set matchProfileName(String value) {
-    checkReferenceTo(value);
+    if (value != _matchProfileName && tracker != null) {
+      tracker.removeReferenceByName(this, _matchProfileName);
+      tracker.addReferenceByName(this, value);
+    }
     _matchProfileName = value;
   }
 
   String _defaultProfileName;
   String get defaultProfileName => _defaultProfileName;
   void set defaultProfileName(String value) {
-    checkReferenceTo(value);
+    if (value != _defaultProfileName && tracker != null) {
+      tracker.removeReferenceByName(this, _defaultProfileName);
+      tracker.addReferenceByName(this, value);
+    }
     _defaultProfileName = value;
   }
 
@@ -63,9 +69,9 @@ abstract class RuleListProfile extends InclusiveProfile {
     w.code('function (url, host, scheme) {');
     w.code("'use strict';");
 
-    IncludableProfile mp = getProfileByName(matchProfileName);
+    IncludableProfile mp = tracker.getProfileByName(matchProfileName);
     var matchScriptName = mp.getScriptName();
-    IncludableProfile dp = getProfileByName(defaultProfileName);
+    IncludableProfile dp = tracker.getProfileByName(defaultProfileName);
     var defaultScriptName = dp.getScriptName();
 
     for (var rule in _rules) {
@@ -92,8 +98,9 @@ abstract class RuleListProfile extends InclusiveProfile {
     return matchProfileName == name || defaultProfileName == name;
   }
 
-  List<String> getProfileNames() {
-    return [matchProfileName, defaultProfileName];
+  Iterable<Profile> getProfileNames() {
+    return [tracker.getProfileByName(matchProfileName),
+            tracker.getProfileByName(defaultProfileName)];
   }
 
   Map<String, Object> toPlain([Map<String, Object> p]) {
@@ -108,8 +115,8 @@ abstract class RuleListProfile extends InclusiveProfile {
   }
 
   RuleListProfile(String name, this._defaultProfileName,
-                  this._matchProfileName, ProfileResolver resolver)
-    : super(name, resolver);
+                  this._matchProfileName)
+    : super(name);
 
   void loadPlain(Map<String, Object> p) {
     super.loadPlain(p);

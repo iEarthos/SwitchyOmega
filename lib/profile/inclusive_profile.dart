@@ -25,53 +25,54 @@ part of switchy_profile;
  * It can be converted to a complete PAC script using [toScript].
  */
 abstract class InclusiveProfile extends ScriptProfile {
+  InclusiveProfile(String name) : super(name);
+
+  ProfileTracker _tracker;
   /**
-   * Returns true if this profile has a result profile which name is [name].
-   * Otherwise, false.
+   * Set the tracker that tracks this profile and result profiles. This method
+   * calls [initTracker] before the tracker is changed.
+   * Having a non-null tracker is required for reference-related methods like
+   * [toScript].
+   * Setting [tracker] to [:null:] disables reference-related methods.
    */
-  bool containsProfileName(String name);
-
-  /** A function that find profiles by their names. */
-  ProfileResolver getProfileByName;
-
-  /**
-   * Get the names of all result profiles of this profile.
-   */
-  List<String> getProfileNames();
-
-  Map<String, IncludableProfile> getAllReferences() {
-    var s = new HashMap<String, IncludableProfile>();
-    var queue = new List<String>.from(getProfileNames());
-    while (queue.length > 0) {
-      var p = getProfileByName(queue[0]);
-      queue.removeRange(0, 1);
-      s[p.name] = p;
-      if (p is InclusiveProfile) {
-        for (var pp in (p as InclusiveProfile).getProfileNames()) {
-          var circ = s[pp];
-          if (circ != null || pp == this.name) {
-            throw new CircularReferenceException(p, ifNull(circ, this));
-          }
-          queue.add(pp);
-        }
-      }
+  void set tracker(ProfileTracker value) {
+    if (_tracker != value && value != null) {
+      initTracker(value);
     }
-    return s;
+    _tracker = value;
   }
 
-  void checkReferenceTo(String name) {
-    if (getProfileByName != null) {
-      var profile = getProfileByName(name);
-      if (profile is InclusiveProfile) {
-        if (profile.containsProfileName(this.name)) {
-          throw new CircularReferenceException(this, profile);
-        }
-      }
+  ProfileTracker get tracker => _tracker;
+
+  /**
+   * Get all direct result profiles of this profile. Requires [tracker].
+   */
+  Iterable<Profile> getProfileNames() => tracker.directReferences(this);
+
+  /**
+   * Returns true if [name] is a direct or indirect result of this profile.
+   * Requires [tracker].
+   */
+  bool hasReferenceTo(String name) {
+    if (tracker == null) {
+      throw new StateError('A non-null tracker is required for this method.');
     }
+    return tracker.hasReferenceToName(this, name);
+  }
+
+  /**
+   * Returns all direct or indirect result of this profile. Requires [tracker].
+   */
+  Iterable<IncludableProfile> allReferences() {
+    if (tracker == null) {
+      throw new StateError('A non-null tracker is required for this method.');
+    }
+    return tracker.allReferences(this);
   }
 
   /**
    * Convert this profile to a complete PAC script with all included profiles.
+   * Requires [tracker].
    */
   String toScript([bool pretty = true]) {
     var w = new WellFormattedCodeWriter();
@@ -103,9 +104,9 @@ abstract class InclusiveProfile extends ScriptProfile {
 
   void _writeAllProfilesTo(CodeWriter w) {
     // Write all included profiles
-    for (var p in getAllReferences().values) {
-      w.inline('${p.getScriptName()} : ');
-      p.writeTo(w);
+    for (var profile in allReferences()) {
+      w.inline('${profile.getScriptName()} : ');
+      profile.writeTo(w);
       w.code(',');
     }
 
@@ -117,30 +118,20 @@ abstract class InclusiveProfile extends ScriptProfile {
 
   /**
    * Select one result profile according to the params and return its name.
+   * Implementation of this method should not rely on the [tracker].
    */
   String choose(String url, String host, String scheme, Date datetime);
 
-  InclusiveProfile(String name, this.getProfileByName) : super(name);
+  /**
+   * This method will be called when setting [tracker]. When implemented, this
+   * method should add all direct references to the [tracker].
+   */
+  void initTracker(ProfileTracker tracker);
 }
-
-typedef Profile ProfileResolver(String name);
 
 /**
- * Thrown when a circular reference of two [InclusiveProfile]s is detected.
+ * A [Rule] is a combination of a [condition] and a [profileName].
  */
-class CircularReferenceException implements Exception {
-  final InclusiveProfile parent;
-  final InclusiveProfile result;
-
-  CircularReferenceException(this.parent, this.result);
-
-  String toString() => 'Profile "${result.name}" cannot be configured as a '
-                       'result profile of Profile "${parent.name}", because it'
-                       'references Profile "${parent.name}", directly or indirectly.';
-}
-
-typedef void RuleProfileNameChangeCallback(Rule rule, String oldProfileName);
-
 class Rule extends Plainable {
   Condition condition;
 
@@ -154,6 +145,9 @@ class Rule extends Plainable {
     }
   }
 
+  /**
+   * When [profileName] is changed, this function will be called.
+   */
   Function onProfileNameChange = null;
 
   Map<String, Object> toPlain([Map<String, Object> p]) {
@@ -167,7 +161,7 @@ class Rule extends Plainable {
 
   void loadPlain(Map<String, Object> p) {
     this.condition = new Condition.fromPlain(p['condition']);
-    this.profileName = p['profileName'];
+    this._profileName = p['profileName'];
   }
 
   Rule.fromPlain(Map<String, Object> p) {
@@ -176,3 +170,9 @@ class Rule extends Plainable {
 
   Rule(this.condition, this._profileName);
 }
+
+/**
+ * A [RuleProfileNameChangeCallback] is called when the profileName of the
+ * [rule] is changed from [oldProfileName] to [:rule.profileName:].
+ */
+typedef void RuleProfileNameChangeCallback(Rule rule, String oldProfileName);

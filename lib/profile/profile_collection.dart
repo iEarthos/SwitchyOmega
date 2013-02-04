@@ -24,22 +24,23 @@ part of switchy_profile;
  * A set of profiles. Predefined profiles are pre-added to the set,
  * but they are not converted to plain.
  */
+
 class ProfileCollection extends Collection<Profile>
-    implements Set<Profile>, Plainable {
-  Map<String, Profile> _profiles;
+   implements Set<Profile>, Plainable, ProfileTracker {
+  Map<String, _ProfileData> _profiles;
 
   /**
    * Returns the profile by its [name].
    */
   Profile getProfileByName(String name) {
-    return _profiles[name];
+    return _profiles[name].profile;
   }
 
   /**
    * Returns the profile by its [name].
    */
   Profile operator [](String name) {
-    return _profiles[name];
+    return _profiles[name].profile;
   }
 
   void _addPredefined() {
@@ -48,37 +49,29 @@ class ProfileCollection extends Collection<Profile>
     this.add(new SystemProfile());
   }
 
-  void _setResolver(Profile p) {
-    if (p is InclusiveProfile) {
-      (p as InclusiveProfile).getProfileByName = this.getProfileByName;
-    }
-  }
-
   /**
    * Convert this collection to a list of plain profile objects.
    * Predefined profiles will not be included in the result.
    */
   List<Object> toPlain([List<Object> p, Object config]) {
     if (p == null) p = new List<Object>();
-    p.addAll(_profiles.values.where((prof) => !prof.predefined)
-        .mappedBy((prof) => prof.toPlain()));
+    p.addAll(_profiles.values.where((prof) => !prof.profile.predefined)
+        .mappedBy((prof) => prof.profile.toPlain()));
 
     return p;
   }
 
   ProfileCollection([Collection<Profile> profiles = null]) {
-    _profiles = new Map<String, Profile>();
+    _profiles = new Map<String, _ProfileData>();
     _addPredefined();
     if (profiles != null) {
       this.addAll(profiles);
-      profiles.forEach(_setResolver);
     }
   }
 
   void loadPlain(List<Object> p) {
     for (Map<String, Object> profile in p) {
       var pp = new Profile.fromPlain(profile);
-      _setResolver(pp);
       this.add(pp);
     }
   }
@@ -93,17 +86,31 @@ class ProfileCollection extends Collection<Profile>
     return _profiles.containsKey(value.name);
   }
 
-  void add(Profile value) {
-    _profiles[value.name] = value;
-    _setResolver(value);
+  void add(Profile profile) {
+    if (!_profiles.containsKey(profile.name)) {
+      _profiles[profile.name] = new _ProfileData(profile);
+      if (profile is InclusiveProfile) {
+        profile.tracker = this;
+      }
+    }
   }
 
   /**
    * Remove [value] from this set if [value] is not predefined.
+   * If the [value] is still referred by another profile, throws [StateError].
    */
   bool remove(Profile value) {
     if (value.predefined) return false;
+    var data = _profiles[value.name];
+    if (data == null) return false;
+    if (data.referredBy.length > 0) throw new StateError(
+        'This profile cannot be removed because it is still referred by'
+        'at least one profile.');
     _profiles.remove(value.name);
+    if (value is InclusiveProfile) {
+      value.tracker = null;
+    }
+    return true;
   }
 
   /**
@@ -111,16 +118,24 @@ class ProfileCollection extends Collection<Profile>
    * profiles cannot be removed.
    */
   void clear() {
+    _profiles.values.forEach((data) {
+      if (data.profile is InclusiveProfile) {
+        (data.profile as InclusiveProfile).tracker = null;
+      }
+    });
     _profiles.clear();
     _addPredefined();
   }
 
-  int get length {
-    return _profiles.length;
+  Object toJson() {
+    return this.toPlain();
   }
 
-  Iterator<Profile> get iterator {
-    return _profiles.values.iterator;
+  Iterator get iterator =>
+      _profiles.values.mappedBy((data) => data.profile).iterator;
+
+  int get length {
+    return _profiles.length;
   }
 
   bool isSubsetOf(Collection<Profile> collection) {
@@ -135,7 +150,148 @@ class ProfileCollection extends Collection<Profile>
     return new Set<Profile>.from(collection.where((e) => this.contains(e)));
   }
 
-  Object toJson() {
-    return this.toPlain();
+  void addReference(InclusiveProfile from, IncludableProfile to) {
+    var from_data = _profiles[from.name];
+    var to_data = _profiles[to.name];
+
+    if (to_data.allRef != null && to_data.allRef.containsKey(from)) {
+      throw new CircularReferenceException(from, to);
+    }
+
+    from_data.directRef.increase(to);
+    from_data.allRef.increase(to);
+    to_data.referredBy.increase(from);
+
+    for (var profile in from_data.referredBy.keys) {
+      _profiles[profile.name].allRef.increase(to);
+    }
+    if (to_data.allRef != null) {
+      for (var profile in to_data.allRef.keys) {
+        _profiles[profile.name].referredBy.increase(from);
+      }
+    }
   }
+
+  void removeReference(InclusiveProfile from, IncludableProfile to) {
+    var from_data = _profiles[from.name];
+    var to_data = _profiles[to.name];
+    from_data.directRef.decrease(to);
+    from_data.allRef.decrease(to);
+    to_data.referredBy.decrease(from);
+
+    for (var profile in from_data.referredBy.keys) {
+      _profiles[profile.name].allRef.decrease(to);
+    }
+    if (to_data.allRef != null) {
+      for (var profile in to_data.allRef.keys) {
+        _profiles[profile.name].referredBy.decrease(from);
+      }
+    }
+  }
+
+  bool hasReference(InclusiveProfile from, IncludableProfile to) {
+    return _profiles[from.name].allRef.containsKey(to);
+  }
+
+  Iterable<Profile> directReferences(InclusiveProfile profile) {
+    return _profiles[profile.name].directRef.keys;
+  }
+
+  Iterable<Profile> allReferences(InclusiveProfile profile) {
+    return _profiles[profile.name].allRef.keys;
+  }
+
+  Iterable<Profile> referredBy(IncludableProfile profile) {
+    return _profiles[profile.name].referredBy.keys;
+  }
+
+  // Some helpers for name-based references.
+  void addReferenceByName(InclusiveProfile from, String to) {
+    addReference(from, getProfileByName(to));
+  }
+
+  void removeReferenceByName(InclusiveProfile from, String to) {
+    removeReference(from, getProfileByName(to));
+  }
+
+  bool hasReferenceToName(InclusiveProfile from, String to) =>
+      hasReference(from, getProfileByName(to));
+}
+
+/**
+ * Contains data needed for ProfileCollection implementation.
+ */
+class _ProfileData {
+  Profile profile;
+  CountMap<IncludableProfile> directRef = null;
+  CountMap<IncludableProfile> allRef = null;
+  CountMap<InclusiveProfile> referredBy = null;
+
+  _ProfileData(this.profile) {
+    referredBy = new CountMap<InclusiveProfile>();
+    if (profile is InclusiveProfile) {
+      directRef = new CountMap<IncludableProfile>();
+      allRef = new CountMap<IncludableProfile>();
+    }
+  }
+}
+
+class CountMap<E> implements Map<E, int> {
+  Map<E, int> _count = new Map<E, int>();
+
+  int increase(E element, [int count = 1]) {
+    if (count < 0) throw new ArgumentError('count must not be negative.');
+    return _count[element] = ifNull(_count[element], 0) + count;
+  }
+
+  int decrease(E element, [int count = 1]) {
+    var c = _count[element];
+    if (c == null) {
+      throw new StateError('The element is not in the map.');
+    }
+    if (c > count) {
+      return _count[element] = c - count;
+    } else if (c == count) {
+      _count.remove(element);
+      return 0;
+    } else {
+      throw new StateError('count must not be greater than the value in map.');
+    }
+  }
+
+  bool containsValue(int value) {
+    return _count.containsValue(value);
+  }
+
+  bool containsKey(E key) {
+    return _count.containsKey(key);
+  }
+
+  int operator [](E key) => _count[key];
+
+  void operator []=(E key, int value) {
+    throw new UnsupportedError('Count values cannot be set directly.');
+  }
+
+  int putIfAbsent(E key, int ifAbsent()) {
+    throw new UnsupportedError('Count values cannot be set directly.');
+  }
+
+  int remove(E key) => _count.remove(key);
+
+  void clear() {
+    _count.clear();
+  }
+
+  void forEach(void f(E key, int value)) {
+    _count.forEach(f);
+  }
+
+  Iterable<E> get keys => _count.keys;
+
+  Iterable<int> get values => _count.values;
+
+  int get length => _count.length;
+
+  bool get isEmpty => _count.isEmpty;
 }
