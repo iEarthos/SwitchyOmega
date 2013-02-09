@@ -38,8 +38,8 @@
   </head>
   <body class="container-fluid">
     <div>
-      <datalist id="profiles" template="template" iterate="name in options != null ? options.profiles.keys.toList() : []">
-        <option>{{name}}</option>
+      <datalist id="profiles" template="template" iterate="p in options != null ? options.profiles.toList() : []">
+        <option>{{p.name}}</option>
       </datalist>
       <datalist id="condition-types">
         <option data-i18n="condition_hostWildcard" value="HostWildcardCondition"></option>
@@ -86,7 +86,7 @@
             <li class="divider"></li>
             <li class="nav-header" data-i18n="options_navHeader_profiles"></li>
             <template instantiate="if options != null">
-              <template iterate="profile in options.profiles.values.where((p) => !p.predefined).toList()">
+              <template iterate="profile in options.profiles.where((p) => !p.predefined).toList()">
                 <li>
                   <a href="#profile-{{profile.name}}" data-toggle="tab">
                     <i class="{{profileIcons[profile.profileType]}}"></i>
@@ -205,7 +205,7 @@
           </section>
         </div>
         <template instantiate="if options != null">
-          <template iterate="profile in options.profiles.values.toList()">
+          <template iterate="profile in options.profiles.toList()">
             <div class="tab-pane" data-workaround-id="profile-{{profile.name}}" data-profile="{{profile.name}}">
               <header class="span10 profile-header">
                 <h2>

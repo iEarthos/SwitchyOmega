@@ -19,8 +19,8 @@ abstract class SwitchyOptions extends Plainable {
 
   List<String> get quickSwitchProfiles;
 
-  Map<String, Profile> _profiles;
-  Map<String, Profile> get profiles => _profiles;
+  ProfileCollection _profiles;
+  ProfileCollection get profiles => _profiles;
 
   Profile getProfileByName(String name) {
     return profiles[name];
@@ -40,11 +40,11 @@ abstract class SwitchyOptions extends Plainable {
     p['quickSwitchProfiles'] = quickSwitchProfiles;
 
     var plainProfiles = new Map<String, Object>();
-    _profiles.forEach((name, p) {
-      plainProfiles[name] = p.toPlain();
+    profiles.forEach((p) {
+      plainProfiles[p.name] = p.toPlain();
     });
 
-    p['profiles'] = plainProfiles;
+    p['profiles'] = profiles.toPlain();
 
     p['currentProfileName'] = currentProfileName;
 
@@ -60,10 +60,8 @@ abstract class SwitchyOptions extends Plainable {
 
     quickSwitchProfiles.clear();
     quickSwitchProfiles.addAll(p['quickSwitchProfiles']);
-    _profiles = new Map<String, Profile>();
-    (p['profiles'] as Map<String, Map<String, Object>>).forEach((name, prof) {
-      _profiles[name] = new Profile.fromPlain(prof);
-    });
+
+    _profiles = new ProfileCollection.fromPlain(p['profiles']);
 
     currentProfileName = p['currentProfileName'];
   }
@@ -82,7 +80,7 @@ abstract class SwitchyOptions extends Plainable {
     revertProxyChanges = false;
 
     quickSwitchProfiles.clear();
-    _profiles = new Map<String, Profile>();
+    _profiles = new ProfileCollection();
   }
 
 }

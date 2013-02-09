@@ -77,7 +77,11 @@ void removeRule(SwitchProfile profile, Rule rule) {
 }
 
 List<Profile> validResultProfilesFor(InclusiveProfile profile) {
-  throw new UnimplementedError();
+  return options.profiles.where((p) {
+    if (p == profile || p is! IncludableProfile) return false;
+    if (p is InclusiveProfile && p.hasReferenceTo(profile.name)) return false;
+    return true;
+  }).toList();
 }
 
 void addRule(SwitchProfile profile) {
@@ -117,9 +121,7 @@ Map<Rule, RuleEditor> ruleEditors = new Map<Rule, RuleEditor>();
 
 // This is only for testing.
 void exportPac() {
-  ProfileCollection col = new ProfileCollection();
-  col.addAll(options.profiles.values);
-  var auto = col.getProfileByName('auto') as InclusiveProfile;
+  var auto = options.profiles['auto'] as InclusiveProfile;
   print(auto.toScript());
 }
 

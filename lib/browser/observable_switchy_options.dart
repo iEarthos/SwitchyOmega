@@ -23,14 +23,11 @@ class ObservableSwitchyOptions extends SwitchyOptions {
   SwitchyOptionsObserver get observer => _observer;
   void set observer(SwitchyOptionsObserver value) {
     _observer = value;
-    (profiles as ObservableProfileMap).observer = _observer;
   }
 
   ObservableSwitchyOptions([
       SwitchyOptionsObserver observer = const SwitchyOptionsEmptyObserver()])
-      : this._observer = observer {
-        this._profiles = new ObservableProfileMap(observer);
-      }
+      : this._observer = observer { }
 
   bool _confirmDelection;
 
@@ -99,7 +96,6 @@ class ObservableSwitchyOptions extends SwitchyOptions {
   void loadPlain(Map<String, Object> p) {
     _quickSwitchProfiles = new List<String>();
     super.loadPlain(p);
-    this._profiles = new ObservableProfileMap(observer, this._profiles);
   }
 
   ObservableSwitchyOptions.fromPlain(Object p) {
@@ -108,78 +104,5 @@ class ObservableSwitchyOptions extends SwitchyOptions {
 
   ObservableSwitchyOptions.defaults() : super.defaults() {
     _quickSwitchProfiles = new List<String>();
-  }
-}
-
-class ObservableProfileMap implements Map<String, Profile> {
-  Map<String, Profile> _inner;
-  SwitchyOptionsObserver observer;
-
-  ObservableProfileMap(this.observer, [Map<String, Profile> inner]) {
-    if (inner == null) {
-      _inner = new Map<String, Profile>();
-    } else {
-      _inner = inner;
-    }
-  }
-
-  void clear() {
-    var keys = _inner.keys;
-    _inner.clear();
-    keys.forEach((k) {
-      observer.profileRemoved(k);
-    });
-  }
-
-  bool containsKey(String key) {
-    return _inner.containsKey(key);
-  }
-
-  bool containsValue(Profile value) {
-    return _inner.containsValue(value);
-  }
-
-  void forEach(void f(String key, Profile value)) {
-    _inner.forEach(f);
-  }
-
-  Iterable<String> get keys {
-    return _inner.keys;
-  }
-
-  Iterable<Profile> get values {
-    return _inner.values;
-  }
-
-  bool get isEmpty {
-    return _inner.isEmpty;
-  }
-
-  int get length {
-    return _inner.length;
-  }
-
-  void operator []=(String key, Profile value) {
-    _inner[key] = value;
-    observer.profileAddedOrChanged(value);
-  }
-
-  Profile operator [](String key) {
-    return _inner[key];
-  }
-
-  Profile putIfAbsent(String key, Profile ifAbsent()) {
-    var profile = _inner[key];
-    if (profile == null) {
-      profile = _inner[key] = ifAbsent();
-      observer.profileAddedOrChanged(profile);
-    }
-    return profile;
-  }
-
-  Profile remove(String key) {
-    var profile = _inner.remove(key);
-    observer.profileRemoved(key);
-    return profile;
   }
 }
