@@ -33,8 +33,44 @@ import '../html/converters.dart' as convert;
 import '../html/lib.dart';
 import 'editors.dart';
 
+List<Profile> modalCannotDeleteProfile_referring = [];
+Profile modalDeleteProfile_profile = null;
+
+void deleteProfile(Profile profile) {
+  options.profiles.remove(profile);
+  if (options.currentProfileName == profile.name) {
+    options.currentProfileName = new DirectProfile().name;
+  }
+  if (options.startupProfileName == profile.name) {
+    options.startupProfileName = null;
+  }
+  options.quickSwitchProfiles.remove(profile.name);
+  watchers.dispatch();
+}
+
+void requestProfileDelete(Profile profile) {
+  var ref = options.profiles.referredBy(profile);
+  if (!ref.isEmpty) {
+    // Cannot delete profile.
+    modalCannotDeleteProfile_referring = ref.toList();
+    js.send('modal.profile.cannotDelete', null, (_, [reply]) {
+      // Modal closed.
+      modalCannotDeleteProfile_referring = [];
+    });
+  } else {
+    modalDeleteProfile_profile = profile;
+    js.send('modal.profile.delete', null, (action, [reply]) {
+      if (action == 'delete') {
+        deleteProfile(profile);
+        js.send('tab.reset');
+      }
+      modalDeleteProfile_profile = null;
+    });
+  }
+}
+
 String bypassListToText(List<BypassCondition> list) =>
-  list.mappedBy((b) => b.pattern).join('\n');
+    list.mappedBy((b) => b.pattern).join('\n');
 
 void handleFixedServerUI() {
   dynamicEvent('change', '.bypass-list',  (e, TextAreaElement bypassList) {
@@ -68,6 +104,24 @@ void handleSwitchProfileUI() {
     profile.insertRange(index_new, 1, rule);
     watchers.dispatch();
   });
+}
+
+void moveRuleUp(SwitchProfile profile, Rule rule) {
+  var index_old = profile.indexOf(rule);
+  if (index_old > 0) {
+    profile.removeAt(index_old);
+    profile.insertRange(index_old - 1, 1, rule);
+  }
+  watchers.dispatch();
+}
+
+void moveRuleDown(SwitchProfile profile, Rule rule) {
+  var index_old = profile.indexOf(rule);
+  if (index_old < profile.length - 1) {
+    profile.removeAt(index_old);
+    profile.insertRange(index_old + 1, 1, rule);
+  }
+  watchers.dispatch();
 }
 
 void removeRule(SwitchProfile profile, Rule rule) {
@@ -125,15 +179,47 @@ void exportPac() {
   print(auto.toScript());
 }
 
+String idBindingWorkaroundAttrName = 'data-workaround-id';
+
+void idBindingWorkaround() {
+  document.queryAll('[$idBindingWorkaroundAttrName]').forEach(
+      (target) {
+        bindToDataList(target);
+      });
+
+  MutationObserver ob = new MutationObserver(
+      (List<MutationRecord> mutations, MutationObserver _) {
+        mutations.forEach((MutationRecord record) {
+          switch (record.type) {
+            case 'attributes':
+              var e = record.target as Element;
+              e.id = e.attributes[idBindingWorkaroundAttrName];
+              break;
+            case 'childList':
+              record.addedNodes.forEach((el) {
+                if (el is Element) {
+                  el.queryAll('[$idBindingWorkaroundAttrName]').forEach(
+                      (Element e) {
+                        e.id = e.attributes[idBindingWorkaroundAttrName];
+                      });
+                }
+              });
+              break;
+          }
+        });
+      });
+  ob.observe(document.documentElement,
+      childList: true,
+      attributes: true,
+      subtree: true,
+      attributeFilter: [idBindingWorkaroundAttrName]);
+}
+
 void main() {
+  idBindingWorkaround();
   c.send('options.get', null, (Map<String, Object> o, [Function respond]) {
     options = new ObservableSwitchyOptions.fromPlain(o);
-
     watchers.dispatch();
-
-    queryAll('[data-workaround-id]').forEach((e) {
-      e.id = e.attributes['data-workaround-id'];
-    });
     js.send('options.init');
   });
 

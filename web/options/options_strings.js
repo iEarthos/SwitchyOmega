@@ -30,6 +30,8 @@ var strings = [
   "condition_never",
   "dialog_close",
   "dialog_save",
+  "dialog_ok",
+  "dialog_cancel",
   "options_title",
   "options_navHeader_setting",
   "options_navHeader_profiles",
@@ -93,5 +95,8 @@ var strings = [
   "options_hostLevelsBetween",
   "options_modalHeader_renameProfile",
   "options_modalHeader_deleteProfile",
-  "options_deleteProfileConfirm"
+  "options_deleteProfileConfirm",
+  "options_modalHeader_cannotDeleteProfile",
+  "options_profileReferredBy",
+  "options_modifyReferringProfiles"
 ];

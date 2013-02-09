@@ -217,7 +217,7 @@
                     <i class="icon-pencil icon-white"></i>
                     <span data-i18n="options_renameProfile"></span>
                   </a>
-                  <a class="profile-delete btn btn-danger" data-toggle="modal" href="#modal-profile-delete">
+                  <a class="profile-delete btn btn-danger" on-click="$event.preventDefault(); requestProfileDelete(profile)">
                     <i class="icon-trash icon-white"></i>
                     <span data-i18n="options_deleteProfile"></span>
                   </a>
@@ -418,7 +418,7 @@ example.com
         </p>
       </div>
       <div class="modal-footer">
-        <a class="btn" data-dismiss="modal" data-i18n="dialog_close"></a>
+        <a class="btn" data-dismiss="modal" data-i18n="dialog_cancel"></a>
         <a href="#" class="btn btn-primary" id="profile-rename-save" data-i18n="dialog_save"></a>
       </div>
     </div>
@@ -429,11 +429,33 @@ example.com
       </div>
       <div class="modal-body">
         <p data-i18n="options_deleteProfileConfirm"></p>
-        <div class="well"><div class="profile-color" style="background-color: blue;"></div><span>Example</span></div>
+        <div class="well" template="template" instantiate="if modalDeleteProfile_profile != null">
+          <div class="profile-color" style="background-color: {{modalDeleteProfile_profile.color}};"></div>
+          <span>{{modalDeleteProfile_profile.name}}</span>
+        </div>
       </div>
       <div class="modal-footer">
-        <a href="#" class="btn" data-dismiss="modal" data-i18n="dialog_close"></a>
-        <a href="#" class="btn btn-primary btn-danger" data-i18n="options_deleteProfile"></a>
+        <a href="#" class="btn" data-dismiss="modal" data-i18n="dialog_cancel"></a>
+        <a href="#" class="btn btn-primary btn-danger delete-profile-confirm-button"
+            data-dismiss="modal" data-i18n="options_deleteProfile"></a>
+      </div>
+    </div>
+    <div class="modal hide fade" id="modal-profile-cannot-delete">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">×</button>
+        <h3 data-i18n="options_modalHeader_cannotDeleteProfile"></h3>
+      </div>
+      <div class="modal-body">
+        <p data-i18n="options_profileReferredBy"></p>
+        <div class="well">
+          <ul template="template" iterate="profile in modalCannotDeleteProfile_referring">
+            <li><div class="profile-color" style="background-color: {{profile.color}};"></div><span>{{profile.name}}</span></li>
+          </ul>
+        </div>
+        <p data-i18n="options_modifyReferringProfiles"></p>
+      </div>
+      <div class="modal-footer">
+        <a href="#" class="btn" data-dismiss="modal" data-i18n="dialog_ok"></a>
       </div>
     </div>
   </body>

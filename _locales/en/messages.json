@@ -48,6 +48,12 @@
   "dialog_save": {
     "message": "Save changes"
   },
+  "dialog_ok": {
+    "message": "OK"
+  },
+  "dialog_cancel": {
+    "message": "Cancel"
+  },
 
   "options_title": {
     "message": "SwitchyOmega Options"
@@ -240,6 +246,15 @@
   },
   "options_deleteProfileConfirm": {
     "message": "Do you really want to delete the following profile?"
+  },
+  "options_modalHeader_cannotDeleteProfile": {
+    "message": "Unable to Delete Profile"
+  },
+  "options_profileReferredBy": {
+    "message": "This profile cannot be deleted because it is referred by the following profiles:"
+  },
+  "options_modifyReferringProfiles": {
+    "message": "You must modify these profiles and make them stop referring to this profile before you can delete it."
   },
 
   "popup_title": {

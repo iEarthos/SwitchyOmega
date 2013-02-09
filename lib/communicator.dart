@@ -39,7 +39,7 @@ class Communicator {
     }
     _callback_maps = new Map<String, Map<String, CommunicatorCallback>>();
     _action_handlers = new Map<String, List<CommunicatorCallback>>();
-    this.source.on.message.add(this._onmessage);
+    this.source.onMessage.listen(this._onmessage);
   }
 
   void _postMessage(WindowBase destWin, String action, Object value,

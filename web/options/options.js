@@ -86,11 +86,41 @@
           }
         });
       }
+    },
+    'tab.reset': function () {
+      $('#options-nav a[data-toggle="tab"]').first().click();
+    },
+    'modal.profile.delete': function (_, reply) {
+      var modal = $('#modal-profile-delete');
+      var button = $('#modal-profile-delete .delete-profile-confirm-button');
+      var on_click = function () {
+        modal.off('hidden', on_hidden);
+        button.off('click', on_click);
+        reply('delete');
+      };
+      var on_hidden = function () {
+        modal.off('hidden', on_hidden);
+        button.off('click', on_click);
+        reply('dismiss');
+      };
+      button.on('click', on_click);
+      modal.on('hidden', on_hidden);
+      modal.modal();
+    },
+    'modal.profile.cannotDelete': function (_, reply) {
+      var modal = $('#modal-profile-cannot-delete');
+      var on_hidden = function () {
+        modal.off('hidden', on_hidden);
+        reply();
+      };
+      modal.on('hidden', on_hidden);
+      modal.modal();
     }
   });
 
   $(document).ready(function () {
     isDocReady = true;
+    
     // Sortable
     var containers = $('.cycle-profile-container');
     containers.sortable({
