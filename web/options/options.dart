@@ -45,6 +45,13 @@ void deleteProfile(Profile profile) {
     options.startupProfileName = null;
   }
   options.quickSwitchProfiles.remove(profile.name);
+
+  if (profile is FixedProfile) {
+    fixedProfileEditors.remove(profile);
+  } else if (profile is SwitchProfile) {
+    profile.forEach((rule) => ruleEditors.remove(rule));
+  }
+
   watchers.dispatch();
 }
 
