@@ -39,6 +39,9 @@ Profile modalDeleteProfile_profile = null;
 String modalRenameProfile_newName = null;
 String modalRenameProfile_oldName = null;
 
+Profile modalDeleteRule_profile = null;
+Rule modalDeleteRule_rule = null;
+
 void deleteProfile(Profile profile) {
   options.profiles.remove(profile);
   if (options.currentProfileName == profile.name) {
@@ -154,6 +157,22 @@ void moveRuleDown(SwitchProfile profile, Rule rule) {
     profile.insertRange(index_old + 1, 1, rule);
   }
   watchers.dispatch();
+}
+
+void requestRemoveRule(SwitchProfile profile, Rule rule) {
+  if (options.confirmDeletion) {
+    modalDeleteRule_profile = profile;
+    modalDeleteRule_rule = rule;
+    js.send('modal.rule.delete', null, (action, [reply]) {
+      if (action == 'delete') {
+        removeRule(profile, rule);
+      }
+      modalDeleteRule_profile = null;
+      modalDeleteRule_rule = null;
+    });
+  } else {
+    removeRule(profile, rule);
+  }
 }
 
 void removeRule(SwitchProfile profile, Rule rule) {

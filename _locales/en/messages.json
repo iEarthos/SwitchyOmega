@@ -79,8 +79,8 @@
   "options_group_miscOptions": {
     "message": "Misc Options"
   },
-  "options_confirmDelection": {
-    "message": "Confirm profile/condition deletion."
+  "options_confirmDeletion": {
+    "message": "Confirm on condition deletion."
   },
   "options_refreshOnProfileChange": {
     "message": "Refresh current tab on profile change."
@@ -241,6 +241,12 @@
   "options_modalHeader_renameProfile": {
     "message": "Rename Profile"
   },
+  "options_newProfileName": {
+    "message": "New profile name"
+  },
+  "options_profileNameConflict": {
+    "message": "A profile with this name already exists."
+  },
   "options_modalHeader_deleteProfile": {
     "message": "Delete Profile"
   },
@@ -256,18 +262,20 @@
   "options_modifyReferringProfiles": {
     "message": "You must modify these profiles and make them stop referring to this profile before you can delete it."
   },
-  "options_newProfileName": {
-    "message": "New profile name"
-  },
-  "options_profileNameConflict": {
-    "message": "A profile with this name already exists."
-  },
   "options_profileNameEmpty": {
     "message": "The name of the profile must not be empty."
   },
   "popup_title": {
     "message": "SwitchyOmega Popup",
     "description": "The page title of the popup. Normally you won't see it."
+  },
+  "options_modalHeader_deleteRule": {
+    "message": "Delete Rule"
+  },
+  "options_deleteRuleConfirm": {
+    "message": "Do you really want to delete the following rule?"
+  },
+  "options_deleteRule": {
+    "message": "Delete"
   }
-
 }

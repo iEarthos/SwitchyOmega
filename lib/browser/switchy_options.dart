@@ -53,6 +53,7 @@ abstract class SwitchyOptions extends Plainable {
 
   void loadPlain(Map<String, Object> p) {
     currentProfileName = p['currentProfileName'];
+    confirmDeletion = p['confirmDeletion'];
     refreshOnProfileChange = p['refreshOnProfileChange'];
     startupProfileName = p['startupProfileName'];
     enableQuickSwitch = p['enableQuickSwitch'];

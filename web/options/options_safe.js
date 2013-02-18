@@ -53,8 +53,7 @@ c.on({
   'options.get': function (data, respond) {
   	respond({
   	  // The profiles are from the pac_gen_test.
-  	  'date': true,
-  	  'test': 'fail',
+  	  'confirmDeletion': true,
   	  'profiles': [
   	      {
   	        "name":"ssh",

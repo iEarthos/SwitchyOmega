@@ -40,7 +40,7 @@ var strings = [
   "options_tab_importExport",
   "options_addProfile",
   "options_group_miscOptions",
-  "options_confirmDelection",
+  "options_confirmDeletion",
   "options_refreshOnProfileChange",
   "options_group_switchOptions",
   "options_startupProfile",
@@ -101,5 +101,8 @@ var strings = [
   "options_modifyReferringProfiles",
   "options_newProfileName",
   "options_profileNameEmpty",
-  "options_profileNameConflict"
+  "options_profileNameConflict",
+  "options_modalHeader_deleteRule",
+  "options_deleteRuleConfirm",
+  "options_deleteRule"
 ];

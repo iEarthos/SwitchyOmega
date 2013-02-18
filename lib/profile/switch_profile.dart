@@ -152,7 +152,7 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
 
   void remove(Rule rule) {
     var index = this._rules.indexOf(rule);
-    if (index > 0) {
+    if (index >= 0) {
       _untrack(rule);
       this._rules.remove(rule);
     }

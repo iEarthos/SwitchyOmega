@@ -147,6 +147,23 @@
       button.on('click', on_click);
       modal.on('hidden', on_hidden);
       modal.modal();
+    },
+    'modal.rule.delete': function (_, reply) {
+      var modal = $('#modal-rule-delete');
+      var button = $('#rule-delete-confirm');
+      var on_click = function () {
+        modal.off('hidden', on_hidden);
+        button.off('click', on_click);
+        reply('delete');
+      };
+      var on_hidden = function () {
+        modal.off('hidden', on_hidden);
+        button.off('click', on_click);
+        reply('dismiss');
+      };
+      button.on('click', on_click);
+      modal.on('hidden', on_hidden);
+      modal.modal();
     }
   });
 

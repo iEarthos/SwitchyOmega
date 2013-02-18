@@ -35,7 +35,7 @@ class ObservableSwitchyOptions extends SwitchyOptions {
   void set confirmDeletion(bool value) {
     if (_confirmDelection != value) {
       _confirmDelection = value;
-      observer.optionModified('confirmDeletion', value);
+      if (observer != null) observer.optionModified('confirmDeletion', value);
     }
   }
 
@@ -44,7 +44,8 @@ class ObservableSwitchyOptions extends SwitchyOptions {
   void set refreshOnProfileChange(bool value) {
     if (_refreshOnProfileChange != value) {
       _refreshOnProfileChange = value;
-      observer.optionModified('refreshOnProfileChange', value);
+      if (observer != null)
+        observer.optionModified('refreshOnProfileChange', value);
     }
   }
 
@@ -53,7 +54,8 @@ class ObservableSwitchyOptions extends SwitchyOptions {
   void set startupProfileName(String value) {
     if (_startupProfileName != value) {
       _startupProfileName = value;
-      observer.optionModified('startupProfileName', value);
+      if (observer != null)
+        observer.optionModified('startupProfileName', value);
     }
   }
 
@@ -62,7 +64,8 @@ class ObservableSwitchyOptions extends SwitchyOptions {
   void set enableQuickSwitch(bool value) {
     if (_enableQuickSwitch != value) {
       _enableQuickSwitch = value;
-      observer.optionModified('enableQuickSwitch', value);
+      if (observer != null)
+        observer.optionModified('enableQuickSwitch', value);
     }
   }
 
@@ -71,7 +74,8 @@ class ObservableSwitchyOptions extends SwitchyOptions {
   void set revertProxyChanges(bool value) {
     if (_revertProxyChanges != value) {
       _revertProxyChanges = value;
-      observer.optionModified('revertProxyChanges', value);
+      if (observer != null)
+        observer.optionModified('revertProxyChanges', value);
     }
   }
 
@@ -80,7 +84,8 @@ class ObservableSwitchyOptions extends SwitchyOptions {
   void set quickSwitchProfiles(List<String> value) {
     if (_quickSwitchProfiles != value) {
       _quickSwitchProfiles = value;
-      observer.optionModified('quickSwitchProfiles', value);
+      if (observer != null)
+        observer.optionModified('quickSwitchProfiles', value);
     }
   }
 
@@ -89,7 +94,8 @@ class ObservableSwitchyOptions extends SwitchyOptions {
   void set currentProfileName(String value) {
     if (_currentProfileName != value) {
       _currentProfileName = value;
-      observer.optionModified('currentProfileName', value);
+      if (observer != null)
+        observer.optionModified('currentProfileName', value);
     }
   }
 
