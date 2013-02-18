@@ -89,6 +89,29 @@ abstract class RuleListProfile extends InclusiveProfile {
     w.inline('}');
   }
 
+  void renameProfile(String oldName, String newName) {
+    if (matchProfileName == oldName) {
+      matchProfileName = newName;
+    }
+    if (defaultProfileName == oldName) {
+      defaultProfileName = newName;
+    }
+  }
+
+  String choose(String url, String host, String scheme, Date datetime) {
+    for (var rule in _rules) {
+      if (rule.condition.match(url, host, scheme, datetime)) {
+        return rule.profileName;
+      }
+    }
+    return defaultProfileName;
+  }
+
+  void initTracker(ProfileTracker tracker) {
+    tracker.addReferenceByName(this, matchProfileName);
+    tracker.addReferenceByName(this, defaultProfileName);
+  }
+
   /**
    * Parse the [rules] and return the results.
    */

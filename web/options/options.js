@@ -87,12 +87,24 @@
         });
       }
     },
-    'tab.reset': function () {
-      $('#options-nav a[data-toggle="tab"]').first().click();
+    'tab.reset': function (tabhref) {
+      var tabs = $('#options-nav a[data-toggle="tab"]');
+      var tab = null;
+      if (tabhref) {
+        tabs.each(function (_, e) {
+          if (e.getAttribute('href') === tabhref) {
+            tab = $(e);
+          }
+        });
+      }
+      if (tab === null) {
+        tab = tabs.first();
+      }
+      tab.click();
     },
     'modal.profile.delete': function (_, reply) {
       var modal = $('#modal-profile-delete');
-      var button = $('#modal-profile-delete .delete-profile-confirm-button');
+      var button = $('#profile-delete-confirm');
       var on_click = function () {
         modal.off('hidden', on_hidden);
         button.off('click', on_click);
@@ -113,6 +125,26 @@
         modal.off('hidden', on_hidden);
         reply();
       };
+      modal.on('hidden', on_hidden);
+      modal.modal();
+    },
+    'modal.profile.rename': function (_, reply) {
+      var modal = $('#modal-profile-rename');
+      var button = $('#profile-rename-save');
+      var on_click = function () {
+        if (button.is('.disabled')) {
+          return false;
+        }
+        modal.off('hidden', on_hidden);
+        button.off('click', on_click);
+        reply('rename');
+      };
+      var on_hidden = function () {
+        modal.off('hidden', on_hidden);
+        button.off('click', on_click);
+        reply('dismiss');
+      };
+      button.on('click', on_click);
       modal.on('hidden', on_hidden);
       modal.modal();
     }

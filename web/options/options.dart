@@ -36,6 +36,9 @@ import 'editors.dart';
 List<Profile> modalCannotDeleteProfile_referring = [];
 Profile modalDeleteProfile_profile = null;
 
+String modalRenameProfile_newName = null;
+String modalRenameProfile_oldName = null;
+
 void deleteProfile(Profile profile) {
   options.profiles.remove(profile);
   if (options.currentProfileName == profile.name) {
@@ -74,6 +77,28 @@ void requestProfileDelete(Profile profile) {
       modalDeleteProfile_profile = null;
     });
   }
+}
+
+void requestProfileRename(Profile profile) {
+  modalRenameProfile_newName = modalRenameProfile_oldName = profile.name;
+  js.send('modal.profile.rename', null, (action, [reply]) {
+    if (action == 'rename') {
+      if (modalRenameProfile_newName != modalRenameProfile_oldName) {
+        options.profiles.renameProfile(modalRenameProfile_oldName,
+            modalRenameProfile_newName);
+        watchers.dispatch();
+        js.send('tab.reset', '#profile-$modalRenameProfile_newName');
+      }
+    }
+    modalRenameProfile_newName = modalRenameProfile_oldName = null;
+  });
+}
+
+bool modalRenameProfile_isValid() {
+  if (modalRenameProfile_newName == modalRenameProfile_oldName) return true;
+  if (modalRenameProfile_newName.isEmpty) return false;
+  if (options.profiles[modalRenameProfile_newName] != null) return false;
+  return true;
 }
 
 String bypassListToText(List<BypassCondition> list) =>

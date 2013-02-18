@@ -98,5 +98,8 @@ var strings = [
   "options_deleteProfileConfirm",
   "options_modalHeader_cannotDeleteProfile",
   "options_profileReferredBy",
-  "options_modifyReferringProfiles"
+  "options_modifyReferringProfiles",
+  "options_newProfileName",
+  "options_profileNameEmpty",
+  "options_profileNameConflict"
 ];

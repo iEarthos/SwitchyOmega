@@ -46,11 +46,6 @@ abstract class Profile extends Plainable {
   */
   bool get predefined => false;
 
-  /** Simply return the hash code of [name]. */
-  int get hashCode {
-    return this.name.hashCode;
-  }
-
   /** Create a [name]d profile. */
   Profile(String name, [this.color = null]) {
     if (this.color == null) this.color = ProfileColors.profile_default;

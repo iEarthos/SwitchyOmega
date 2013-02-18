@@ -43,6 +43,15 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
     });
   }
 
+  void renameProfile(String oldName, String newName) {
+    _rules.forEach((rule) {
+      if (rule.profileName == oldName) {
+        rule.profileName = newName;
+      }
+    });
+    if (this.defaultProfileName == oldName) this.defaultProfileName = newName;
+  }
+
   void _track(Rule r) {
     if (tracker != null) tracker.addReferenceByName(this, r.profileName);
     r.onProfileNameChange = _onRuleProfileNameChange;
@@ -286,8 +295,14 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
   Iterable<Rule> where(bool f(Rule element)) =>
       IterableMixinWorkaround.where(this, f);
 
+  List map(f(Rule element)) =>
+      IterableMixinWorkaround.mappedByList(this, f);
+
   List mappedBy(f(Rule element)) =>
       IterableMixinWorkaround.mappedByList(this, f);
+
+  Iterable<dynamic> expand(Iterable<dynamic> f(Rule element)) =>
+      IterableMixinWorkaround.expand(this, f);
 
   List<Rule> take(int n) =>
       IterableMixinWorkaround.takeList(this, n);

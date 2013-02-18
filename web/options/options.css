@@ -209,7 +209,7 @@ input[type="number"] {
 
 .nav-list .active [class^="icon-"],
 .nav-list .active [class*=" icon-"] {
-  background-image: url(../styles/images/glyphicons-halflings-white.png);
+  background-image: url(../img/glyphicons-halflings-white.png);
 }
 
 /* Profile Toolbar */

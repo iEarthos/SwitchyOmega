@@ -28,19 +28,21 @@ part of switchy_profile;
 class ProfileCollection extends Collection<Profile>
    implements Set<Profile>, Plainable, ProfileTracker {
   Map<String, _ProfileData> _profiles;
+  bool _renamingProfile = false;
 
   /**
    * Returns the profile by its [name].
    */
   Profile getProfileByName(String name) {
-    return _profiles[name].profile;
+    var data = _profiles[name];
+    return data == null ? null : data.profile;
   }
 
   /**
    * Returns the profile by its [name].
    */
   Profile operator [](String name) {
-    return _profiles[name].profile;
+    return getProfileByName(name);
   }
 
   void _addPredefined() {
@@ -151,6 +153,7 @@ class ProfileCollection extends Collection<Profile>
   }
 
   void addReference(InclusiveProfile from, IncludableProfile to) {
+    if (_renamingProfile) return;
     var from_data = _profiles[from.name];
     var to_data = _profiles[to.name];
 
@@ -173,6 +176,7 @@ class ProfileCollection extends Collection<Profile>
   }
 
   void removeReference(InclusiveProfile from, IncludableProfile to) {
+    if (_renamingProfile) return;
     var from_data = _profiles[from.name];
     var to_data = _profiles[to.name];
     from_data.directRef.decrease(to);
@@ -207,15 +211,36 @@ class ProfileCollection extends Collection<Profile>
 
   // Some helpers for name-based references.
   void addReferenceByName(InclusiveProfile from, String to) {
+    if (_renamingProfile) return;
     addReference(from, getProfileByName(to));
   }
 
   void removeReferenceByName(InclusiveProfile from, String to) {
+    if (_renamingProfile) return;
     removeReference(from, getProfileByName(to));
   }
 
   bool hasReferenceToName(InclusiveProfile from, String to) =>
       hasReference(from, getProfileByName(to));
+
+  void renameProfile(String oldName, String newName) {
+    var profileData = _profiles.remove(oldName);
+    if (profileData == null) return;
+    // InclusiveProfiles may call addReference or removeReference upon
+    // renaming. We just ignore the reference  modification requests until
+    // the renaming is complete.
+    _renamingProfile = true;
+
+    for (var data in _profiles.values) {
+      if (data.profile is InclusiveProfile && data.profile.name != oldName) {
+        data.profile.renameProfile(oldName, newName);
+      }
+    }
+    // Update the name of the profile data.
+    profileData.profile.name = newName;
+    _profiles[newName] = profileData;
+    _renamingProfile = false;
+  }
 }
 
 /**

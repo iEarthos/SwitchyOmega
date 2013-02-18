@@ -127,6 +127,12 @@ abstract class InclusiveProfile extends ScriptProfile {
    * method should add all direct references to the [tracker].
    */
   void initTracker(ProfileTracker tracker);
+
+  /**
+   * This method will be called when renaming profile [oldName] to [newName].
+   * When implemented, this method should update the name of result profiles.
+   */
+  void renameProfile(String oldName, String newName);
 }
 
 /**
