@@ -305,7 +305,7 @@
                         <th data-i18n="options_conditionActions"></th>
                       </tr>
                     </thead>
-                    <tbody class="conditions" template="template" iterate="rule in profile.mappedBy((r) => ruleEditors.putIfAbsent(r, () => new RuleEditor(r))).toList()">
+                    <tbody class="conditions" template="template" iterate="rule in profile.map((r) => ruleEditors.putIfAbsent(r, () => new RuleEditor(r))).toList()">
                       <tr>
                         <td class="sort-bar">
                           <i class="icon-resize-vertical"></i>

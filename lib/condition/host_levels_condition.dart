@@ -36,7 +36,7 @@ class HostLevelsCondition extends HostCondition {
   bool matchHost(String host) {
     int dotCount = 0;
     for (var i = 0; i < host.length; i++) {
-      if (host.charCodeAt(i) == dotCharCode) {
+      if (host.codeUnitAt(i) == dotCharCode) {
         dotCount++;
         if (dotCount > maxValue) return false;
       }

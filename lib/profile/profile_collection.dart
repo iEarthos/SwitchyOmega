@@ -58,7 +58,7 @@ class ProfileCollection extends Collection<Profile>
   List<Object> toPlain([List<Object> p, Object config]) {
     if (p == null) p = new List<Object>();
     p.addAll(_profiles.values.where((prof) => !prof.profile.predefined)
-        .mappedBy((prof) => prof.profile.toPlain()));
+        .map((prof) => prof.profile.toPlain()));
 
     return p;
   }
@@ -134,7 +134,7 @@ class ProfileCollection extends Collection<Profile>
   }
 
   Iterator get iterator =>
-      _profiles.values.mappedBy((data) => data.profile).iterator;
+      _profiles.values.map((data) => data.profile).iterator;
 
   int get length {
     return _profiles.length;

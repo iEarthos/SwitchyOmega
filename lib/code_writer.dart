@@ -132,14 +132,14 @@ class WellFormattedCodeWriter implements CodeWriter {
 
   CodeWriter code(String codeStr, [bool autoIndent = true]) {
     if (_lineStart) {
-      if (autoIndent && outdentingSymbols.contains(codeStr.charCodeAt(0))) {
+      if (autoIndent && outdentingSymbols.contains(codeStr.codeUnitAt(0))) {
         outdent();
       }
       _sb.add(_currentIndent);
     }
     _sb..add(codeStr)..add(lineBreak);
     if (autoIndent &&
-        indentingSymbols.contains(codeStr.charCodeAt(codeStr.length - 1))) {
+        indentingSymbols.contains(codeStr.codeUnitAt(codeStr.length - 1))) {
       indent();
     }
     _lineStart = true;
@@ -159,7 +159,7 @@ class WellFormattedCodeWriter implements CodeWriter {
 
   CodeWriter inline(String codeStr, [bool autoIndent = true]) {
     if (_lineStart) {
-      if (autoIndent && outdentingSymbols.contains(codeStr.charCodeAt(0))) {
+      if (autoIndent && outdentingSymbols.contains(codeStr.codeUnitAt(0))) {
         outdent();
       }
       _sb.add(_currentIndent);

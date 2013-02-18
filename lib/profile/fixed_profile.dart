@@ -115,7 +115,7 @@ class FixedProfile extends IncludableProfile {
     if (this.fallbackProxy != null) {
       p['fallbackProxy'] = this.fallbackProxy.toPlain();
     }
-    p['bypassList'] = this.bypassList.mappedBy((b) => b.toPlain()).toList();
+    p['bypassList'] = this.bypassList.map((b) => b.toPlain()).toList();
     return p;
   }
 
@@ -138,7 +138,7 @@ class FixedProfile extends IncludableProfile {
       fallbackProxy = new ProxyServer.fromPlain(p['fallbackProxy']);
     }
     var bl = p['bypassList'] as List<Object>;
-    bypassList = bl.mappedBy((b) => new BypassCondition.fromPlain(b)).toList();
+    bypassList = bl.map((b) => new BypassCondition.fromPlain(b)).toList();
   }
 
 

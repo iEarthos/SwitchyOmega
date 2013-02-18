@@ -26,7 +26,7 @@ final String valueLaterDataListAttrName = "data-later-value";
 void copyFromDataList(Element target, DataListElement datalist) {
   target.nodes.clear();
   target.nodes.addAll(
-      datalist.queryAll('option').mappedBy((o) => o.clone(true)));
+      datalist.queryAll('option').map((o) => o.clone(true)));
 
   var value = target.attributes[valueLaterDataListAttrName];
   if (value != null) {

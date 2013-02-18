@@ -21,7 +21,7 @@ part of switchy_condition;
  */
 
 abstract class HostCondition extends Condition {
-  bool match(String url, String host, String scheme, Date datetime) =>
+  bool match(String url, String host, String scheme, DateTime datetime) =>
       matchHost(host);
 
   /**

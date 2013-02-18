@@ -102,7 +102,7 @@ bool modalRenameProfile_isValid() {
 }
 
 String bypassListToText(List<BypassCondition> list) =>
-    list.mappedBy((b) => b.pattern).join('\n');
+    list.map((b) => b.pattern).join('\n');
 
 void handleFixedServerUI() {
   dynamicEvent('change', '.bypass-list',  (e, TextAreaElement bypassList) {
@@ -110,8 +110,8 @@ void handleFixedServerUI() {
         .attributes['data-profile'];
     var profile = options.profiles[profile_name] as FixedProfile;
     profile.bypassList = bypassList.value.split('\n')
-        .mappedBy((l) => l.trim()).where((l) => !l.isEmpty)
-        .mappedBy((l) => new BypassCondition(l))
+        .map((l) => l.trim()).where((l) => !l.isEmpty)
+        .map((l) => new BypassCondition(l))
         .toList();
     // Update the text in the textarea.
     bypassList.value = bypassListToText(profile.bypassList);

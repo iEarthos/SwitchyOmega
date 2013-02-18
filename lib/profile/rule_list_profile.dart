@@ -98,7 +98,7 @@ abstract class RuleListProfile extends InclusiveProfile {
     }
   }
 
-  String choose(String url, String host, String scheme, Date datetime) {
+  String choose(String url, String host, String scheme, DateTime datetime) {
     for (var rule in _rules) {
       if (rule.condition.match(url, host, scheme, datetime)) {
         return rule.profileName;

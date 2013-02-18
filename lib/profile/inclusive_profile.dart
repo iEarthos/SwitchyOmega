@@ -120,7 +120,7 @@ abstract class InclusiveProfile extends ScriptProfile {
    * Select one result profile according to the params and return its name.
    * Implementation of this method should not rely on the [tracker].
    */
-  String choose(String url, String host, String scheme, Date datetime);
+  String choose(String url, String host, String scheme, DateTime datetime);
 
   /**
    * This method will be called when setting [tracker]. When implemented, this

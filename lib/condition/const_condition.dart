@@ -37,7 +37,7 @@ abstract class ConstCondition extends Condition {
   /**
    * Returns [value] at all times.
    */
-  bool match(String url, String host, String scheme, Date datetime) => value;
+  bool match(String url, String host, String scheme, DateTime datetime) => value;
 
   /**
    * Writes [expression] to [w].

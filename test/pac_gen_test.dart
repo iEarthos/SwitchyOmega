@@ -88,7 +88,7 @@ void testCase(Profile p, String url) {
   var slashPos = url.indexOf('/', hostStart);
   if (slashPos < 0) slashPos = url.length;
 
-  if (url.charCodeAt(slashPos - 1) == BypassCondition.closeSquareBracketCode) {
+  if (url.codeUnitAt(slashPos - 1) == BypassCondition.closeSquareBracketCode) {
     host = url.substring(hostStart, slashPos + 1);
   } else {
     var colonPos = url.lastIndexOf(':', slashPos - 1);

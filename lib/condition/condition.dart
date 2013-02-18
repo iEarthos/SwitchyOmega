@@ -31,7 +31,7 @@ abstract class Condition extends Plainable {
    * Returns true if the [url], [host], [scheme] and [datetime] matches this
    * condition. False otherwise.
    */
-  bool match(String url, String host, String scheme, Date datetime);
+  bool match(String url, String host, String scheme, DateTime datetime);
 
   /**
    * Write this condition to [w] as a JavaScript expression.

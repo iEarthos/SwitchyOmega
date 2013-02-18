@@ -69,7 +69,7 @@ class BypassCondition extends Condition implements PatternBasedCondition {
     } else {
       _urlRegex = null;
       _hostWildcard = null;
-      if (server.charCodeAt(server.length - 1) != closeSquareBracketCode) {
+      if (server.codeUnitAt(server.length - 1) != closeSquareBracketCode) {
         var pos = server.lastIndexOf(':');
         if (pos >= 0) {
           var matchPort = server.substring(pos + 1);
@@ -88,7 +88,7 @@ class BypassCondition extends Condition implements PatternBasedCondition {
     _cached = true;
   }
 
-  bool match(String url, String host, String scheme, Date datetime) {
+  bool match(String url, String host, String scheme, DateTime datetime) {
     if (!_cached) _parsePattern();
     if (pattern == localPattern) return localHosts.indexOf(host) >= 0;
     if (_matchScheme != null && _matchScheme != scheme) return false;

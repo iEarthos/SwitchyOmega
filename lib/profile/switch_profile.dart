@@ -90,7 +90,7 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
     w.inline('}');
   }
 
-  String choose(String url, String host, String scheme, Date datetime) {
+  String choose(String url, String host, String scheme, DateTime datetime) {
     for (var rule in _rules) {
       if (rule.condition.match(url, host, scheme, datetime)) {
         return rule.profileName;
@@ -102,7 +102,7 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
   Map<String, Object> toPlain([Map<String, Object> p]) {
     p = super.toPlain(p);
     p['defaultProfileName'] = defaultProfileName;
-    p['rules'] = this.mappedBy((r) => r.toPlain()).toList();
+    p['rules'] = this.map((r) => r.toPlain()).toList();
 
     return p;
   }
@@ -116,7 +116,7 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
   void loadPlain(Map<String, Object> p) {
     super.loadPlain(p);
     var rl = p['rules'] as List<Map<String, Object>>;
-    this.addAll(rl.mappedBy((r) => new Rule.fromPlain(r)));
+    this.addAll(rl.map((r) => new Rule.fromPlain(r)));
   }
 
   factory SwitchProfile.fromPlain(Map<String, Object> p) {
@@ -295,8 +295,8 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
   Iterable<Rule> where(bool f(Rule element)) =>
       IterableMixinWorkaround.where(this, f);
 
-  List map(f(Rule element)) =>
-      IterableMixinWorkaround.mappedByList(this, f);
+  Iterable<Rule> map(f(Rule element)) =>
+      IterableMixinWorkaround.mapList(this, f);
 
   List mappedBy(f(Rule element)) =>
       IterableMixinWorkaround.mappedByList(this, f);
