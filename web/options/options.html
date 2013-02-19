@@ -38,7 +38,14 @@
   </head>
   <body class="container-fluid">
     <template instantiate="if options == null">
-      TODO(catus): Loading screen.
+      <div id="splash">
+        <!-- The following title should be filled with text even if the i18n cache is not loaded. -->
+        <div class="title" data-i18n="appNameShort">SwitchyOmega</div>
+        <br />
+        <div class="progress progress-striped active">
+          <div class="bar" style="width: 100%;"></div>
+        </div>
+      </div>
     </template>
     <template instantiate="if options != null">
       <div>
@@ -69,7 +76,7 @@
           <nav class="collapse-target">
             <ul id="tabs" class="nav nav-list">
               <li class="nav-header" data-i18n="options_navHeader_setting"></li>
-              <li class="active">
+              <li>
                 <a href="#tab-ui" data-toggle="tab">
                   <i class="icon-edit"></i>
                   <span data-i18n="options_tab_ui"></span>
@@ -117,7 +124,7 @@
       </header>
       <div id="main" class="span10">
         <div class="tab-content">
-          <div class="tab-pane active" id="tab-ui">
+          <div class="tab-pane" id="tab-ui">
             <header class="span10">
               <h2 data-i18n="options_tab_ui"></h2>
               <hr />
@@ -153,7 +160,7 @@
                 <h4 data-i18n="options_cycledProfiles"></h4>
                 <p class="help-block" data-i18n="options_cycledProfilesHelp"></p>
                 <ul id="cycle-enabled" class="cycle-profile-container">
-                  <li><div class="profile-color" style="background-color: blue;"></div><span>Example</span></li>
+                  <li><span class="profile-color" style="background-color: blue;"></span><span>Example</span></li>
                 </ul>
                 <p></p>
                 <h4 data-i18n="options_notCycledProfiles"></h4>
@@ -350,7 +357,7 @@
                           <select data-list="profiles" bind-value="profile.defaultProfileName" data-later-value="{{profile.defaultProfileName}}"></select>
                         </td>
                         <td>
-                          <a on-click="setResultsOfAllRules(profile); $event.preventDefault()" href="#"><i class="icon-chevron-up"></i></a>
+                          <a on-click="requestResetRules(profile); $event.preventDefault()" href="#"><i class="icon-chevron-up"></i></a>
                         </td>
                       </tr>
                     </tbody>
@@ -439,7 +446,7 @@
         <div class="modal-body">
           <p data-i18n="options_deleteProfileConfirm"></p>
           <div class="well" template="template" instantiate="if modalDeleteProfile_profile != null">
-            <div class="profile-color" style="background-color: {{modalDeleteProfile_profile.color}};"></div>
+            <span class="profile-color" style="background-color: {{modalDeleteProfile_profile.color}};"></span>
             <span>{{modalDeleteProfile_profile.name}}</span>
           </div>
         </div>
@@ -458,7 +465,10 @@
           <p data-i18n="options_profileReferredBy"></p>
           <div class="well">
             <ul template="template" iterate="profile in modalCannotDeleteProfile_referring">
-              <li><div class="profile-color" style="background-color: {{profile.color}};"></div><span>{{profile.name}}</span></li>
+              <li>
+                <span class="profile-color" style="background-color: {{profile.color}};"></span>
+                <span>{{profile.name}}</span>
+              </li>
             </ul>
           </div>
           <p data-i18n="options_modifyReferringProfiles"></p>
@@ -475,16 +485,58 @@
         <div class="modal-body">
           <p data-i18n="options_deleteRuleConfirm"></p>
           <div class="well" template="template" instantiate="if modalDeleteRule_rule != null">
+            <span class="label label-info">{{query('#condition-types option[value="${modalDeleteRule_rule.condition.conditionType}"]').text}}</span>
             <template instantiate="if modalDeleteRule_rule.condition is PatternBasedCondition">
               {{modalDeleteRule_rule.condition.pattern}}
             </template>
-            <!-- TODO(catus): Maybe, some details about other type of rules here? -->
+            <template instantiate="if modalDeleteRule_rule.condition is HostLevelsCondition">
+              {{modalDeleteRule_rule.condition.minValue}}
+              <span data-i18n="options_hostLevelsBetween"></span>
+              {{modalDeleteRule_rule.condition.maxValue}}
+            </template>
+            <span class="pull-right">
+              <span class="profile-color" style="background-color: {{options.profiles[modalDeleteRule_rule.profileName].color}};"></span>
+              <span>{{modalDeleteRule_rule.profileName}}</span>
+            </span>
           </div>
         </div>
         <div class="modal-footer">
           <a href="#" class="btn" data-dismiss="modal" data-i18n="dialog_cancel"></a>
           <a href="#" class="btn btn-primary btn-danger" id="rule-delete-confirm"
               data-dismiss="modal" data-i18n="options_deleteRule"></a>
+        </div>
+      </div>
+      <div class="modal hide fade" id="modal-rule-reset">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">×</button>
+          <h3 data-i18n="options_modalHeader_resetRules"></h3>
+        </div>
+        <div class="modal-body">
+          <p data-i18n="options_resetRulesConfirm"></p>
+          <div class="well" template="template" instantiate="if modalResetRules_resultProfile != null">
+            <span class="profile-color" style="background-color: {{modalResetRules_resultProfile.color}};"></span>
+            <span>{{modalResetRules_resultProfile.name}}</span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <a href="#" class="btn" data-dismiss="modal" data-i18n="dialog_cancel"></a>
+          <a href="#" class="btn btn-primary btn-danger" id="rule-reset-confirm"
+              data-dismiss="modal" data-i18n="options_resetRules"></a>
+        </div>
+      </div>
+      <div class="modal hide fade" id="modal-profile-add">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">×</button>
+          <h3 data-i18n="options_modalHeader_addProfile"></h3>
+        </div>
+        <div class="modal-body">
+          <p data-i18n="options_profileType"></p>
+
+        </div>
+        <div class="modal-footer">
+          <a href="#" class="btn" data-dismiss="modal" data-i18n="dialog_cancel"></a>
+          <a href="#" class="btn btn-primary btn-danger" id="profile-add-confirm"
+              data-dismiss="modal" data-i18n="options_addProfile"></a>
         </div>
       </div>
     </template>

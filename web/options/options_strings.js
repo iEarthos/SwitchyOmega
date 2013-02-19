@@ -104,5 +104,10 @@ var strings = [
   "options_profileNameConflict",
   "options_modalHeader_deleteRule",
   "options_deleteRuleConfirm",
-  "options_deleteRule"
+  "options_deleteRule",
+  "options_modalHeader_resetRules",
+  "options_resetRulesConfirm",
+  "options_resetRules",
+  "options_modalHeader_addProfile",
+  "options_profileType"
 ];

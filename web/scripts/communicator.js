@@ -26,6 +26,8 @@ var Communicator = function (win, self) {
   this.source.addEventListener('message', this._onmessage.bind(this), false);
 };
 
+Communicator._doNothing = function () {};  
+
 Communicator.prototype._postMessage = function (dest, action, value, callback, reply_to) {
   var reqid = null;
   
@@ -50,9 +52,13 @@ Communicator.prototype._postMessage = function (dest, action, value, callback, r
 
 Communicator.prototype.createResponder = function (source, action, reqid) {
   var that = this;
-  return function (value, callback) {
-    that._postMessage(source, action, value, callback, reqid)
-  };
+  if (reqid != null) {
+    return function (value, callback) {
+      that._postMessage(source, action, value, callback, reqid)
+    };
+  } else {
+    return Communicator._doNothing;
+  }
 };
 
 Communicator.prototype._onmessage = function (e) {

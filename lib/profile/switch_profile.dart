@@ -22,7 +22,7 @@ part of switchy_profile;
 
 /**
  * Selects the result profile of the first matching [Rule],
- * or the [defaultProfile] if no rule matches.
+ * or the [defaultProfileName] if no rule matches.
  */
 class SwitchProfile extends InclusiveProfile implements List<Rule> {
   String get profileType => 'SwitchProfile';
@@ -64,7 +64,7 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
 
   String _defaultProfileName;
   String get defaultProfileName => _defaultProfileName;
-  void set defaultProfile(String value) {
+  void set defaultProfileName(String value) {
     if (tracker != null) {
       tracker.removeReferenceByName(this, _defaultProfileName);
       tracker.addReferenceByName(this, value);

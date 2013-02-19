@@ -277,5 +277,20 @@
   },
   "options_deleteRule": {
     "message": "Delete"
+  },
+  "options_modalHeader_resetRules" : {
+    "message": "Reset rules"
+  },
+  "options_resetRulesConfirm" : {
+    "message": "Are you sure to set the result profile of ALL rules to the following profile?"
+  },
+  "options_resetRules" : {
+    "message": "Reset rules"
+  },
+  "options_modalHeader_addProfile" : {
+    "message": "Add Profile"
+  },
+  "options_profileType" : {
+    "message": "Please select the type of the profile:"
   }
 }

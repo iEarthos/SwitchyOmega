@@ -31,21 +31,6 @@
   
   var c = new Communicator(window.top);
 
-  // Get memorized tabs
-  var isDocReady = false;
-  var showTabInner = function (hash) {
-    $('#options-nav a[href="' + hash + '"]').tab('show');
-  };
-  var showTab = function (hash) {
-    if (isDocReady) {
-      showTabInner(hash);
-    } else {
-      $(document).ready(function () {
-        showTabInner(hash);
-      });
-    }
-  };
-
   var i18n = null;
   c.send('i18n.cache', null, function (cache) {
     i18n = new i18nDict(cache);
@@ -73,21 +58,35 @@
     });
     i18nTemplate.process(document, i18n);
   });
-  
+
   c.on({
     'options.init': function () {
-      if (location.hash) {
-        showTab(location.hash);
-        location.hash = '';
-      } else {
-        c.send('tab.get', null, function (hash) {
-          if (hash) {
-            showTab(hash);
-          }
-        });
-      }
+      // Sortable
+      var containers = $('.cycle-profile-container');
+      containers.sortable({
+        connectWith: '.cycle-profile-container',
+        change: function () {
+          // onFieldModified(false);
+        }
+      }).disableSelection();
+      var quickSwitch = $('#quick-switch');
+      quickSwitch.change(function () {
+        if (quickSwitch[0].checked) {
+          containers.sortable('enable');
+          $('#quick-switch-settings').slideDown();
+        } else {
+          containers.sortable('disable');
+          $('#quick-switch-settings').slideUp();
+        }
+      });
+      
+      // Memorize Tab
+      $('#options-nav').on('shown', 'a[data-toggle="tab"]', function (e) {
+        var tabHash = e.target.getAttribute('href');
+        c.send('tab.set', tabHash);
+      });
     },
-    'tab.reset': function (tabhref) {
+    'tab.set': function (tabhref) {
       var tabs = $('#options-nav a[data-toggle="tab"]');
       var tab = null;
       if (tabhref) {
@@ -100,7 +99,7 @@
       if (tab === null) {
         tab = tabs.first();
       }
-      tab.click();
+      tab.tab('show');
     },
     'modal.profile.delete': function (_, reply) {
       var modal = $('#modal-profile-delete');
@@ -164,31 +163,27 @@
       button.on('click', on_click);
       modal.on('hidden', on_hidden);
       modal.modal();
-    }
+    },
+    'modal.rule.reset': function (_, reply) {
+      var modal = $('#modal-rule-reset');
+      var button = $('#rule-reset-confirm');
+      var on_click = function () {
+        modal.off('hidden', on_hidden);
+        button.off('click', on_click);
+        reply('reset');
+      };
+      var on_hidden = function () {
+        modal.off('hidden', on_hidden);
+        button.off('click', on_click);
+        reply('dismiss');
+      };
+      button.on('click', on_click);
+      modal.on('hidden', on_hidden);
+      modal.modal();
+    },
   });
 
   $(document).ready(function () {
-    isDocReady = true;
-    
-    // Sortable
-    var containers = $('.cycle-profile-container');
-    containers.sortable({
-      connectWith: '.cycle-profile-container',
-      change: function () {
-        // onFieldModified(false);
-      }
-    }).disableSelection();
-    var quickSwitch = $('#quick-switch');
-    quickSwitch.change(function () {
-      if (quickSwitch[0].checked) {
-        containers.sortable('enable');
-        $('#quick-switch-settings').slideDown();
-      } else {
-        containers.sortable('disable');
-        $('#quick-switch-settings').slideUp();
-      }
-    });
-    
     // Conditions Sort
     var MutationObserver = window.MutationObserver ||
                            window.WebKitMutationObserver;
@@ -232,12 +227,6 @@
     }).observe(document, {
         childList: true,
         subtree: true
-    });
-    
-    // Memorize Tab
-    $('#options-nav').on('shown', 'a[data-toggle="tab"]', function (e) {
-      var tabHash = e.target.getAttribute('href');
-      c.send('tab.set', tabHash);
     });
     
     var fireInputAndChangeEvent = function (target) {

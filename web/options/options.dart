@@ -42,6 +42,9 @@ String modalRenameProfile_oldName = null;
 Profile modalDeleteRule_profile = null;
 Rule modalDeleteRule_rule = null;
 
+Profile modalResetRules_profile = null;
+Profile modalResetRules_resultProfile = null;
+
 void deleteProfile(Profile profile) {
   options.profiles.remove(profile);
   if (options.currentProfileName == profile.name) {
@@ -75,7 +78,7 @@ void requestProfileDelete(Profile profile) {
     js.send('modal.profile.delete', null, (action, [reply]) {
       if (action == 'delete') {
         deleteProfile(profile);
-        js.send('tab.reset');
+        js.send('tab.set');
       }
       modalDeleteProfile_profile = null;
     });
@@ -90,7 +93,7 @@ void requestProfileRename(Profile profile) {
         options.profiles.renameProfile(modalRenameProfile_oldName,
             modalRenameProfile_newName);
         watchers.dispatch();
-        js.send('tab.reset', '#profile-$modalRenameProfile_newName');
+        js.send('tab.set', '#profile-$modalRenameProfile_newName');
       }
     }
     modalRenameProfile_newName = modalRenameProfile_oldName = null;
@@ -198,9 +201,22 @@ void addRule(SwitchProfile profile) {
   watchers.dispatch();
 }
 
-void setResultsOfAllRules(SwitchProfile profile) {
+void resetRules(SwitchProfile profile) {
   profile.forEach((rule) {
     rule.profileName = profile.defaultProfileName;
+  });
+  watchers.dispatch();
+}
+
+void requestResetRules(SwitchProfile profile) {
+  modalResetRules_profile = profile;
+  modalResetRules_resultProfile = options.profiles[profile.defaultProfileName];
+  js.send('modal.rule.reset', null, (action, [reply]) {
+    if (action == 'reset') {
+      resetRules(profile);
+    }
+    modalResetRules_profile = null;
+    modalResetRules_resultProfile = null;
   });
 }
 
@@ -269,8 +285,21 @@ void idBindingWorkaround() {
 void main() {
   idBindingWorkaround();
   c.send('options.get', null, (Map<String, Object> o, [Function respond]) {
-    options = new ObservableSwitchyOptions.fromPlain(o);
+    options = new ObservableSwitchyOptions.fromPlain(o['options']);
     watchers.dispatch();
+
+    var lastActiveTab = o['tab'];
+    var navs = queryAll('#options-nav a[data-toggle="tab"]');
+    var nav = navs.firstMatching((e) => e.attributes['href'] == lastActiveTab,
+        orElse: () => navs.first);
+    closestElement(nav, 'li').classes.add('active');
+    var tab = query(nav.attributes['href']);
+    if (tab == null && nav.attributes['href'][0] == '#') {
+      var id = nav.attributes['href'].substring(1);
+      tab = query('[$idBindingWorkaroundAttrName="$id"]');
+    }
+    tab.classes.add('active');
+
     js.send('options.init');
   });
 

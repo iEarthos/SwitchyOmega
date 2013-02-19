@@ -38,7 +38,7 @@ c.on({
     } else {
       hash = localStorage['options_last_tab'];
     }
-    respond([hash]);
+    respond(hash);
   },
   'tab.set': function (hash, respond) {
     localStorage['options_last_tab'] = hash;
@@ -51,7 +51,7 @@ c.on({
     respond(i18nCache);
   },
   'options.get': function (data, respond) {
-  	respond({
+  	respond({'tab': localStorage['options_last_tab'], 'options': {
   	  // The profiles are from the pac_gen_test.
   	  'confirmDeletion': true,
   	  'profiles': [
@@ -88,7 +88,7 @@ c.on({
   	      }
   	    ],
   	  'quickSwitchProfiles' : []
-  	});
+  	}});
   }
 });
 

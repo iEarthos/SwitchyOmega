@@ -65,10 +65,16 @@ class Communicator {
     }), '*');
   }
 
+  static void _doNothing(Object value, [Function respond]) {}
+
   CommunicatorCallback createResponder(WindowBase source, String action, String reqid) {
-    return (Object value, [Function respond]) {
-      this._postMessage(source, action, value, respond, reqid);
-    };
+    if (reqid != null) {
+      return (Object value, [Function respond]) {
+        this._postMessage(source, action, value, respond, reqid);
+      };
+    } else {
+      return _doNothing;
+    }
   }
 
   void _onmessage(MessageEvent e) {
