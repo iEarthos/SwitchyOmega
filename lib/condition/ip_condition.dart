@@ -53,7 +53,7 @@ class IpCondition extends HostCondition {
     var partCount = 0;
     while (length > partLen) {
       length -= partLen;
-      sb.add('255.');
+      sb.write('255.');
       partCount++;
     }
     if (partCount >= maxPartCount) {
@@ -65,10 +65,10 @@ class IpCondition extends HostCondition {
         bitValue >>= 1;
         mask += bitValue;
       }
-      sb.add(mask);
+      sb.write(mask);
       partCount++;
       for (var i = partCount; i < maxPartCount; i++) {
-        sb.add('.0');
+        sb.write('.0');
       }
       return _mask = sb.toString();
     }

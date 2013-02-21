@@ -5,7 +5,7 @@ import 'package:switchyomega/condition/lib.dart';
 import 'package:switchyomega/condition/shexp_utils.dart';
 import 'package:switchyomega/lang/lib.dart';
 import 'package:switchyomega/profile/lib.dart';
-import '../html/converters.dart' as convert;
+import 'package:switchyomega/html/converters.dart' as convert;
 
 class FixedProfileEditor {
   FixedProfile profile;

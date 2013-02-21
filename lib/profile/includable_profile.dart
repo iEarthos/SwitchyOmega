@@ -52,15 +52,15 @@ abstract class IncludableProfile extends Profile {
     StringBuffer sb = new StringBuffer();
     for (var c in JSON.stringify('$magicPrefix$name').charCodes) {
       if (c < 128) {
-        sb.addCharCode(c);
+        sb.writeCharCode(c);
       } else {
-        sb.add(r'\u');
+        sb.write(r'\u');
         var hex = c.toRadixString(16);
         // Fill to 4 digits
         for (var i = hex.length; i < 4; i++) {
-          sb.add('0');
+          sb.write('0');
         }
-        sb.add(hex);
+        sb.write(hex);
       }
     }
     return _scriptName = sb.toString();

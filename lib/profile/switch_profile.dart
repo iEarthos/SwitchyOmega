@@ -298,9 +298,6 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
   Iterable<Rule> map(f(Rule element)) =>
       IterableMixinWorkaround.mapList(this, f);
 
-  List mappedBy(f(Rule element)) =>
-      IterableMixinWorkaround.mappedByList(this, f);
-
   Iterable<dynamic> expand(Iterable<dynamic> f(Rule element)) =>
       IterableMixinWorkaround.expand(this, f);
 

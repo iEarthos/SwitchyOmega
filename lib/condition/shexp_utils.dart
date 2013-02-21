@@ -56,22 +56,22 @@ String shExp2RegExp(String pattern, {bool trimAsterisk : false}) {
   }
 
   StringBuffer sb = new StringBuffer();
-  if (start == 0) sb.add('^');
+  if (start == 0) sb.write('^');
   for (var i = start; i < end; i++) {
     switch (codes[i]) {
       case 42: // '*'
-        sb.add('.*');
+        sb.write('.*');
         break;
       case 63: // '?'
-        sb.add('.');
+        sb.write('.');
         break;
       default:
-        if (regExpMetaChars.contains(codes[i])) sb.add(r'\');
-        sb.addCharCode(codes[i]);
+        if (regExpMetaChars.contains(codes[i])) sb.write(r'\');
+        sb.writeCharCode(codes[i]);
         break;
     }
   }
-  if (end == pattern.length) sb.add(r'$');
+  if (end == pattern.length) sb.write(r'$');
 
   return sb.toString();
 }

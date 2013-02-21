@@ -135,9 +135,9 @@ class WellFormattedCodeWriter implements CodeWriter {
       if (autoIndent && outdentingSymbols.contains(codeStr.codeUnitAt(0))) {
         outdent();
       }
-      _sb.add(_currentIndent);
+      _sb.write(_currentIndent);
     }
-    _sb..add(codeStr)..add(lineBreak);
+    _sb..write(codeStr)..write(lineBreak);
     if (autoIndent &&
         indentingSymbols.contains(codeStr.codeUnitAt(codeStr.length - 1))) {
       indent();
@@ -147,12 +147,12 @@ class WellFormattedCodeWriter implements CodeWriter {
   }
 
   CodeWriter raw(String codeStr) {
-    _sb.add(codeStr);
+    _sb.write(codeStr);
     return this;
   }
 
   CodeWriter newLine() {
-    _sb.add(lineBreak);
+    _sb.write(lineBreak);
     _lineStart = true;
     return this;
   }
@@ -162,9 +162,9 @@ class WellFormattedCodeWriter implements CodeWriter {
       if (autoIndent && outdentingSymbols.contains(codeStr.codeUnitAt(0))) {
         outdent();
       }
-      _sb.add(_currentIndent);
+      _sb.write(_currentIndent);
     }
-    _sb.add(codeStr);
+    _sb.write(codeStr);
     _lineStart = false;
     return this;
   }

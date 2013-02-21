@@ -72,10 +72,8 @@ class ProfileCollection extends Collection<Profile>
   }
 
   void loadPlain(List<Object> p) {
-    for (Map<String, Object> profile in p) {
-      var pp = new Profile.fromPlain(profile);
-      this.add(pp);
-    }
+    this.addAll(p.map(
+        (Map<String, Object> profile) => new Profile.fromPlain(profile)));
   }
 
   factory ProfileCollection.fromPlain(List<Object> p) {
@@ -95,6 +93,22 @@ class ProfileCollection extends Collection<Profile>
         profile.tracker = this;
       }
     }
+  }
+
+  void addAll(Iterable<Profile> profiles) {
+    var added_profile = new Queue<Profile>();
+    profiles.forEach((profile) {
+      if (!_profiles.containsKey(profile.name)) {
+        _profiles[profile.name] = new _ProfileData(profile);
+        added_profile.add(profile);
+      }
+    });
+
+    added_profile.forEach((profile) {
+      if (profile is InclusiveProfile) {
+        profile.tracker = this;
+      }
+    });
   }
 
   /**

@@ -29,8 +29,8 @@ import 'package:switchyomega/condition/lib.dart';
 import 'package:switchyomega/lang/lib.dart';
 import 'package:switchyomega/profile/lib.dart';
 import 'package:web_ui/watcher.dart' as watchers;
-import '../html/converters.dart' as convert;
-import '../html/lib.dart';
+import 'package:switchyomega/html/converters.dart' as convert;
+import 'package:switchyomega/html/lib.dart';
 import 'editors.dart';
 
 List<Profile> modalCannotDeleteProfile_referring = [];
