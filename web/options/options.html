@@ -39,11 +39,12 @@
   <body class="container-fluid">
     <template instantiate="if options == null">
       <div id="splash">
-        <!-- The following title should be filled with text even if the i18n cache is not loaded. -->
-        <div class="title" data-i18n="appNameShort">SwitchyOmega</div>
-        <br />
-        <div class="progress progress-striped active">
-          <div class="bar" style="width: 100%;"></div>
+        <div>
+          <!-- The following title should be filled with text even if the i18n cache is not loaded. -->
+          <h1 data-i18n="appNameShort">SwitchyOmega</h1>
+          <div class="progress progress-striped active">
+            <div class="bar" style="width: 100%;"></div>
+          </div>
         </div>
       </div>
     </template>
@@ -64,16 +65,17 @@
         </datalist>
       </div>
       <header class="span2" id="options-nav">
+        <div class="width-holder">.</div>
         <div class="nav-wrapper">
           <div class="navbar navbar-effect">
             <h1 data-i18n="appNameShort"></h1>
-            <a href="#" class="btn btn-navbar" data-toggle="collapse" data-target=".collapse-target">
+            <a href="#navbar-collapse-target" class="btn btn-navbar" data-toggle="collapse">
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
             </a>
           </div>
-          <nav class="collapse-target">
+          <nav class="collapse-target" id="navbar-collapse-target">
             <ul id="tabs" class="nav nav-list">
               <li class="nav-header" data-i18n="options_navHeader_setting"></li>
               <li>
@@ -120,7 +122,6 @@
             </ul>
           </nav>
         </div>
-        <div class="width-holder">.</div>
       </header>
       <div id="main" class="span10">
         <div class="tab-content">
