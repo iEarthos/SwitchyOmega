@@ -1,6 +1,6 @@
 import 'dart:io';
-import 'package:web_ui/component_build.dart';
 
 void main() {
-    build(new Options().arguments, ["web/options/options.html"]);
+  Process.run('make', []).then((r) => print(r.stdout),
+      onError: (e) => print(e));
 }

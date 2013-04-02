@@ -1,14 +1,12 @@
 include Makefile.inc
 
-all : pac_gen_test options
+SUBDIRS = test web
 
-subdir:
-	true
+all: $(SUBDIRS)
 
-pac_gen_test : pac_gen_test.dart.js
+.PHONY: subdirs $(SUBDIRS)
 
-pac_gen_test.dart.js : pac_gen_test.dart profile/* condition/* utils/* lang/*
-	$(DART_COMPILER) $(DART_COMPILER_OPTIONS) -o$@ $<
+subdirs: $(SUBDIRS)
 
-options : subdir
-	cd options;	$(MAKE) $(MFLAGS)
+$(SUBDIRS):
+	$(MAKE) -C $@

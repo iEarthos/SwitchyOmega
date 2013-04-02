@@ -8,6 +8,7 @@
 ### dart2js
 *.dart.js
 *.dart.js.map
+*.dart.js.deps
 ### dwc
 out
 
