@@ -27,11 +27,11 @@ import '../code_writer.dart';
 Set<int> _regExpMetaChars = null;
 
 /**
- * The charCodes of all meta-chars which need escaping in regex.
+ * The codeUnits of all meta-chars which need escaping in regex.
  */
 Set<int> get regExpMetaChars {
   if (_regExpMetaChars == null) {
-    _regExpMetaChars = new Set.from(r'[\^$.|?*+(){}'.charCodes);
+    _regExpMetaChars = new Set.from(r'[\^$.|?*+(){}'.codeUnits);
   }
   return _regExpMetaChars;
 }
@@ -41,7 +41,7 @@ Set<int> get regExpMetaChars {
  * This function encodes [regExpMetaChars] in the [pattern].
  */
 String shExp2RegExp(String pattern, {bool trimAsterisk : false}) {
-  var codes = pattern.charCodes;
+  var codes = pattern.codeUnits;
   var start = 0;
   var end = pattern.length;
 

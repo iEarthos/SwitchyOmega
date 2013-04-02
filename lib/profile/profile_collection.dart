@@ -25,7 +25,7 @@ part of switchy_profile;
  * but they are not converted to plain.
  */
 
-class ProfileCollection extends Collection<Profile>
+class ProfileCollection extends HashSet<Profile>
    implements Set<Profile>, Plainable, ProfileTracker {
   Map<String, _ProfileData> _profiles;
   bool _renamingProfile = false;
@@ -152,18 +152,6 @@ class ProfileCollection extends Collection<Profile>
 
   int get length {
     return _profiles.length;
-  }
-
-  bool isSubsetOf(Collection<Profile> collection) {
-    return new Set<Profile>.from(collection).containsAll(this);
-  }
-
-  bool containsAll(Collection<Profile> collection) {
-    return collection.every((e) => this.contains(e));
-  }
-
-  Set<Profile> intersection(Collection<Profile> collection) {
-    return new Set<Profile>.from(collection.where((e) => this.contains(e)));
   }
 
   void addReference(InclusiveProfile from, IncludableProfile to) {

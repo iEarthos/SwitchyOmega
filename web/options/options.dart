@@ -197,7 +197,7 @@ void addRule(SwitchProfile profile) {
   var profileName = profile.length > 0 ?
       profile.last.profileName : profile.defaultProfileName;
 
-  profile.addLast(new Rule(condition, profileName));
+  profile.add(new Rule(condition, profileName));
   watchers.dispatch();
 }
 
@@ -290,7 +290,7 @@ void main() {
 
     var lastActiveTab = o['tab'];
     var navs = queryAll('#options-nav a[data-toggle="tab"]');
-    var nav = navs.firstMatching((e) => e.attributes['href'] == lastActiveTab,
+    var nav = navs.firstWhere((e) => e.attributes['href'] == lastActiveTab,
         orElse: () => navs.first);
     closestElement(nav, 'li').classes.add('active');
     var tab = query(nav.attributes['href']);

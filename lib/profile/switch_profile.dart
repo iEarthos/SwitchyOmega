@@ -133,7 +133,8 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
 
   Iterator<Rule> get iterator => this._rules.iterator;
 
-  List<Rule> toList() => this._rules.toList();
+  List<Rule> toList({ bool growable: true }) =>
+      this._rules.toList(growable: growable);
 
   Set<Rule> toSet() => this._rules.toSet();
 
@@ -183,6 +184,14 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
     if (rule != null) _untrack(rule);
     return rule;
   }
+
+  void insert(int index, Rule element) {
+    _rules.insert(index, element);
+  }
+
+  List<Rule> sublist(int start, [int end]) => _rules.sublist(start, end);
+
+  Map<int, Rule> asMap() => _rules.asMap();
 
   Rule removeLast() {
     var rule = this._rules.removeLast();
@@ -264,13 +273,22 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
     IterableMixinWorkaround.retainAll(this, elementsToRetain);
   }
 
-  void removeMatching(bool test(Rule element)) {
-    IterableMixinWorkaround.removeMatching(this, test);
+  void removeWhere(bool test(Rule element)) {
+    IterableMixinWorkaround.removeWhere(this, test);
   }
 
-  void retainMatching(bool test(Rule element)) {
-    IterableMixinWorkaround.retainMatching(this, test);
+  void retainWhere(bool test(Rule element)) {
+    IterableMixinWorkaround.retainWhere(this, test);
   }
+
+  Rule firstWhere(bool test(Rule element), {Rule orElse()}) =>
+      IterableMixinWorkaround.firstWhere(this, test, orElse);
+
+  Rule lastWhere(bool test(Rule element), {Rule orElse()}) =>
+      IterableMixinWorkaround.lastWhere(this, test, orElse);
+
+  Rule singleWhere(bool test(Rule element)) =>
+      IterableMixinWorkaround.singleWhere(this, test);
 
   Rule min([int compare(Rule a, Rule b)]) =>
       IterableMixinWorkaround.min(this, compare);
@@ -280,23 +298,13 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
 
   Rule get single => IterableMixinWorkaround.single(this);
 
-  Rule firstMatching(bool test(Rule value), {orElse()}) =>
-      IterableMixinWorkaround.firstMatching(this, test, orElse);
-
-  Rule lastMatching(bool test(Rule value), {orElse()}) =>
-      IterableMixinWorkaround.lastMatchingInList(this, test, orElse);
-
-  Rule singleMatching(bool test(Rule value)) =>
-      IterableMixinWorkaround.singleMatching(this, test);
-
   String join([String separator]) =>
       IterableMixinWorkaround.joinList(this, separator);
 
   Iterable<Rule> where(bool f(Rule element)) =>
       IterableMixinWorkaround.where(this, f);
 
-  Iterable<Rule> map(f(Rule element)) =>
-      IterableMixinWorkaround.mapList(this, f);
+  Iterable map(f(Rule element)) => IterableMixinWorkaround.map(this, f);
 
   Iterable<dynamic> expand(Iterable<dynamic> f(Rule element)) =>
       IterableMixinWorkaround.expand(this, f);
