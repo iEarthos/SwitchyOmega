@@ -2,12 +2,16 @@ include ../Makefile.inc
 
 ENTRY_POINTS=$(shell ls -1 options/*.html | sed -e "s/^/out\//")
 
-all: entries out/packages pack_options
+all: entries out/packages pack_options js
 
 entries: $(ENTRY_POINTS)
 
 out/%.html: %.html
 	$(DART_WEB_COMPILER) --basedir=. -o out/ $<
+
+SCRIPTS=$(shell find -P out/options/ -name '*.dart' | sed -e "s/$$/.js/")
+
+js: entries $(SCRIPTS)
 
 out/options/options.html: options/options.dart
 
