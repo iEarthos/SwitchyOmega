@@ -20,11 +20,18 @@ part of switchy_profile;
  * along with SwitchyOmega.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
+abstract class InclusiveProfile_MixinBugWorkaround extends InclusiveProfile {
+  InclusiveProfile_MixinBugWorkaround() : super('');
+  void workaroundSetName(String name) { _name = name; }
+}
+
 /**
  * Selects the result profile of the first matching [Rule],
  * or the [defaultProfileName] if no rule matches.
  */
-class SwitchProfile extends InclusiveProfile implements List<Rule> {
+class SwitchProfile extends InclusiveProfile_MixinBugWorkaround with ListMixin
+    implements List<Rule> {
   String get profileType => 'SwitchProfile';
 
   List<Rule> _rules;
@@ -80,12 +87,12 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
       w.inline('if (');
       rule.condition.writeTo(w);
       w.code(')').indent();
-      var ip = tracker.getProfileByName(rule.profileName);
+      var ip = tracker.getProfileByName(rule.profileName) as IncludableProfile;
       w.code('return ${ip.getScriptName()};')
        .outdent();
     }
 
-    var dp = tracker.getProfileByName(defaultProfileName);
+    var dp = tracker.getProfileByName(defaultProfileName) as IncludableProfile;
     w.code('return ${dp.getScriptName()};');
     w.inline('}');
   }
@@ -107,7 +114,8 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
     return p;
   }
 
-  SwitchProfile(String name, String defaultProfileName) : super(name) {
+  SwitchProfile(String name, String defaultProfileName) : super() {
+    workaroundSetName(name);
     if (tracker != null) tracker.addReferenceByName(this, defaultProfileName);
     this._defaultProfileName = defaultProfileName;
     this._rules = new List<Rule>();
@@ -128,20 +136,18 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
   int get length => _rules.length;
 
   void set length(int newLength) {
+    if (newLength < this.length) {
+      for (var i = newLength; i < this.length; i++) {
+        _untrack(this[i]);
+      }
+    }
     this._rules.length = newLength;
   }
-
-  Iterator<Rule> get iterator => this._rules.iterator;
-
-  List<Rule> toList({ bool growable: true }) =>
-      this._rules.toList(growable: growable);
-
-  Set<Rule> toSet() => this._rules.toSet();
 
   Rule operator [](int i) => this._rules[i];
 
   void operator []=(int i, Rule rule) {
-    _untrack(this[i]);
+    if (this[i] != null) _untrack(this[i]);
     _track(rule);
     this._rules[i] = rule;
   }
@@ -151,17 +157,11 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
     this._rules.add(rule);
   }
 
-  void remove(Rule rule) {
+  bool remove(Rule rule) {
     var index = this._rules.indexOf(rule);
-    if (index >= 0) {
-      _untrack(rule);
-      this._rules.remove(rule);
-    }
-  }
-
-  void addLast(Rule rule) {
-    _track(rule);
-    this._rules.addLast(rule);
+    if (index < 0) return false;
+    _untrack(rule);
+    return this._rules.remove(rule);
   }
 
   void addAll(Iterable<Rule> rules) {
@@ -169,73 +169,9 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
     this._rules.addAll(rules);
   }
 
-  int indexOf(Rule rule, [int start = 0]) => this._rules.indexOf(rule, start);
-
-  int lastIndexOf(Rule rule, [int start]) =>
-      this._rules.lastIndexOf(rule, start);
-
   void clear() {
     this._rules.forEach(_untrack);
     this._rules.clear();
-  }
-
-  Rule removeAt(int i) {
-    var rule = this._rules.removeAt(i);
-    if (rule != null) _untrack(rule);
-    return rule;
-  }
-
-  void insert(int index, Rule element) {
-    _rules.insert(index, element);
-  }
-
-  List<Rule> sublist(int start, [int end]) => _rules.sublist(start, end);
-
-  Map<int, Rule> asMap() => _rules.asMap();
-
-  Rule removeLast() {
-    var rule = this._rules.removeLast();
-    if (rule != null) _untrack(rule);
-    return rule;
-  }
-
-  List<Rule> getRange(int start, int length) {
-    return this._rules.getRange(start, length);
-  }
-
-  void setRange(int start, int length, List<Rule> from, [int startFrom = 0]) {
-    if (tracker != null) {
-      for (var i = start; i < start + length; i++) {
-        tracker.removeReferenceByName(this, this._rules[i].profileName);
-      }
-      for (var i = startFrom; i < length; i++) {
-        tracker.addReferenceByName(this, from[start + i].profileName);
-      }
-    }
-    for (var i = start; i < start + length; i++) {
-      _rules[i].onProfileNameChange = null;
-    }
-    this._rules.setRange(start, length, from, startFrom);
-    for (var i = start; i < start + length; i++) {
-      _rules[i].onProfileNameChange = this._onRuleProfileNameChange;
-    }
-  }
-
-  void removeRange(int start, int length) {
-    for (var i = start; i < start + length; i++) {
-      _untrack(this._rules[i]);
-    }
-    this._rules.removeRange(start, length);
-  }
-
-  void insertRange(int start, int length, [Rule fill]) {
-    if (fill != null && tracker != null) {
-      for (var i = 0; i < length; i++) {
-        tracker.addReferenceByName(this, fill.profileName);
-      }
-    }
-    this._rules.insertRange(start, length, fill);
-    fill.onProfileNameChange = this._onRuleProfileNameChange;
   }
 
   void removeAll(Iterable<Rule> elementsToRemove) {
@@ -248,80 +184,4 @@ class SwitchProfile extends InclusiveProfile implements List<Rule> {
     return this._rules.contains(rule);
   }
 
-  bool get isEmpty => this.length > 0;
-
-  Rule get first => this._rules.first;
-
-  Rule get last => this._rules.last;
-
-  Rule elementAt(int index) => this[index];
-
-  List<Rule> get reversed => _rules.reversed;
-
-  // Implementation using IterableMixinWorkaround:
-
-  void forEach(void f(Rule o)) => IterableMixinWorkaround.forEach(this, f);
-
-  bool any(bool f(Rule o)) => IterableMixinWorkaround.any(this, f);
-
-  bool every(bool f(Rule o)) => IterableMixinWorkaround.every(this, f);
-
-  dynamic reduce(initialValue, combine(previousValue, Rule element)) =>
-    IterableMixinWorkaround.reduce(this, initialValue, combine);
-
-  void retainAll(Iterable<Rule> elementsToRetain) {
-    IterableMixinWorkaround.retainAll(this, elementsToRetain);
-  }
-
-  void removeWhere(bool test(Rule element)) {
-    IterableMixinWorkaround.removeWhere(this, test);
-  }
-
-  void retainWhere(bool test(Rule element)) {
-    IterableMixinWorkaround.retainWhere(this, test);
-  }
-
-  Rule firstWhere(bool test(Rule element), {Rule orElse()}) =>
-      IterableMixinWorkaround.firstWhere(this, test, orElse);
-
-  Rule lastWhere(bool test(Rule element), {Rule orElse()}) =>
-      IterableMixinWorkaround.lastWhere(this, test, orElse);
-
-  Rule singleWhere(bool test(Rule element)) =>
-      IterableMixinWorkaround.singleWhere(this, test);
-
-  Rule min([int compare(Rule a, Rule b)]) =>
-      IterableMixinWorkaround.min(this, compare);
-
-  Rule max([int compare(Rule a, Rule b)]) =>
-      IterableMixinWorkaround.max(this, compare);
-
-  Rule get single => IterableMixinWorkaround.single(this);
-
-  String join([String separator]) =>
-      IterableMixinWorkaround.joinList(this, separator);
-
-  Iterable<Rule> where(bool f(Rule element)) =>
-      IterableMixinWorkaround.where(this, f);
-
-  Iterable map(f(Rule element)) => IterableMixinWorkaround.map(this, f);
-
-  Iterable<dynamic> expand(Iterable<dynamic> f(Rule element)) =>
-      IterableMixinWorkaround.expand(this, f);
-
-  List<Rule> take(int n) =>
-      IterableMixinWorkaround.takeList(this, n);
-
-  Iterable takeWhile(bool test(Rule value)) =>
-      IterableMixinWorkaround.takeWhile(this, test);
-
-  List<Rule> skip(int n) =>
-      IterableMixinWorkaround.skipList(this, n);
-
-  Iterable<Rule> skipWhile(bool test(value)) =>
-      IterableMixinWorkaround.skipWhile(this, test);
-
-  void sort([int compare(Rule a, Rule b)]) {
-    IterableMixinWorkaround.sortList(this, compare);
-  }
 }

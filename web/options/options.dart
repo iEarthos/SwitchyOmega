@@ -139,7 +139,7 @@ void handleSwitchProfileUI() {
     var index_old = int.parse(target.attributes['data-index-old']);
     var index_new = int.parse(target.attributes['data-index-new']);
     var rule = profile.removeAt(index_old);
-    profile.insertRange(index_new, 1, rule);
+    profile.insert(index_new, rule);
     watchers.dispatch();
   });
 }
@@ -148,7 +148,7 @@ void moveRuleUp(SwitchProfile profile, Rule rule) {
   var index_old = profile.indexOf(rule);
   if (index_old > 0) {
     profile.removeAt(index_old);
-    profile.insertRange(index_old - 1, 1, rule);
+    profile.insert(index_old - 1, rule);
   }
   watchers.dispatch();
 }
@@ -157,7 +157,7 @@ void moveRuleDown(SwitchProfile profile, Rule rule) {
   var index_old = profile.indexOf(rule);
   if (index_old < profile.length - 1) {
     profile.removeAt(index_old);
-    profile.insertRange(index_old + 1, 1, rule);
+    profile.insert(index_old + 1, rule);
   }
   watchers.dispatch();
 }
@@ -187,7 +187,7 @@ void removeRule(SwitchProfile profile, Rule rule) {
 List<Profile> validResultProfilesFor(InclusiveProfile profile) {
   return options.profiles.where((p) {
     if (p == profile || p is! IncludableProfile) return false;
-    if (p is InclusiveProfile && p.hasReferenceTo(profile.name)) return false;
+    if (p is InclusiveProfile) if (p.hasReferenceTo(profile.name)) return false;
     return true;
   }).toList();
 }

@@ -16,15 +16,12 @@ js: entries $(SCRIPTS)
 out/options/options.html: options/options.dart
 
 out/packages: entries
-	@if [ ! -d $@ ]; then \
-		mkdir -p $@; \
-		ln -sfT ../../../lib/ $@/switchyomega; \
-		cp -rnL $(shell ls -d packages/* | grep -v 'switchyomega') $@; \
+	@if [ "`readlink $@`" != '../../ipackages' ]; then \
+		ln -sfT ../../ipackages $@; \
 	fi
 
 pack_options: out/packages
 	@if [ -n `readlink out/options/packages/web_ui | grep -o '^/'` ]; then \
 		rm -rf out/options/packages; \
-		mkdir -p out/options/packages/; \
-		cd out/options/packages && ln -sf ../../packages/* .; \
+		ln -sfT ../../../ipackages out/options/packages; \
 	fi

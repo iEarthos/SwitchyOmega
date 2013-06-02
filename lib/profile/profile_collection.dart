@@ -63,7 +63,7 @@ class ProfileCollection extends HashSet<Profile>
     return p;
   }
 
-  ProfileCollection([Collection<Profile> profiles = null]) {
+  ProfileCollection([Iterable<Profile> profiles = null]) {
     _profiles = new Map<String, _ProfileData>();
     _addPredefined();
     if (profiles != null) {
@@ -235,7 +235,7 @@ class ProfileCollection extends HashSet<Profile>
 
     for (var data in _profiles.values) {
       if (data.profile is InclusiveProfile && data.profile.name != oldName) {
-        data.profile.renameProfile(oldName, newName);
+        (data.profile as InclusiveProfile).renameProfile(oldName, newName);
       }
     }
     // Update the name of the profile data.
