@@ -73,8 +73,8 @@
   "options_tab_importExport": {
     "message": "Import/Export"
   },
-  "options_addProfile": {
-    "message": "Add profile..."
+  "options_newProfile": {
+    "message": "New profile..."
   },
   "options_group_miscOptions": {
     "message": "Misc Options"
@@ -287,10 +287,37 @@
   "options_resetRules" : {
     "message": "Reset rules"
   },
-  "options_modalHeader_addProfile" : {
-    "message": "Add Profile"
+  "options_modalHeader_newProfile" : {
+    "message": "New Profile"
   },
   "options_profileType" : {
     "message": "Please select the type of the profile:"
+  },
+  "options_profileTypeFixedProfile" : {
+    "message": "Fixed Profile"
+  },
+  "options_profileDescFixedProfile" : {
+    "message": "Tunneling traffic through proxy servers."
+  },
+  "options_profileTypePacProfile" : {
+    "message": "PAC Profile"
+  },
+  "options_profileDescPacProfile" : {
+    "message": "Choosing proxies using an online/local PAC script."
+  },
+  "options_profileTypeSwitchProfile" : {
+    "message": "Switch Profile"
+  },
+  "options_profileDescSwitchProfile" : {
+    "message": "Applying different profiles automatically on various conditions such as domains or patterns. (Replaces AutoSwitch mode.)"
+  },
+  "options_profileTypeRulelistProfile" : {
+    "message": "Rulelist Profile"
+  },
+  "options_profileDescRulelistProfile" : {
+    "message": "Reusing an online collection of conditions published by others."
+  },
+  "options_createProfile" : {
+    "message": "Create"
   }
 }

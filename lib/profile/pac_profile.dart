@@ -44,12 +44,12 @@ class PacProfile extends ScriptProfile {
    * Write a wrapper function around the [pacScript].
    */
   void writeTo(CodeWriter w) {
-    w.code('function (url, host) {');
+    w.code('(function () {');
 
-    w.newLine().raw(this.pacScript).newLine();
+    w.newLine().raw(this.pacScript).newLine().newLine();
 
-    w.code('return FindProxyForURL(url, host);');
-    w.inline('}');
+    w.code('return function (url, host) { return [ FindProxyForURL(url, host) ]; };');
+    w.inline('})()');
   }
 
   Map<String, Object> toPlain([Map<String, Object> p]) {
@@ -64,7 +64,7 @@ class PacProfile extends ScriptProfile {
     return p;
   }
 
-  PacProfile(String name) : super(name);
+  PacProfile(String name) : super(name), pacScript = '', _pacUrl = '';
 
   void loadPlain(Map<String, Object> p) {
     super.loadPlain(p);

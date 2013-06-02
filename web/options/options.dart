@@ -45,6 +45,8 @@ Rule modalDeleteRule_rule = null;
 Profile modalResetRules_profile = null;
 Profile modalResetRules_resultProfile = null;
 
+String modalNewProfile_name = '';
+
 void deleteProfile(Profile profile) {
   options.profiles.remove(profile);
   if (options.currentProfileName == profile.name) {
@@ -104,6 +106,12 @@ bool modalRenameProfile_isValid() {
   if (modalRenameProfile_newName == modalRenameProfile_oldName) return true;
   if (modalRenameProfile_newName.isEmpty) return false;
   if (options.profiles[modalRenameProfile_newName] != null) return false;
+  return true;
+}
+
+bool modalNewProfile_isValid() {
+  if (modalNewProfile_name.isEmpty) return false;
+  if (options.profiles[modalNewProfile_name] != null) return false;
   return true;
 }
 
@@ -228,6 +236,11 @@ Communicator c = new Communicator(window.top);
 Communicator js = new Communicator(window);
 ObservableSwitchyOptions options = null;
 
+List<String> profileTypes = ['FixedProfile',
+                             'SwitchProfile',
+                             'PacProfile',
+                             'RulelistProfile'];
+
 Map<String, String> profileIcons = {
   'FixedProfile': 'icon-globe',
   'PacProfile': 'icon-tasks',
@@ -282,6 +295,31 @@ void idBindingWorkaround() {
       attributeFilter: [idBindingWorkaroundAttrName]);
 }
 
+void handleNewProfileUI() {
+  js.on('profile.create', (String type, [Function respond]) {
+    Profile p = null;
+    switch (type) {
+      case 'FixedProfile':
+        p = new FixedProfile(modalNewProfile_name);
+        break;
+      case 'PacProfile':
+        p = new PacProfile(modalNewProfile_name);
+        break;
+      case 'SwitchProfile':
+        p = new SwitchProfile(modalNewProfile_name, new DirectProfile().name);
+        break;
+      case 'RulelistProfile':
+        throw new UnimplementedError();
+    }
+    if (p != null) {
+      options.profiles.add(p);
+      watchers.dispatch();
+      js.send('tab.set', '#profile-$modalNewProfile_name');
+    }
+    modalNewProfile_name = '';
+  });
+}
+
 void main() {
   idBindingWorkaround();
   c.send('options.get', null, (Map<String, Object> o, [Function respond]) {
@@ -308,5 +346,7 @@ void main() {
   handleSwitchProfileUI();
   handleRulelistUI();
   autoBindToDataList(document.documentElement);
+
+  handleNewProfileUI();
 }
 

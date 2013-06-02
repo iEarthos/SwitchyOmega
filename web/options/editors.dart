@@ -61,6 +61,8 @@ class ProxyServerEditor {
       this._host = proxy.host;
       this._port = proxy.port;
       _isEmpty = false;
+    } else {
+      this._host = '';
     }
   }
 
@@ -120,7 +122,8 @@ class ProxyServerEditor {
     } else {
       if (this.isDefault) return null;
       var default_proxy = this.profileEditor[''];
-      return ifNull(default_proxy._port, default_proxy.defaultPort);
+      var port = default_proxy.protocol.isEmpty ? null : default_proxy._port;
+      return ifNull(port, default_proxy.defaultPort);
     }
   }
 }

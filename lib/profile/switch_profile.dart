@@ -47,6 +47,7 @@ class SwitchProfile extends InclusiveProfile_MixinBugWorkaround with ListMixin
     tracker.addReferenceByName(this, defaultProfileName);
     _rules.forEach((rule) {
       tracker.addReferenceByName(this, rule.profileName);
+      rule.onProfileNameChange = _onRuleProfileNameChange;
     });
   }
 

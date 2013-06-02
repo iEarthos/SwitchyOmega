@@ -38,7 +38,7 @@ var strings = [
   "options_tab_ui",
   "options_tab_general",
   "options_tab_importExport",
-  "options_addProfile",
+  "options_newProfile",
   "options_group_miscOptions",
   "options_confirmDeletion",
   "options_refreshOnProfileChange",
@@ -108,6 +108,15 @@ var strings = [
   "options_modalHeader_resetRules",
   "options_resetRulesConfirm",
   "options_resetRules",
-  "options_modalHeader_addProfile",
-  "options_profileType"
+  "options_modalHeader_newProfile",
+  "options_profileType",
+  "options_profileTypeFixedProfile",
+  "options_profileDescFixedProfile",
+  "options_profileTypePacProfile",
+  "options_profileDescPacProfile",
+  "options_profileTypeSwitchProfile",
+  "options_profileDescSwitchProfile",
+  "options_profileTypeRulelistProfile",
+  "options_profileDescRulelistProfile",
+  "options_createProfile"
 ];

@@ -114,9 +114,9 @@
               </li>
               <li class="divider"></li>
               <li>
-                <a>
+                <a data-toggle="modal" href="#modal-profile-new">
                   <i class="icon-plus"></i>
-                  <span data-i18n="options_addProfile"></span>
+                  <span data-i18n="options_newProfile"></span>
                 </a>
               </li>
             </ul>
@@ -298,7 +298,7 @@
                 </section>
               </template>
               <template instantiate="if profile.profileType == 'SwitchProfile'">
-                <datalist data-workaround-id="profiles-avaliable-to-{{profile.name}}" template="template"
+                <datalist data-workaround-id="profiles-available-to-{{profile.name}}" template="template"
                     iterate="p in validResultProfilesFor(profile)">
                   <option>{{p.name}}</option>
                 </datalist>
@@ -335,7 +335,7 @@
                           </template>
                         </td>
                         <td>
-                          <select data-list="profiles-avaliable-to-{{profile.name}}" bind-value="rule.rule.profileName" data-later-value="{{rule.rule.profileName}}"></select>
+                          <select data-list="profiles-available-to-{{profile.name}}" bind-value="rule.rule.profileName" data-later-value="{{rule.rule.profileName}}"></select>
                         </td>
                         <td>
                           <a on-click="requestRemoveRule(profile, rule.rule); $event.preventDefault();" href="#"><i class="icon-trash"></i></a>
@@ -355,7 +355,7 @@
                         <td></td>
                         <td colspan="2" data-i18n="options_switchDefaultProfile"></td>
                         <td>
-                          <select data-list="profiles" bind-value="profile.defaultProfileName" data-later-value="{{profile.defaultProfileName}}"></select>
+                          <select data-list="profiles-available-to-{{profile.name}}" bind-value="profile.defaultProfileName" data-later-value="{{profile.defaultProfileName}}"></select>
                         </td>
                         <td>
                           <a on-click="requestResetRules(profile); $event.preventDefault()" href="#"><i class="icon-chevron-up"></i></a>
@@ -525,19 +525,40 @@
               data-dismiss="modal" data-i18n="options_resetRules"></a>
         </div>
       </div>
-      <div class="modal hide fade" id="modal-profile-add">
+      <div class="modal hide fade" id="modal-profile-new">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal">×</button>
-          <h3 data-i18n="options_modalHeader_addProfile"></h3>
+          <h3 data-i18n="options_modalHeader_newProfile"></h3>
         </div>
         <div class="modal-body">
+          <div class="control-group {{modalNewProfile_isValid() ? '' : 'error'}}">
+            <label class="control-label" for="profile-new-name" data-i18n="options_newProfileName"></label>
+            <div class="controls">
+              <input type="text" id="profile-new-name" bind-value="modalNewProfile_name" required="required" />
+              <span class="help-inline">
+                <span template="template" data-i18n="options_profileNameConflict"
+                    instantiate="if !modalNewProfile_isValid() && !modalNewProfile_name.isEmpty"></span>
+                <span template="template" instantiate="if modalNewProfile_name.isEmpty" data-i18n="options_profileNameEmpty"></span>
+              </span>
+            </div>
+          </div>
           <p data-i18n="options_profileType"></p>
+          <div template="template" iterate="type in profileTypes" class="well">
+            <label class="radio">
+              <input type="radio" name="profile-new-type" value="{{type}}" checked="{{type == 'FixedProfile'}}">
+              <span class="profile-type">
+                <i class="{{profileIcons[type]}}"></i>
+                <span data-i18n="options_profileType{{type}}"></span>
+              </span>
+              <span class="help-inline" data-i18n="options_profileDesc{{type}}"></span>
+            </label>
+          </div>
 
         </div>
         <div class="modal-footer">
           <a href="#" class="btn" data-dismiss="modal" data-i18n="dialog_cancel"></a>
-          <a href="#" class="btn btn-primary btn-danger" id="profile-add-confirm"
-              data-dismiss="modal" data-i18n="options_addProfile"></a>
+          <a href="#" class="btn btn-primary btn-primary {{modalNewProfile_isValid() ? '' : 'disabled'}}" id="profile-new-create"
+              data-dismiss="modal" data-i18n="options_createProfile"></a>
         </div>
       </div>
     </template>

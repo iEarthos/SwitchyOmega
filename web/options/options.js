@@ -239,6 +239,13 @@
       target.dispatchEvent(evt);
     };
     
+    // Create new profiles
+    $('body').on('click', '#profile-new-create', function (e) {
+      if ($('#profile-new-create').is('.disabled')) return;
+      var type = $('input[name="profile-new-type"]:checked').val();
+      new Communicator(window).send('profile.create', type);
+    });
+    
     // Clear input
     $('body').on('click', '.clear-input', function (e) {
       var button = $(e.target).closest('.clear-input');
