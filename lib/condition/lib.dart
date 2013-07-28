@@ -23,7 +23,6 @@ library switchy_condition;
 import 'dart:core';
 import 'dart:json' as JSON;
 import 'dart:math';
-import 'dart:uri';
 import '../code_writer.dart';
 import '../lang/lib.dart';
 import 'shexp_utils.dart';

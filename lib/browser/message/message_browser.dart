@@ -14,7 +14,7 @@ class MessageBrowser extends Browser {
     } else {
       this._c = c;
     }
-    this.storage = new MessageStorage(this._c);
+    this._storage = new MessageStorage(this._c);
   }
 
   MessageStorage get storage => _storage;

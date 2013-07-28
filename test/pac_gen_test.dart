@@ -69,10 +69,11 @@ void main() {
 ProxyServer resolveProxy(Profile p, String url, String host, String scheme) {
   while (p != null) {
     if (p is InclusiveProfile) {
-      p = p.tracker.getProfileByName(p.choose(url, host, scheme, null));
+      p = p.tracker.getProfileByName(
+          (p as InclusiveProfile).choose(url, host, scheme, null));
     }
     if (p is FixedProfile) {
-      return p.getProxyFor(url, host, scheme);
+      return (p as FixedProfile).getProxyFor(url, host, scheme);
     }
     if (p is DirectProfile) {
       return null;

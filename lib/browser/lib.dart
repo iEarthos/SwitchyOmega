@@ -2,11 +2,10 @@ library switchy_browser;
 
 import 'dart:async';
 import 'dart:core';
-import '../lang/lib.dart';
-import '../profile/lib.dart';
-
+import 'package:switchyomega/lang/lib.dart';
+import 'package:switchyomega/profile/lib.dart';
+import 'package:web_ui/web_ui.dart';
 
 part 'browser.dart';
 
 part 'switchy_options.dart';
-part 'observable_switchy_options.dart';

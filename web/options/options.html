@@ -50,7 +50,7 @@
     </template>
     <template instantiate="if options != null">
       <div>
-        <datalist id="profiles" template="template" iterate="p in options.profiles.toList()">
+        <datalist id="profiles" template="template" iterate="p in options.profilesAsList">
           <option>{{p.name}}</option>
         </datalist>
         <datalist id="condition-types">
@@ -98,7 +98,7 @@
               </li>
               <li class="divider"></li>
               <li class="nav-header" data-i18n="options_navHeader_profiles"></li>
-              <template iterate="profile in options.profiles.where((p) => !p.predefined).toList()">
+              <template iterate="profile in options.profilesAsList.where((p) => !p.predefined).toList()">
                 <li>
                   <a href="#profile-{{profile.name}}" data-toggle="tab">
                     <i class="{{profileIcons[profile.profileType]}}"></i>
@@ -214,7 +214,7 @@
               </div>
             </section>
           </div>
-          <template iterate="profile in options.profiles.toList()">
+          <template iterate="profile in options.profilesAsList">
             <div class="tab-pane" data-workaround-id="profile-{{profile.name}}" data-profile="{{profile.name}}">
               <header class="span10 profile-header">
                 <h2>

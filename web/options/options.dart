@@ -22,29 +22,35 @@ library switchy_options;
 
 import 'dart:html';
 import 'dart:json' as JSON;
+import 'dart:async';
+import 'package:web_ui/web_ui.dart';
+import 'package:switchyomega/switchyomega.dart';
+import 'package:switchyomega/html/converters.dart' as convert;
 import 'package:switchyomega/browser/lib.dart';
 import 'package:switchyomega/browser/message/lib.dart';
-import 'package:switchyomega/communicator.dart';
-import 'package:switchyomega/condition/lib.dart';
-import 'package:switchyomega/lang/lib.dart';
-import 'package:switchyomega/profile/lib.dart';
-import 'package:web_ui/watcher.dart' as watchers;
-import 'package:switchyomega/html/converters.dart' as convert;
-import 'package:switchyomega/html/lib.dart';
 import 'editors.dart';
 
-List<Profile> modalCannotDeleteProfile_referring = [];
+@observable
+List<Profile> modalCannotDeleteProfile_referring = toObservable([]);
+@observable
 Profile modalDeleteProfile_profile = null;
 
+@observable
 String modalRenameProfile_newName = null;
+@observable
 String modalRenameProfile_oldName = null;
 
+@observable
 Profile modalDeleteRule_profile = null;
+@observable
 Rule modalDeleteRule_rule = null;
 
+@observable
 Profile modalResetRules_profile = null;
+@observable
 Profile modalResetRules_resultProfile = null;
 
+@observable
 String modalNewProfile_name = '';
 
 void deleteProfile(Profile profile) {
@@ -60,10 +66,9 @@ void deleteProfile(Profile profile) {
   if (profile is FixedProfile) {
     fixedProfileEditors.remove(profile);
   } else if (profile is SwitchProfile) {
-    profile.forEach((rule) => ruleEditors.remove(rule));
+    (profile as SwitchProfile).forEach((rule) => ruleEditors.remove(rule));
   }
-
-  watchers.dispatch();
+  options.notifyProfilesChange();
 }
 
 void requestProfileDelete(Profile profile) {
@@ -94,7 +99,7 @@ void requestProfileRename(Profile profile) {
       if (modalRenameProfile_newName != modalRenameProfile_oldName) {
         options.profiles.renameProfile(modalRenameProfile_oldName,
             modalRenameProfile_newName);
-        watchers.dispatch();
+        options.notifyProfilesChange();
         js.send('tab.set', '#profile-$modalRenameProfile_newName');
       }
     }
@@ -148,7 +153,6 @@ void handleSwitchProfileUI() {
     var index_new = int.parse(target.attributes['data-index-new']);
     var rule = profile.removeAt(index_old);
     profile.insert(index_new, rule);
-    watchers.dispatch();
   });
 }
 
@@ -158,7 +162,6 @@ void moveRuleUp(SwitchProfile profile, Rule rule) {
     profile.removeAt(index_old);
     profile.insert(index_old - 1, rule);
   }
-  watchers.dispatch();
 }
 
 void moveRuleDown(SwitchProfile profile, Rule rule) {
@@ -167,7 +170,6 @@ void moveRuleDown(SwitchProfile profile, Rule rule) {
     profile.removeAt(index_old);
     profile.insert(index_old + 1, rule);
   }
-  watchers.dispatch();
 }
 
 void requestRemoveRule(SwitchProfile profile, Rule rule) {
@@ -189,7 +191,6 @@ void requestRemoveRule(SwitchProfile profile, Rule rule) {
 void removeRule(SwitchProfile profile, Rule rule) {
   profile.remove(rule);
   ruleEditors.remove(rule);
-  watchers.dispatch();
 }
 
 List<Profile> validResultProfilesFor(InclusiveProfile profile) {
@@ -206,14 +207,12 @@ void addRule(SwitchProfile profile) {
       profile.last.profileName : profile.defaultProfileName;
 
   profile.add(new Rule(condition, profileName));
-  watchers.dispatch();
 }
 
 void resetRules(SwitchProfile profile) {
   profile.forEach((rule) {
     rule.profileName = profile.defaultProfileName;
   });
-  watchers.dispatch();
 }
 
 void requestResetRules(SwitchProfile profile) {
@@ -234,7 +233,9 @@ void handleRulelistUI() {
 
 Communicator c = new Communicator(window.top);
 Communicator js = new Communicator(window);
-ObservableSwitchyOptions options = null;
+
+@observable
+SwitchyOptions options = null;
 
 List<String> profileTypes = ['FixedProfile',
                              'SwitchProfile',
@@ -313,7 +314,8 @@ void handleNewProfileUI() {
     }
     if (p != null) {
       options.profiles.add(p);
-      watchers.dispatch();
+      options.notifyProfilesChange();
+
       js.send('tab.set', '#profile-$modalNewProfile_name');
     }
     modalNewProfile_name = '';
@@ -323,22 +325,25 @@ void handleNewProfileUI() {
 void main() {
   idBindingWorkaround();
   c.send('options.get', null, (Map<String, Object> o, [Function respond]) {
-    options = new ObservableSwitchyOptions.fromPlain(o['options']);
-    watchers.dispatch();
+    options = new SwitchyOptions.fromPlain(o['options']);
+    // TODO: Run the callback after the observers finish instead of setting timeout.
+    // (But how?)
+    new Future.delayed(const Duration(milliseconds: 100), () {
+      var lastActiveTab = o['tab'];
+      var navs = queryAll('#options-nav a[data-toggle="tab"]');
 
-    var lastActiveTab = o['tab'];
-    var navs = queryAll('#options-nav a[data-toggle="tab"]');
-    var nav = navs.firstWhere((e) => e.attributes['href'] == lastActiveTab,
-        orElse: () => navs.first);
-    closestElement(nav, 'li').classes.add('active');
-    var tab = query(nav.attributes['href']);
-    if (tab == null && nav.attributes['href'][0] == '#') {
-      var id = nav.attributes['href'].substring(1);
-      tab = query('[$idBindingWorkaroundAttrName="$id"]');
-    }
-    tab.classes.add('active');
+      var nav = navs.firstWhere((e) => e.attributes['href'] == lastActiveTab,
+          orElse: () => navs.first);
+      closestElement(nav, 'li').classes.add('active');
+      var tab = query(nav.attributes['href']);
+      if (tab == null && nav.attributes['href'][0] == '#') {
+        var id = nav.attributes['href'].substring(1);
+        tab = query('[$idBindingWorkaroundAttrName="$id"]');
+      }
+      tab.classes.add('active');
 
-    js.send('options.init');
+      js.send('options.init');
+    });
   });
 
   handleFixedServerUI();
@@ -349,4 +354,3 @@ void main() {
 
   handleNewProfileUI();
 }
-

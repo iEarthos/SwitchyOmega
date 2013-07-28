@@ -314,6 +314,12 @@ class CountMap<E> implements Map<E, int> {
     _count.forEach(f);
   }
 
+  void addAll(Map<E, int> items) {
+    items.forEach((key, value) {
+      this.increase(key, value);
+    });
+  }
+
   Iterable<E> get keys => _count.keys;
 
   Iterable<int> get values => _count.values;
@@ -321,4 +327,5 @@ class CountMap<E> implements Map<E, int> {
   int get length => _count.length;
 
   bool get isEmpty => _count.isEmpty;
+  bool get isNotEmpty => !_count.isEmpty;
 }

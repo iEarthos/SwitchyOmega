@@ -1,33 +1,33 @@
 part of switchy_browser;
 
+@observable
+class SwitchyOptions extends Plainable {
+  bool confirmDeletion;
 
-abstract class SwitchyOptions extends Plainable {
-  bool get confirmDeletion;
-  void set confirmDeletion(bool value);
+  bool refreshOnProfileChange;
 
-  bool get refreshOnProfileChange;
-  void set refreshOnProfileChange(bool value);
+  String startupProfileName;
 
-  String get startupProfileName;
-  void set startupProfileName(String value);
+  bool enableQuickSwitch;
 
-  bool get enableQuickSwitch;
-  void set enableQuickSwitch(bool value);
+  bool revertProxyChanges;
 
-  bool get revertProxyChanges;
-  void set revertProxyChanges(bool value);
+  final List<String> quickSwitchProfiles = toObservable([]);
 
-  List<String> get quickSwitchProfiles;
+  final ProfileCollection profiles = new ProfileCollection();
 
-  ProfileCollection _profiles;
-  ProfileCollection get profiles => _profiles;
+  final List<Profile> profilesAsList = toObservable([]);
+
+  void notifyProfilesChange() {
+    profilesAsList.clear();
+    profilesAsList.addAll(profiles);
+  }
 
   Profile getProfileByName(String name) {
     return profiles[name];
   }
 
-  String get currentProfileName;
-  set currentProfileName(String value);
+  String currentProfileName;
 
   Object toPlain([Map<String, Object> p]) {
     if (p == null) p = new Map<String, Object>();
@@ -43,7 +43,6 @@ abstract class SwitchyOptions extends Plainable {
     profiles.forEach((p) {
       plainProfiles[p.name] = p.toPlain();
     });
-
     p['profiles'] = profiles.toPlain();
 
     p['currentProfileName'] = currentProfileName;
@@ -62,12 +61,14 @@ abstract class SwitchyOptions extends Plainable {
     quickSwitchProfiles.clear();
     quickSwitchProfiles.addAll(p['quickSwitchProfiles']);
 
-    _profiles = new ProfileCollection.fromPlain(p['profiles']);
+    profiles.loadPlain(p['profiles']);
 
     currentProfileName = p['currentProfileName'];
+    profilesAsList.clear();
+    profilesAsList.addAll(profiles);
   }
 
-  SwitchyOptions();
+  SwitchyOptions() {}
 
   SwitchyOptions.fromPlain(Object p) {
     this.loadPlain(p);
@@ -81,7 +82,6 @@ abstract class SwitchyOptions extends Plainable {
     revertProxyChanges = false;
 
     quickSwitchProfiles.clear();
-    _profiles = new ProfileCollection();
   }
 
 }
