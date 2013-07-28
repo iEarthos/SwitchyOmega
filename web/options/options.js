@@ -1,5 +1,5 @@
 /*!
- * Copyright (C) 2012, The SwitchyOmega Authors. Please see the AUTHORS file
+ * Copyright (C) 2012-2013, The SwitchyOmega Authors. Please see the AUTHORS file
  * for details.
  *
  * This file is part of SwitchyOmega.
@@ -24,11 +24,11 @@
   if (window.top === window) {
     location.href = location.href.replace(".html", "_safe.html");
   }
-  
+
   // Dart uses symbol $ in generated scripts.
   jQuery.noConflict();
   var $ = jQuery;
-  
+
   var c = new Communicator(window.top);
 
   var i18n = null;
@@ -79,7 +79,7 @@
           $('#quick-switch-settings').slideUp();
         }
       });
-      
+
       // Memorize Tab
       $('#options-nav').on('shown', 'a[data-toggle="tab"]', function (e) {
         var tabHash = e.target.getAttribute('href');
@@ -209,11 +209,11 @@
                       ui.item.attr('data-index-old',
                           ui.item.data('index-old'));
                       ui.item.attr('data-index-new', ui.item.index());
-                      
+
                       var evt = document.createEvent('CustomEvent');
                       evt.initCustomEvent('x-sort', true, false, null);
                       ui.item[0].dispatchEvent(evt);
-                      
+
                       ui.item.removeAttr('data-index-old');
                       ui.item.removeAttr('data-index-new');
                     }
@@ -228,24 +228,24 @@
         childList: true,
         subtree: true
     });
-    
+
     var fireInputAndChangeEvent = function (target) {
       var evt = document.createEvent('HTMLEvents');
       evt.initEvent('input', true, false);
       target.dispatchEvent(evt);
-      
+
       evt = document.createEvent('HTMLEvents');
       evt.initEvent('change', true, true);
       target.dispatchEvent(evt);
     };
-    
+
     // Create new profiles
     $('body').on('click', '#profile-new-create', function (e) {
       if ($('#profile-new-create').is('.disabled')) return;
       var type = $('input[name="profile-new-type"]:checked').val();
       new Communicator(window).send('profile.create', type);
     });
-    
+
     // Clear input
     $('body').on('click', '.clear-input', function (e) {
       var button = $(e.target).closest('.clear-input');

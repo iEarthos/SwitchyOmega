@@ -1,5 +1,5 @@
 /*!
- * Copyright (C) 2012, The SwitchyOmega Authors. Please see the AUTHORS file
+ * Copyright (C) 2012-2013, The SwitchyOmega Authors. Please see the AUTHORS file
  * for details.
  *
  * This file is part of SwitchyOmega.

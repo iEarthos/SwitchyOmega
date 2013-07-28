@@ -1,5 +1,5 @@
 /*!
- * Copyright (C) 2012, The SwitchyOmega Authors. Please see the AUTHORS file
+ * Copyright (C) 2012-2013, The SwitchyOmega Authors. Please see the AUTHORS file
  * for details.
  *
  * This file is part of SwitchyOmega.
@@ -26,11 +26,11 @@ var Communicator = function (win, self) {
   this.source.addEventListener('message', this._onmessage.bind(this), false);
 };
 
-Communicator._doNothing = function () {};  
+Communicator._doNothing = function () {};
 
 Communicator.prototype._postMessage = function (dest, action, value, callback, reply_to) {
   var reqid = null;
-  
+
   if (callback) {
     var map = this._callback_maps[action];
     if (!map) {
@@ -41,7 +41,7 @@ Communicator.prototype._postMessage = function (dest, action, value, callback, r
     } while (map[reqid]);
     map[reqid] = callback;
   }
-  
+
   dest.postMessage(JSON.stringify({
     'action': action,
     'reqid': reqid,
@@ -86,7 +86,7 @@ Communicator.prototype._onmessage = function (e) {
 
 Communicator.prototype.send = function (action, value, callback) {
   this._postMessage(this.dest, action, value, callback);
-  
+
   return this;
 };
 
@@ -105,6 +105,6 @@ Communicator.prototype.on = function (action, callback) {
     }
     callbacks.push(callback);
   }
-  
+
   return this;
 };
