@@ -81,8 +81,8 @@ abstract class Profile extends Plainable {
       case 'PacProfile':
         profile = new PacProfile.fromPlain(p);
         break;
-      case 'RuleListProfile':
-        // TODO
+      case 'SwitchyRuleListProfile':
+        profile = new RuleListProfile.fromPlain(p);
         break;
       case 'SwitchProfile':
         profile = new SwitchProfile.fromPlain(p);

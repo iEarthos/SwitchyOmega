@@ -34,14 +34,36 @@ void main() {
   f.bypassList.add(new BypassCondition('*:3333'));
   f.bypassList.add(new BypassCondition('<local>'));
 
-  var s = new SwitchProfile('auto', d.name);
+  // Example rule list from https://code.google.com/p/switchy/wiki/RuleList
+  var rulelist = r"""
+        ; Summary: Example Rule List
+        ; Author: Mhd Hejazi (my@email)
+        ; Date: 2010-01-20
+        ; URL: http://samabox.com/projects/chrome/switchy/switchyrules.txt
+        
+        #BEGIN
+        
+        [Wildcard]
+        *://chrome.google.com/*
+        *://*.samabox.com/*
+        
+        [RegExp]
+        ^http://code\.google\.com/.*
+        youtube
+        
+        #END
+      """;
+  var r = new SwitchyRuleListProfile('rulelist', d.name, f.name);
+  r.ruleList = rulelist;
+
+  var s = new SwitchProfile('auto', r.name);
   // The following line will only work in PAC files because it uses isInNet.
   // f.bypassList.add(new BypassCondition('192.168.0.0/18'));
   s.add(new Rule(new HostWildcardCondition('*.example.com'), f.name));
   s.add(new Rule(new HostLevelsCondition(0, 0), new DirectProfile().name));
   s.add(new Rule(new KeywordCondition('foo'), f.name));
 
-  var col = new ProfileCollection([d, f, s]);
+  var col = new ProfileCollection([d, f, r, s]);
 
   // Serialize the profiles to JSON and then parse back to test the roundtrip.
   var json = JSON.stringify(col);
@@ -64,6 +86,9 @@ void main() {
   testCase(s, 'http://foo.test:3333/test');
   testCase(s, 'http://127.0.0.1/foo');
   testCase(s, 'http://another.example.test');
+  testCase(s, 'https://chrome.google.com/');
+  testCase(s, 'http://samabox.com/');
+  testCase(s, 'http://code.google.com/p/switchy/wiki/RuleList');
 }
 
 ProxyServer resolveProxy(Profile p, String url, String host, String scheme) {

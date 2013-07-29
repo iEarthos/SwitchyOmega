@@ -99,6 +99,7 @@ abstract class RuleListProfile extends InclusiveProfile {
   }
 
   String choose(String url, String host, String scheme, DateTime datetime) {
+    if (_rules == null) _rules = parseRules(ruleList);
     for (var rule in _rules) {
       if (rule.condition.match(url, host, scheme, datetime)) {
         return rule.profileName;
@@ -135,6 +136,7 @@ abstract class RuleListProfile extends InclusiveProfile {
     } else {
       p['ruleList'] = ruleList;
     }
+    return p;
   }
 
   RuleListProfile(String name, this._defaultProfileName,
@@ -154,8 +156,17 @@ abstract class RuleListProfile extends InclusiveProfile {
   }
 
   factory RuleListProfile.fromPlain(Map<String, Object> p) {
-    RuleListProfile f = null; // TODO
-
+    RuleListProfile f = null;
+    switch (p['profileType']) {
+      case 'SwitchyRuleListProfile':
+        f = new SwitchyRuleListProfile(p['name'], p['defaultProfileNameName'],
+            p['matchProfileNameName']);
+        break;
+      default:
+        throw new UnsupportedError(
+            'Unknown profile type ${p['profileType']}.');
+    }
+    f.loadPlain(p);
     return f;
   }
 }
