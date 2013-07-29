@@ -31,10 +31,10 @@
     <script type="text/javascript" src="../scripts/communicator.js"></script>
     <script type="text/javascript" src="../scripts/i18n_template2.js"></script>
     <script type="text/javascript" src="../scripts/i18n_dict.js"></script>
+    <script type="text/javascript" src="../scripts/filesaver.min.js"></script>
     <script type="text/javascript" src="options.js"></script>
 
     <script type="application/dart" src="options.dart"></script>
-    <script type="text/javascript" src="../scripts/dart.js"></script>
   </head>
   <body class="container-fluid">
     <template instantiate="if options == null">
@@ -191,11 +191,11 @@
             <section class="settings-group">
               <h3 data-i18n="options_group_importExportSettings"></h3>
               <p>
-                <button class="btn" id="make-backup" data-i18n="options_makeBackup"></button>
+                <button class="btn" id="make-backup" data-i18n="options_makeBackup" on-click="exportOptions()"></button>
                 <span class="help-inline" data-i18n="options_makeBackupHelp"></span>
               </p>
               <p>
-                <input type="file" id="restore-local-selector" />
+                <input type="file" id="restore-local-file" on-change="restoreLocal($event.target)"/>
                 <button class="btn" id="restore-local" data-i18n="options_restoreLocal"></button>
                 <span class="help-inline" data-i18n="options_restoreLocalHelp"></span>
               </p>

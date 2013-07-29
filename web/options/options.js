@@ -85,6 +85,11 @@
         var tabHash = e.target.getAttribute('href');
         c.send('tab.set', tabHash);
       });
+
+      // Restore options from local files.
+      $('#restore-local').on('click', function (e) {
+        $('#restore-local-file').click();
+      });
     },
     'tab.set': function (tabhref) {
       var tabs = $('#options-nav a[data-toggle="tab"]');
@@ -181,6 +186,9 @@
       modal.on('hidden', on_hidden);
       modal.modal();
     },
+    'file.saveAs': function (data, reply) {
+      saveAs(new Blob([data.content]), data.name);
+    }
   });
 
   $(document).ready(function () {

@@ -247,10 +247,33 @@ Map<FixedProfile, FixedProfileEditor> fixedProfileEditors =
 
 Map<Rule, RuleEditor> ruleEditors = new Map<Rule, RuleEditor>();
 
-// This is only for testing.
 void exportPac() {
-  var auto = options.profiles['auto'] as InclusiveProfile;
-  print(auto.toScript());
+  var current = options.profiles[options.currentProfileName];
+  if (current is InclusiveProfile) {
+    js.send('file.saveAs', {
+      'name': 'SwitchyOmega.pac',
+      'content': current.toScript()
+    });
+  }
+}
+
+void exportOptions() {
+  js.send('file.saveAs', {
+    'name': 'SwitchyOmegaOptions.json',
+    'content': JSON.stringify(options)
+  });
+}
+
+void restoreLocal(FileUploadInputElement file) {
+  if (file.files.length > 0 && file.files[0].name.length > 0) {
+    var r = new FileReader();
+    r.onLoad.listen((data) {
+      var json = r.result as String;
+      options = new SwitchyOptions.fromPlain(JSON.parse(json));
+    });
+    r.readAsText(file.files[0]);
+    file.value = "";
+  }
 }
 
 String idBindingWorkaroundAttrName = 'data-workaround-id';

@@ -52,8 +52,8 @@ c.on({
   },
   'options.get': function (data, respond) {
   	respond({'tab': localStorage['options_last_tab'], 'options': {
-  	  // The profiles are from the pac_gen_test.
   	  'confirmDeletion': true,
+  	  'currentProfileName': 'auto',
   	  'profiles': [
   	      {
   	        "name":"ssh",
