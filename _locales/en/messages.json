@@ -311,11 +311,17 @@
   "options_profileDescSwitchProfile" : {
     "message": "Applying different profiles automatically on various conditions such as domains or patterns. (Replaces AutoSwitch mode.)"
   },
-  "options_profileTypeRulelistProfile" : {
+  "options_profileTypeSwitchyRuleListProfile" : {
     "message": "Rulelist Profile"
   },
-  "options_profileDescRulelistProfile" : {
+  "options_profileDescSwitchyRuleListProfile" : {
     "message": "Reusing an online collection of conditions published by others."
+  },
+  "options_profileTypeAutoProxyRuleListProfile" : {
+    "message": "Rulelist Profile (AutoProxy Compatible)"
+  },
+  "options_profileDescAutoProxyRuleListProfile" : {
+    "message": "Same as above, but uses the AutoProxy format (like GFWList)."
   },
   "options_createProfile" : {
     "message": "Create"

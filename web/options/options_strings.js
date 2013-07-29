@@ -116,7 +116,9 @@ var strings = [
   "options_profileDescPacProfile",
   "options_profileTypeSwitchProfile",
   "options_profileDescSwitchProfile",
-  "options_profileTypeRulelistProfile",
-  "options_profileDescRulelistProfile",
+  "options_profileTypeSwitchyRuleListProfile",
+  "options_profileDescSwitchyRuleListProfile",
+  "options_profileTypeAutoProxyRuleListProfile",
+  "options_profileDescAutoProxyRuleListProfile",
   "options_createProfile"
 ];

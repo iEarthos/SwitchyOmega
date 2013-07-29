@@ -106,12 +106,6 @@
                   </a>
                 </li>
               </template>
-              <li>
-                <a href="#profile-rulelist" data-toggle="tab">
-                  <i class="icon-list"></i>
-                  <span>Rulelist</span>
-                </a>
-              </li>
               <li class="divider"></li>
               <li>
                 <a data-toggle="modal" href="#modal-profile-new">
@@ -365,54 +359,39 @@
                   </table>
                 </section>
               </template>
+              <template instantiate="if profile.profileType.endsWith('RuleListProfile')">
+                <datalist data-workaround-id="profiles-available-to-{{profile.name}}" template="template"
+                    iterate="p in validResultProfilesFor(profile)">
+                  <option>{{p.name}}</option>
+                </datalist>
+                <section class="settings-group">
+                  <h3 data-i18n="options_group_ruleListResult"></h3>
+                  <div class="h-control">
+                    <label data-i18n="options_ruleListMatchProfile"></label>
+                    <select data-list="profiles-available-to-{{profile.name}}" bind-value="profile.matchProfileName" data-later-value="{{profile.matchProfileName}}"></select>
+                  </div>
+                  <div class="h-control">
+                    <label data-i18n="options_ruleListDefaultProfile"></label>
+                    <select data-list="profiles-available-to-{{profile.name}}" bind-value="profile.defaultProfileName" data-later-value="{{profile.defaultProfileName}}"></select>
+                  </div>
+                </section>
+                <section class="settings-group">
+                  <h3 data-i18n="options_group_ruleListUrl"></h3>
+                  <div class="input-append">
+                    <input type="url" class="rule-list-url input-xxlarge" bind-value="profile.sourceUrl" on-change="$event.target.dispatchEvent(new Event('input'));"/>
+                    <a class="add-on clear-input btn">
+                      <i class="icon-remove"></i>
+                    </a>
+                  </div>
+                  <p class="help-block" data-i18n="options_ruleListUrlHelp"></p>
+                </section>
+                <section class="settings-group">
+                  <h3 data-i18n="options_group_ruleListText"></h3>
+                  <textarea class="rule-list-text input-xxlarge" disabled="{{!profile.sourceUrl.isEmpty}}" bind-value="profile.ruleList"></textarea>
+                </section>
+              </template>
             </div>
           </template>
-          <div class="tab-pane" id="profile-rulelist">
-            <header class="span10 profile-header">
-              <h2>
-                <span data-i18n="options_profileTabPrefix"></span>
-                <span class="profile-name">Rulelist</span>
-              </h2>
-              <div class="profile-toolbar">
-                <a class="profile-delete btn btn-info" data-toggle="modal" href="#modal-profile-rename">
-                  <i class="icon-pencil icon-white"></i>
-                  <span data-i18n="options_renameProfile"></span>
-                </a>
-                <a class="profile-delete btn btn-danger" data-toggle="modal" href="#modal-profile-delete">
-                  <i class="icon-trash icon-white"></i>
-                  <span data-i18n="options_deleteProfile"></span>
-                </a>
-              </div>
-              <hr />
-            </header>
-            <section class="settings-group">
-              <h3 data-i18n="options_group_ruleListResult"></h3>
-              <div class="h-control">
-                <label data-i18n="options_ruleListMatchProfile"></label>
-                <select data-list="profiles"></select>
-              </div>
-              <div class="h-control">
-                <label data-i18n="options_ruleListDefaultProfile"></label>
-                <select data-list="profiles"></select>
-              </div>
-            </section>
-            <section class="settings-group">
-              <h3 data-i18n="options_group_ruleListUrl"></h3>
-              <div class="input-append">
-                <input type="url" class="rule-list-url input-xxlarge" value="http://wpad/wpad.dat" />
-                <a class="add-on clear-input btn">
-                  <i class="icon-remove"></i>
-                </a>
-              </div>
-              <p class="help-block" data-i18n="options_ruleListUrlHelp"></p>
-            </section>
-            <section class="settings-group">
-              <h3 data-i18n="options_group_ruleListText"></h3>
-              <textarea class="rule-list-text input-xxlarge" disabled="disabled">
-  example.com
-              </textarea>
-            </section>
-          </div>
         </div>
       </div>
       <div class="modal hide fade" id="modal-profile-rename">

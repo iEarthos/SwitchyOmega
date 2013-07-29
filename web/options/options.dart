@@ -137,12 +137,6 @@ void handleFixedServerUI() {
   });
 }
 
-void handlePacScriptsUI() {
-//  dynamicEvent('change', '.pac-url',  (e, InputElement pacUrl) {
-//    pacUrl.dispatchEvent(new Event('input'));
-//  });
-}
-
 void handleSwitchProfileUI() {
   new EventStreamProvider('x-sort').forTarget(document).listen((Event e) {
     var target = e.target as Element;
@@ -227,10 +221,6 @@ void requestResetRules(SwitchProfile profile) {
   });
 }
 
-void handleRulelistUI() {
-
-}
-
 Communicator c = new Communicator(window.top);
 Communicator js = new Communicator(window);
 
@@ -240,13 +230,16 @@ SwitchyOptions options = null;
 List<String> profileTypes = ['FixedProfile',
                              'SwitchProfile',
                              'PacProfile',
-                             'RulelistProfile'];
+                             'SwitchyRuleListProfile',
+                             'AutoProxyRuleListProfile'];
 
 Map<String, String> profileIcons = {
   'FixedProfile': 'icon-globe',
   'PacProfile': 'icon-tasks',
   'RulelistProfile': 'icon-list',
-  'SwitchProfile': 'icon-retweet'
+  'SwitchProfile': 'icon-retweet',
+  'SwitchyRuleListProfile': 'icon-list',
+  'AutoProxyRuleListProfile': 'icon-list'
 };
 
 Map<FixedProfile, FixedProfileEditor> fixedProfileEditors =
@@ -309,7 +302,15 @@ void handleNewProfileUI() {
       case 'SwitchProfile':
         p = new SwitchProfile(modalNewProfile_name, new DirectProfile().name);
         break;
-      case 'RulelistProfile':
+      case 'SwitchyRuleListProfile':
+        p = new SwitchyRuleListProfile(modalNewProfile_name,
+            new DirectProfile().name, new DirectProfile().name);
+        break;
+      case 'AutoProxyRuleListProfile':
+        p = new SwitchyRuleListProfile(modalNewProfile_name,
+            new DirectProfile().name, new DirectProfile().name);
+        break;
+      default:
         throw new UnimplementedError();
     }
     if (p != null) {
@@ -347,9 +348,7 @@ void main() {
   });
 
   handleFixedServerUI();
-  handlePacScriptsUI();
   handleSwitchProfileUI();
-  handleRulelistUI();
   autoBindToDataList(document.documentElement);
 
   handleNewProfileUI();

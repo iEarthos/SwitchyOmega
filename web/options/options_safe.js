@@ -78,13 +78,21 @@ c.on({
   	      {
   	        "name":"auto",
   	        "color":"#0000cc",
-  	        "defaultProfileName":"http",
+  	        "defaultProfileName":"rulelist",
   	        "rules": [
   	          {"profileName":"ssh","condition":{"pattern":"*.example.com","conditionType":"HostWildcardCondition"}},
   	          {"profileName":"direct","condition":{"minValue":0,"conditionType":"HostLevelsCondition","maxValue":0}},
   	          {"profileName":"ssh","condition":{"pattern":"foo","conditionType":"KeywordCondition"}}
   	        ],
   	        "profileType":"SwitchProfile"
+  	      },
+  	      {
+  	        "name":"rulelist",
+  	        "color":"#0000cc",
+  	        "defaultProfileName":"direct",
+  	        "matchProfileName":"http",
+  	        "ruleList": "[AutoProxy]\nexample.com",
+  	        "profileType":"AutoProxyRuleListProfile"
   	      }
   	    ],
   	  'quickSwitchProfiles' : []

@@ -25,13 +25,15 @@ part of switchy_profile;
  * If [sourceUrl] is not null, the ruleList will be downloaded from [sourceUrl].
  */
 abstract class RuleListProfile extends InclusiveProfile {
-  String _sourceUrl;
+  String _sourceUrl = '';
   String get sourceUrl => _sourceUrl;
 
   void set sourceUrl(String value) {
     _sourceUrl = value;
-    _ruleList = null;
-    _rules = null;
+    if (value != null && value.length > 0) {
+      _ruleList = '';
+      _rules = null;
+    }
   }
 
   String _matchProfileName;
@@ -56,7 +58,7 @@ abstract class RuleListProfile extends InclusiveProfile {
 
   List<Rule> _rules;
 
-  String _ruleList;
+  String _ruleList = '';
   String get ruleList => _ruleList;
 
   void set ruleList(String value) {
@@ -129,9 +131,9 @@ abstract class RuleListProfile extends InclusiveProfile {
 
   Map<String, Object> toPlain([Map<String, Object> p]) {
     p = super.toPlain(p);
-    p['defaultProfileNameName'] = defaultProfileName;
-    p['matchProfileNameName'] = matchProfileName;
-    if (sourceUrl != null) {
+    p['defaultProfileName'] = defaultProfileName;
+    p['matchProfileName'] = matchProfileName;
+    if (sourceUrl != null && sourceUrl.length > 0) {
       p['sourceUrl'] = sourceUrl;
     } else {
       p['ruleList'] = ruleList;
@@ -145,10 +147,10 @@ abstract class RuleListProfile extends InclusiveProfile {
 
   void loadPlain(Map<String, Object> p) {
     super.loadPlain(p);
-    defaultProfileName = p['defaultProfileNameName'];
-    matchProfileName = p['matchProfileNameName'];
+    defaultProfileName = p['defaultProfileName'];
+    matchProfileName = p['matchProfileName'];
     var u = p['sourceUrl'];
-    if (u != null) {
+    if (u != null && u.length > 0) {
       sourceUrl = u;
     } else {
       ruleList = p['ruleList'];
@@ -159,12 +161,12 @@ abstract class RuleListProfile extends InclusiveProfile {
     RuleListProfile f = null;
     switch (p['profileType']) {
       case 'SwitchyRuleListProfile':
-        f = new SwitchyRuleListProfile(p['name'], p['defaultProfileNameName'],
-            p['matchProfileNameName']);
+        f = new SwitchyRuleListProfile(p['name'], p['defaultProfileName'],
+            p['matchProfileName']);
         break;
       case 'AutoProxyRuleListProfile':
         f = new AutoProxyRuleListProfile(p['name'],
-            p['defaultProfileNameName'], p['matchProfileNameName']);
+            p['defaultProfileName'], p['matchProfileName']);
         break;
       default:
         throw new UnsupportedError(
