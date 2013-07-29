@@ -2,3 +2,4 @@ name: switchyomega
 dependencies:
   web_ui: any
   browser: any
+  crypto: any

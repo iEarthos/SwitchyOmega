@@ -26,6 +26,7 @@ import 'dart:json' as JSON;
 import '../code_writer.dart';
 import '../condition/lib.dart';
 import '../lang/lib.dart';
+import 'package:crypto/crypto.dart';
 
 part 'profile.dart';
 
