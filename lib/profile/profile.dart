@@ -82,6 +82,7 @@ abstract class Profile extends Plainable {
         profile = new PacProfile.fromPlain(p);
         break;
       case 'SwitchyRuleListProfile':
+      case 'AutoProxyRuleListProfile':
         profile = new RuleListProfile.fromPlain(p);
         break;
       case 'SwitchProfile':

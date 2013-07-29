@@ -167,13 +167,15 @@ class ProfileCollection extends HashSet<Profile>
     from_data.allRef.increase(to);
     to_data.referredBy.increase(from);
 
-    for (var profile in from_data.referredBy.keys) {
-      _profiles[profile.name].allRef.increase(to);
-    }
+    from_data.referredBy.forEach((profile, count) {
+      _profiles[profile.name].allRef.increase(to, count);
+    });
+
     if (to_data.allRef != null) {
-      for (var profile in to_data.allRef.keys) {
-        _profiles[profile.name].referredBy.increase(from);
-      }
+      to_data.allRef.forEach((profile, count) {
+        _profiles[profile.name].referredBy.increase(from, count);
+        from_data.allRef.increase(profile, count);
+      });
     }
   }
 
@@ -185,13 +187,15 @@ class ProfileCollection extends HashSet<Profile>
     from_data.allRef.decrease(to);
     to_data.referredBy.decrease(from);
 
-    for (var profile in from_data.referredBy.keys) {
-      _profiles[profile.name].allRef.decrease(to);
-    }
+    from_data.referredBy.forEach((profile, count) {
+      _profiles[profile.name].allRef.decrease(to, count);
+    });
+
     if (to_data.allRef != null) {
-      for (var profile in to_data.allRef.keys) {
-        _profiles[profile.name].referredBy.decrease(from);
-      }
+      to_data.allRef.forEach((profile, count) {
+        _profiles[profile.name].referredBy.decrease(from, count);
+        from_data.allRef.decrease(profile, count);
+      });
     }
   }
 

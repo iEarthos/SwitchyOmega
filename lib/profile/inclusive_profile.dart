@@ -47,7 +47,7 @@ abstract class InclusiveProfile extends ScriptProfile {
   /**
    * Get all direct result profiles of this profile. Requires [tracker].
    */
-  Iterable<Profile> getProfileNames() => tracker.directReferences(this);
+  Iterable<Profile> getProfiles() => tracker.directReferences(this);
 
   /**
    * Returns true if [name] is a direct or indirect result of this profile.

@@ -23,50 +23,61 @@ import 'package:switchyomega/condition/lib.dart';
 import 'package:switchyomega/profile/lib.dart';
 
 void main() {
-  var d = new FixedProfile('http');
-  d.fallbackProxy = new ProxyServer('127.0.0.1', 'http', 8888);
+  var http = new FixedProfile('http');
+  http.fallbackProxy = new ProxyServer('127.0.0.1', 'http', 8888);
 
-  var f = new FixedProfile('ssh');
-  f.proxyForHttp = new ProxyServer('127.0.0.1', 'http', 8080);
-  f.fallbackProxy = new ProxyServer('127.0.0.1', 'socks5', 7070);
-  f.bypassList.add(new BypassCondition('127.0.0.1:3333'));
-  f.bypassList.add(new BypassCondition('https://www.example.com'));
-  f.bypassList.add(new BypassCondition('*:3333'));
-  f.bypassList.add(new BypassCondition('<local>'));
+  var ssh = new FixedProfile('ssh');
+  ssh.proxyForHttp = new ProxyServer('127.0.0.1', 'http', 8080);
+  ssh.fallbackProxy = new ProxyServer('127.0.0.1', 'socks5', 7070);
+  ssh.bypassList.add(new BypassCondition('127.0.0.1:3333'));
+  ssh.bypassList.add(new BypassCondition('https://www.example.com'));
+  ssh.bypassList.add(new BypassCondition('*:3333'));
+  ssh.bypassList.add(new BypassCondition('<local>'));
 
+  var list1 = new SwitchyRuleListProfile('list1', http.name, ssh.name);
   // Example rule list from https://code.google.com/p/switchy/wiki/RuleList
-  var rulelist = r"""
-        ; Summary: Example Rule List
-        ; Author: Mhd Hejazi (my@email)
-        ; Date: 2010-01-20
-        ; URL: http://samabox.com/projects/chrome/switchy/switchyrules.txt
-        
-        #BEGIN
-        
-        [Wildcard]
-        *://chrome.google.com/*
-        *://*.samabox.com/*
-        
-        [RegExp]
-        ^http://code\.google\.com/.*
-        youtube
-        
-        #END
-      """;
-  var r = new SwitchyRuleListProfile('rulelist', d.name, f.name);
-  r.ruleList = rulelist;
+  list1.ruleList = r"""
+      ; Summary: Example Rule List
+      ; Author: Mhd Hejazi (my@email)
+      ; Date: 2010-01-20
+      ; URL: http://samabox.com/projects/chrome/switchy/switchyrules.txt
+      
+      #BEGIN
+      
+      [Wildcard]
+      *://chrome.google.com/*
+      *://*.samabox.com/*
+      
+      [RegExp]
+      ^http://code\.google\.com/.*
+      youtube
+      
+      #END
+    """;
 
-  var s = new SwitchProfile('auto', r.name);
+  var list2 = new AutoProxyRuleListProfile('list2', list1.name, ssh.name);
+  list2.ruleList = r"""[AutoProxy]
+      autoproxy.example.net
+      ||autoproxy2.example.net
+      |https://ssl.autoproxy3.example.net
+      /^https?:\/\/[^\/]+autoproxy4.example\.net/
+      @@||autoproxy5.example.net
+      !Foo bar
+    """;
+
+  var sw = new SwitchProfile('auto', list2.name);
   // The following line will only work in PAC files because it uses isInNet.
   // f.bypassList.add(new BypassCondition('192.168.0.0/18'));
-  s.add(new Rule(new HostWildcardCondition('*.example.com'), f.name));
-  s.add(new Rule(new HostLevelsCondition(0, 0), new DirectProfile().name));
-  s.add(new Rule(new KeywordCondition('foo'), f.name));
+  sw.add(new Rule(new HostWildcardCondition('*.example.com'), ssh.name));
+  sw.add(new Rule(new HostLevelsCondition(0, 0), new DirectProfile().name));
+  sw.add(new Rule(new KeywordCondition('foo'), ssh.name));
 
-  var col = new ProfileCollection([d, f, r, s]);
+  var col = new ProfileCollection([http, ssh, list1, list2, sw]);
 
   // Serialize the profiles to JSON and then parse back to test the roundtrip.
   var json = JSON.stringify(col);
+  //print(col.allReferences(list2).toList());
+  //return;
   col = new ProfileCollection.fromPlain(JSON.parse(json));
 
   var auto = col['auto'] as InclusiveProfile;
@@ -78,17 +89,19 @@ void main() {
         "    console.log('[' + extra + ']: ' + actural + "
         "' (Expected: ' + expected + ')');\n"
         '};');
-  testCase(s, 'https://www.example.com/somepath');
-  testCase(s, 'ftp://www.example.com/somepath');
-  testCase(s, 'http://www.example.com/somepath');
-  testCase(s, 'http://foo.test/test');
-  testCase(s, 'http://bar/test');
-  testCase(s, 'http://foo.test:3333/test');
-  testCase(s, 'http://127.0.0.1/foo');
-  testCase(s, 'http://another.example.test');
-  testCase(s, 'https://chrome.google.com/');
-  testCase(s, 'http://samabox.com/');
-  testCase(s, 'http://code.google.com/p/switchy/wiki/RuleList');
+  testCase(sw, 'https://www.example.com/somepath');
+  testCase(sw, 'ftp://www.example.com/somepath');
+  testCase(sw, 'http://www.example.com/somepath');
+  testCase(sw, 'http://foo.test/test');
+  testCase(sw, 'http://bar/test');
+  testCase(sw, 'http://foo.test:3333/test');
+  testCase(sw, 'http://127.0.0.1/foo');
+  testCase(sw, 'http://another.example.test');
+  testCase(sw, 'https://chrome.google.com/');
+  testCase(sw, 'http://samabox.com/');
+  testCase(sw, 'http://code.google.com/p/switchy/wiki/RuleList');
+  testCase(sw, 'http://autoproxy.example.net/');
+  testCase(sw, 'http://autoproxy5.example.net/');
 }
 
 ProxyServer resolveProxy(Profile p, String url, String host, String scheme) {

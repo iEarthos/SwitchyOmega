@@ -41,6 +41,7 @@ part 'pac_profile.dart';
 part 'switch_profile.dart';
 part 'rule_list_profile.dart';
 part 'switchy_rule_list_profile.dart';
+part 'autoproxy_rule_list_profile.dart';
 
 part 'profile_tracker.dart';
 part 'profile_collection.dart';

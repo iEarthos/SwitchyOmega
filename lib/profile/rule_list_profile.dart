@@ -122,7 +122,7 @@ abstract class RuleListProfile extends InclusiveProfile {
     return matchProfileName == name || defaultProfileName == name;
   }
 
-  Iterable<Profile> getProfileNames() {
+  Iterable<Profile> getProfiles() {
     return [tracker.getProfileByName(matchProfileName),
             tracker.getProfileByName(defaultProfileName)];
   }
@@ -161,6 +161,10 @@ abstract class RuleListProfile extends InclusiveProfile {
       case 'SwitchyRuleListProfile':
         f = new SwitchyRuleListProfile(p['name'], p['defaultProfileNameName'],
             p['matchProfileNameName']);
+        break;
+      case 'AutoProxyRuleListProfile':
+        f = new AutoProxyRuleListProfile(p['name'],
+            p['defaultProfileNameName'], p['matchProfileNameName']);
         break;
       default:
         throw new UnsupportedError(
