@@ -100,7 +100,7 @@
               <li class="nav-header" data-i18n="options_navHeader_profiles"></li>
               <template iterate="profile in options.profilesAsList.where((p) => !p.predefined).toList()">
                 <li>
-                  <a href="#profile-{{profile.name}}" data-toggle="tab">
+                  <a href="#{{cssSafeId('profile-${profile.name}')}}" data-toggle="tab">
                     <i class="{{profileIcons[profile.profileType]}}"></i>
                     <span>{{profile.name}}</span>
                   </a>
@@ -209,7 +209,7 @@
             </section>
           </div>
           <template iterate="profile in options.profilesAsList">
-            <div class="tab-pane" data-workaround-id="profile-{{profile.name}}" data-profile="{{profile.name}}">
+            <div class="tab-pane" id="{{cssSafeId('profile-${profile.name}')}}" data-profile="{{profile.name}}">
               <header class="span10 profile-header">
                 <h2>
                   <span data-i18n="options_profileTabPrefix"></span>
@@ -292,7 +292,7 @@
                 </section>
               </template>
               <template instantiate="if profile.profileType == 'SwitchProfile'">
-                <datalist data-workaround-id="profiles-available-to-{{profile.name}}" template="template"
+                <datalist id="{{cssSafeId('profiles-available-to-${profile.name}')}}" template="template"
                     iterate="p in validResultProfilesFor(profile)">
                   <option>{{p.name}}</option>
                 </datalist>
@@ -329,7 +329,7 @@
                           </template>
                         </td>
                         <td>
-                          <select data-list="profiles-available-to-{{profile.name}}" bind-value="rule.rule.profileName" data-later-value="{{rule.rule.profileName}}"></select>
+                          <select data-list="{{cssSafeId('profiles-available-to-${profile.name}')}}" bind-value="rule.rule.profileName" data-later-value="{{rule.rule.profileName}}"></select>
                         </td>
                         <td>
                           <a on-click="requestRemoveRule(profile, rule.rule); $event.preventDefault();" href="#"><i class="icon-trash"></i></a>
@@ -349,7 +349,7 @@
                         <td></td>
                         <td colspan="2" data-i18n="options_switchDefaultProfile"></td>
                         <td>
-                          <select data-list="profiles-available-to-{{profile.name}}" bind-value="profile.defaultProfileName" data-later-value="{{profile.defaultProfileName}}"></select>
+                          <select data-list="{{cssSafeId('profiles-available-to-${profile.name}')}}" bind-value="profile.defaultProfileName" data-later-value="{{profile.defaultProfileName}}"></select>
                         </td>
                         <td>
                           <a on-click="requestResetRules(profile); $event.preventDefault()" href="#"><i class="icon-chevron-up"></i></a>
@@ -360,7 +360,7 @@
                 </section>
               </template>
               <template instantiate="if profile.profileType.endsWith('RuleListProfile')">
-                <datalist data-workaround-id="profiles-available-to-{{profile.name}}" template="template"
+                <datalist id="cssSafeId('profiles-available-to-${profile.name}')" template="template"
                     iterate="p in validResultProfilesFor(profile)">
                   <option>{{p.name}}</option>
                 </datalist>
@@ -368,11 +368,11 @@
                   <h3 data-i18n="options_group_ruleListResult"></h3>
                   <div class="h-control">
                     <label data-i18n="options_ruleListMatchProfile"></label>
-                    <select data-list="profiles-available-to-{{profile.name}}" bind-value="profile.matchProfileName" data-later-value="{{profile.matchProfileName}}"></select>
+                    <select data-list="{{cssSafeId('profiles-available-to-${profile.name}')}}" bind-value="profile.matchProfileName" data-later-value="{{profile.matchProfileName}}"></select>
                   </div>
                   <div class="h-control">
                     <label data-i18n="options_ruleListDefaultProfile"></label>
-                    <select data-list="profiles-available-to-{{profile.name}}" bind-value="profile.defaultProfileName" data-later-value="{{profile.defaultProfileName}}"></select>
+                    <select data-list="{{cssSafeId('profiles-available-to-${profile.name}')}}" bind-value="profile.defaultProfileName" data-later-value="{{profile.defaultProfileName}}"></select>
                   </div>
                 </section>
                 <section class="settings-group">

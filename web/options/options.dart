@@ -276,42 +276,6 @@ void restoreLocal(FileUploadInputElement file) {
   }
 }
 
-String idBindingWorkaroundAttrName = 'data-workaround-id';
-
-void idBindingWorkaround() {
-  document.queryAll('[$idBindingWorkaroundAttrName]').forEach(
-      (target) {
-        bindToDataList(target);
-      });
-
-  MutationObserver ob = new MutationObserver(
-      (List<MutationRecord> mutations, MutationObserver _) {
-        mutations.forEach((MutationRecord record) {
-          switch (record.type) {
-            case 'attributes':
-              var e = record.target as Element;
-              e.id = e.attributes[idBindingWorkaroundAttrName];
-              break;
-            case 'childList':
-              record.addedNodes.forEach((el) {
-                if (el is Element) {
-                  el.queryAll('[$idBindingWorkaroundAttrName]').forEach(
-                      (Element e) {
-                        e.id = e.attributes[idBindingWorkaroundAttrName];
-                      });
-                }
-              });
-              break;
-          }
-        });
-      });
-  ob.observe(document.documentElement,
-      childList: true,
-      attributes: true,
-      subtree: true,
-      attributeFilter: [idBindingWorkaroundAttrName]);
-}
-
 void handleNewProfileUI() {
   js.on('profile.create', (String type, [Function respond]) {
     Profile p = null;
@@ -347,7 +311,6 @@ void handleNewProfileUI() {
 }
 
 void main() {
-  idBindingWorkaround();
   c.send('options.get', null, (Map<String, Object> o, [Function respond]) {
     options = new SwitchyOptions.fromPlain(o['options']);
     // TODO: Run the callback after the observers finish instead of setting timeout.
@@ -360,10 +323,6 @@ void main() {
           orElse: () => navs.first);
       closestElement(nav, 'li').classes.add('active');
       var tab = query(nav.attributes['href']);
-      if (tab == null && nav.attributes['href'][0] == '#') {
-        var id = nav.attributes['href'].substring(1);
-        tab = query('[$idBindingWorkaroundAttrName="$id"]');
-      }
       tab.classes.add('active');
 
       js.send('options.init');

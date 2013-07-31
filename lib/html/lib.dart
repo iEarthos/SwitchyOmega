@@ -26,3 +26,4 @@ import 'package:switchyomega/lang/lib.dart';
 part 'dynamic_event.dart';
 part 'dom_helpers.dart';
 part 'datalist.dart';
+part 'css.dart';

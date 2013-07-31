@@ -4,19 +4,19 @@ packages:
   analyzer_experimental:
     description: analyzer_experimental
     source: hosted
-    version: "0.6.9+2"
+    version: "0.6.13"
   args:
     description: args
     source: hosted
-    version: "0.6.9+2"
+    version: "0.6.13"
   browser:
     description: browser
     source: hosted
-    version: "0.6.9+2"
+    version: "0.6.13"
   crypto:
     description: crypto
     source: hosted
-    version: "0.6.9+2"
+    version: "0.6.13"
   csslib:
     description: csslib
     source: hosted
@@ -28,15 +28,15 @@ packages:
   logging:
     description: logging
     source: hosted
-    version: "0.6.9+2"
+    version: "0.6.13"
   meta:
     description: meta
     source: hosted
-    version: "0.6.9+2"
+    version: "0.6.13"
   path:
     description: path
     source: hosted
-    version: "0.6.9+2"
+    version: "0.6.13"
   pathos:
     description: pathos
     source: hosted
@@ -44,15 +44,19 @@ packages:
   source_maps:
     description: source_maps
     source: hosted
-    version: "0.6.9+2"
+    version: "0.6.13"
   stack_trace:
     description: stack_trace
     source: hosted
-    version: "0.6.9+2"
+    version: "0.6.13"
   unittest:
     description: unittest
     source: hosted
-    version: "0.6.9+2"
+    version: "0.6.13"
+  unmodifiable_collection:
+    description: unmodifiable_collection
+    source: hosted
+    version: "0.6.13"
   web_ui:
     description: web_ui
     source: hosted
