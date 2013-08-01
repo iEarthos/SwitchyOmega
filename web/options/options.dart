@@ -309,10 +309,7 @@ void handleNewProfileUI() {
 
 void main() {
   c.send('options.get', null, (Map<String, Object> o, [Function respond]) {
-    options = new SwitchyOptions.fromPlain(o['options']);
-    // TODO: Run the callback after the observers finish instead of setting timeout.
-    // (But how?)
-    new Future.delayed(const Duration(milliseconds: 100), () {
+    observe(() => options, (_) {
       var lastActiveTab = o['tab'];
       var navs = queryAll('#options-nav a[data-toggle="tab"]');
 
@@ -324,6 +321,8 @@ void main() {
 
       js.send('options.init');
     });
+
+    options = new SwitchyOptions.fromPlain(o['options']);
   });
 
   handleFixedServerUI();
