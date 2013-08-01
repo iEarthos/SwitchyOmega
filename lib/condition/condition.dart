@@ -24,7 +24,7 @@ part of switchy_condition;
  * When a [Condition] is met in an [InclusiveProfile], the corresponding result
  * profile is selected.
  */
-abstract class Condition extends Plainable {
+abstract class Condition extends Plainable with Observable {
   String get conditionType;
 
   /**
@@ -77,12 +77,68 @@ abstract class Condition extends Plainable {
   }
 }
 
+/**
+ * A Condition which uses [pattern] to match URLs.
+ * To mix in or implement this class, the target class must be Observable.
+ */
 abstract class PatternBasedCondition {
-  String get pattern;
-  void set pattern(String value);
+  String _pattern;
+  /** Get the pattern of this condition. */
+  String get pattern {
+    if (observeReads) {
+      notifyRead(this as Observable, ChangeRecord.FIELD, 'pattern');
+    }
+    return _pattern;
+  }
+
+  /** Set the pattern of this condition to [value]. */
+  void set pattern(String value) {
+    if (hasObservers(this as Observable)) {
+      notifyChange(this as Observable, ChangeRecord.FIELD, 'pattern',
+                   _pattern, value);
+    }
+    _pattern = value;
+  }
 }
 
-abstract class RegexCondition extends PatternBasedCondition {
-  RegExp get regex;
-  void set regex(RegExp value);
+/**
+ * A Condition which uses [regex] to match URLs.
+ * To mix in or implement this class, the target class must be Observable.
+ */
+abstract class RegexCondition implements PatternBasedCondition {
+  RegExp _regex;
+
+  /** Get the [regex] of this condition. */
+  RegExp get regex {
+    if (observeReads) {
+      notifyRead(this as Observable, ChangeRecord.FIELD, 'regex');
+    }
+    return _regex;
+  }
+
+  /** Set the [regex] of this condition to [value]. */
+  void set regex(RegExp value) {
+    if (hasObservers(this as Observable)) {
+      notifyChange(this as Observable, ChangeRecord.FIELD, 'regex',
+                   regex, value);
+    }
+    _regex = value;
+  }
+
+  /** Get the pattern of the [regex]. */
+  String get pattern {
+    if (observeReads) {
+      notifyRead(this as Observable, ChangeRecord.FIELD, 'pattern');
+    }
+    return regex.pattern;
+  }
+
+  /** Set the [regex] to a new [RegExp] with a pattern of [value]. */
+  void set pattern(String value) {
+    if (hasObservers(this as Observable)) {
+      notifyChange(this as Observable, ChangeRecord.FIELD, 'pattern',
+                   regex.pattern, value);
+    }
+    regex = new RegExp(value);
+  }
 }

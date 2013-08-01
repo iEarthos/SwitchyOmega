@@ -35,13 +35,6 @@ class SwitchyOptions extends Plainable {
 
   final ProfileCollection profiles = new ProfileCollection();
 
-  final List<Profile> profilesAsList = toObservable([]);
-
-  void notifyProfilesChange() {
-    profilesAsList.clear();
-    profilesAsList.addAll(profiles);
-  }
-
   Profile getProfileByName(String name) {
     return profiles[name];
   }
@@ -83,8 +76,6 @@ class SwitchyOptions extends Plainable {
     profiles.loadPlain(p['profiles']);
 
     currentProfileName = p['currentProfileName'];
-    profilesAsList.clear();
-    profilesAsList.addAll(profiles);
   }
 
   SwitchyOptions() {}

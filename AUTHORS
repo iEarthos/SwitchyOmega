@@ -5,6 +5,11 @@ SwitchyOmega is based on (modified):
 * web/scripts/i18n_templates2.js
   => From project Chromium <http://code.google.com/chromium/>
   => Copyright (c) 2012 The Chromium Authors. All rights reserved.
+* lib/profile/switch_profile.dart
+  => Partially from package:web_ui/observe/list.dart in Dart Web UI.
+  => Copyright (c) 2012, the Dart project authors.
+  => Some code is copied from ObservableList<E> and modified.
+  => See the comments in the file for more details.
 
 SwitchyOmega includes or links to (unchanged):
 * Twitter Bootstrap<http://twitter.github.com/bootstrap>

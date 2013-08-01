@@ -25,15 +25,8 @@ part of switchy_condition;
  * For the pattern syntax, see
  * <https://code.google.com/chrome/extensions/proxy.html#bypass_list>
  */
-class BypassCondition extends Condition implements PatternBasedCondition {
+class BypassCondition extends Condition with PatternBasedCondition {
   final String conditionType = 'BypassCondition';
-
-  String _pattern;
-  String get pattern => _pattern;
-  void set pattern(String value) {
-    _pattern = value;
-    _cached = false;
-  }
 
   bool _cached = false;
   HostWildcardCondition _hostWildcard;
@@ -50,7 +43,7 @@ class BypassCondition extends Condition implements PatternBasedCondition {
   static final List<String> localHosts = const ["127.0.0.1", "[::1]", "localhost"];
 
   void _parsePattern() {
-    var server = _pattern;
+    var server = pattern;
     if (server == localPattern) {
       _cached = true;
       return;
@@ -139,6 +132,9 @@ class BypassCondition extends Condition implements PatternBasedCondition {
   }
 
   BypassCondition([String pattern = '']) {
-    this._pattern = pattern;
+    this.pattern = pattern;
+    observe(() => pattern, (_) {
+      _cached = false;
+    });
   }
 }

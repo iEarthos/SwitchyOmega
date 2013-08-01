@@ -20,10 +20,12 @@
 library switchy_options_editors;
 
 import 'dart:json';
+import 'package:web_ui/web_ui.dart';
 import 'package:switchyomega/switchyomega.dart';
 import 'package:switchyomega/html/converters.dart' as convert;
 import 'package:switchyomega/condition/shexp_utils.dart';
 
+@observable
 class FixedProfileEditor {
   FixedProfile profile;
   FixedProfileEditor(this.profile) {
@@ -62,6 +64,7 @@ class FixedProfileEditor {
 
 }
 
+@observable
 class ProxyServerEditor {
   ProxyServer get proxy {
     if (_isEmpty || _host == '') return null;
@@ -145,6 +148,7 @@ class ProxyServerEditor {
   }
 }
 
+@observable
 class RuleEditor {
   Rule rule;
 
@@ -263,10 +267,10 @@ class RuleEditor {
       } else if (rule.condition is PatternBasedCondition) {
         _regex = _regex.length > 0 ? _regex : _pattern;
       }
-      if (rule.condition is HostLevelsCondition) {
-        var cond = rule.condition as HostLevelsCondition;
-        cond.minValue = cond.maxValue = 1;
-      }
+    }
+    if (rule.condition is HostLevelsCondition) {
+      var cond = rule.condition as HostLevelsCondition;
+      cond.minValue = cond.maxValue = 1;
     }
     _setPattern();
   }

@@ -25,6 +25,7 @@ part of switchy_profile;
  * Besides, a [bypassList] can also be used for server which should be
  * connected directly.
  */
+@observable
 class FixedProfile extends IncludableProfile {
   final String profileType = 'FixedProfile';
 
@@ -37,7 +38,7 @@ class FixedProfile extends IncludableProfile {
    * When the url matches one of the [BypassConditions],
    * direct connection is used.
    */
-  List<BypassCondition> bypassList;
+  final List<BypassCondition> bypassList = toObservable([]);
 
   /**
    * Write the proxy servers and [bypassList] to a PAC script.
@@ -120,7 +121,6 @@ class FixedProfile extends IncludableProfile {
   }
 
   FixedProfile(String name) : super(name) {
-    bypassList = new List<BypassCondition>();
   }
 
   void loadPlain(Map<String, Object> p) {
@@ -138,7 +138,8 @@ class FixedProfile extends IncludableProfile {
       fallbackProxy = new ProxyServer.fromPlain(p['fallbackProxy']);
     }
     var bl = p['bypassList'] as List<Object>;
-    bypassList = bl.map((b) => new BypassCondition.fromPlain(b)).toList();
+    bypassList.clear();
+    bypassList.addAll(bl.map((b) => new BypassCondition.fromPlain(b)));
   }
 
 
@@ -152,6 +153,7 @@ class FixedProfile extends IncludableProfile {
 /**
  * A [ProxyServer].
  */
+@observable
 class ProxyServer extends Plainable {
   String protocol = defaultProtocol;
   String host;

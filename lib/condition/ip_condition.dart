@@ -25,6 +25,7 @@ part of switchy_condition;
  * of the IP address are the same as those of [ip].
  * TODO(catus): Support IPv6.
  */
+@observable
 class IpCondition extends HostCondition {
   final String conditionType = 'IpCondition';
 

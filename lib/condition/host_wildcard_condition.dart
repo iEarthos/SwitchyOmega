@@ -26,16 +26,10 @@ part of switchy_condition;
  * <https://github.com/FelisCatus/SwitchyOmega/wiki/Host-wildcard-condition>.
  */
 class HostWildcardCondition extends HostCondition
-    implements PatternBasedCondition {
+    with PatternBasedCondition {
   final String conditionType = 'HostWildcardCondition';
 
-  String _pattern;
-  String get pattern => _pattern;
-  void set pattern(String value) {
-    _pattern = value;
-    _regex = null;
-    _recorder = null;
-  }
+  @observable String pattern;
 
   bool _magic_subdomain = false;
   RegExp _regex;
@@ -47,14 +41,14 @@ class HostWildcardCondition extends HostCondition
    * for the magic.
    */
   String magicRegex() {
-    if (_pattern.startsWith('**.')) {
-      return shExp2RegExp(_pattern.substring(1), trimAsterisk: true);
-    } else if (_pattern.startsWith('*.')) {
-      return shExp2RegExp(_pattern.substring(2), trimAsterisk: true)
+    if (pattern.startsWith('**.')) {
+      return shExp2RegExp(pattern.substring(1), trimAsterisk: true);
+    } else if (pattern.startsWith('*.')) {
+      return shExp2RegExp(pattern.substring(2), trimAsterisk: true)
           .replaceFirst('^', r'(^|\.)');
     }
 
-    return shExp2RegExp(_pattern, trimAsterisk: true);
+    return shExp2RegExp(pattern, trimAsterisk: true);
   }
 
   bool matchHost(String host) {
@@ -80,7 +74,11 @@ class HostWildcardCondition extends HostCondition
   }
 
   HostWildcardCondition([String pattern = '']) {
-    this._pattern = pattern;
+    this.pattern = pattern;
+    observe(this as Observable, (_) {
+      _regex = null;
+      _recorder = null;
+    });
   }
 
   Map<String, Object> toPlain([Map<String, Object> p]) {

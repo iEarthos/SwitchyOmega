@@ -138,23 +138,11 @@ abstract class InclusiveProfile extends ScriptProfile {
 /**
  * A [Rule] is a combination of a [condition] and a [profileName].
  */
+@observable
 class Rule extends Plainable {
   Condition condition;
 
-  String _profileName;
-  String get profileName => _profileName;
-  set profileName(String value) {
-    String old = _profileName;
-    _profileName = value;
-    if (onProfileNameChange != null && old != value) {
-      onProfileNameChange(this, old);
-    }
-  }
-
-  /**
-   * When [profileName] is changed, this function will be called.
-   */
-  Function onProfileNameChange = null;
+  String profileName;
 
   Map<String, Object> toPlain([Map<String, Object> p]) {
     if (p == null) p = new Map<String, Object>();
@@ -167,18 +155,12 @@ class Rule extends Plainable {
 
   void loadPlain(Map<String, Object> p) {
     this.condition = new Condition.fromPlain(p['condition']);
-    this._profileName = p['profileName'];
+    this.profileName = p['profileName'];
   }
 
   Rule.fromPlain(Map<String, Object> p) {
     this.loadPlain(p);
   }
 
-  Rule(this.condition, this._profileName);
+  Rule(this.condition, this.profileName);
 }
-
-/**
- * A [RuleProfileNameChangeCallback] is called when the profileName of the
- * [rule] is changed from [oldProfileName] to [:rule.profileName:].
- */
-typedef void RuleProfileNameChangeCallback(Rule rule, String oldProfileName);

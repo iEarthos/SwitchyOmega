@@ -24,19 +24,13 @@ part of switchy_profile;
  * A PAC profile selects the proxy by running a [pacScript].
  * If [pacUrl] is not null, the script is downloaded from [pacUrl].
  */
+@observable
 class PacProfile extends ScriptProfile {
   String get profileType => 'PacProfile';
 
-  String _pacUrl;
-  String get pacUrl => _pacUrl;
-  void set pacUrl(String value) {
-    if (value != null && value != '' && value != _pacUrl) {
-      pacScript = "";
-    }
-    _pacUrl = value;
-  }
+  String pacUrl = '';
 
-  String pacScript;
+  String pacScript = '';
 
   String toScript() => this.pacScript;
 
@@ -55,7 +49,7 @@ class PacProfile extends ScriptProfile {
   Map<String, Object> toPlain([Map<String, Object> p]) {
     p = super.toPlain(p);
 
-    if (pacUrl != null) {
+    if (pacUrl != null && pacUrl.length > 0) {
       p['pacUrl'] = this.pacUrl;
     } else {
       p['pacScript'] = this.pacScript;
@@ -64,7 +58,14 @@ class PacProfile extends ScriptProfile {
     return p;
   }
 
-  PacProfile(String name) : super(name), pacScript = '', _pacUrl = '';
+  PacProfile(String name) : super(name) {
+    observeChanges(this as Observable, (List<ChangeRecord> changes) {
+      if (changes.any((c) => c.key == 'pacUrl' && c.newValue != c.oldValue &&
+                             c.newValue != null && c.newValue != '')) {
+        this.pacScript = '';
+      }
+    });
+  }
 
   void loadPlain(Map<String, Object> p) {
     super.loadPlain(p);

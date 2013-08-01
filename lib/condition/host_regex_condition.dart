@@ -24,16 +24,8 @@ part of switchy_condition;
  * Matches when the host matches the [regex] [pattern].
  */
 class HostRegexCondition extends HostCondition
-    implements PatternBasedCondition, RegexCondition {
+    with RegexCondition {
   final String conditionType = 'HostRegexCondition';
-
-  RegExp regex;
-
-  /** Get the pattern of the [regex]. */
-  String get pattern => regex.pattern;
-
-  /** Set the [regex] to a new [RegExp] with a pattern of [value]. */
-  void set pattern(String value) { regex = new RegExp(value); }
 
   bool matchHost(String host) {
     return regex.hasMatch(host);

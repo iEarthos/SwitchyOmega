@@ -50,7 +50,7 @@
     </template>
     <template instantiate="if options != null">
       <div>
-        <datalist id="profiles" template="template" iterate="p in options.profilesAsList">
+        <datalist id="profiles" template="template" iterate="p in options.profiles.toList()">
           <option>{{p.name}}</option>
         </datalist>
         <datalist id="condition-types">
@@ -98,8 +98,8 @@
               </li>
               <li class="divider"></li>
               <li class="nav-header" data-i18n="options_navHeader_profiles"></li>
-              <template iterate="profile in options.profilesAsList.where((p) => !p.predefined).toList()">
-                <li>
+              <template iterate="profile in options.profiles.toList()">
+                <li template="template" instantiate="if !profile.predefined">
                   <a href="#{{cssSafeId('profile-${profile.name}')}}" data-toggle="tab">
                     <i class="{{profileIcons[profile.profileType]}}"></i>
                     <span>{{profile.name}}</span>
@@ -208,7 +208,7 @@
               </div>
             </section>
           </div>
-          <template iterate="profile in options.profilesAsList">
+          <template iterate="profile in options.profiles.toList()">
             <div class="tab-pane" id="{{cssSafeId('profile-${profile.name}')}}" data-profile="{{profile.name}}">
               <header class="span10 profile-header">
                 <h2>
@@ -227,6 +227,12 @@
                 </div>
                 <hr />
               </header>
+              <template instantiate="if profile is InclusiveProfile">
+                <datalist id="{{cssSafeId('profiles-available-to-${profile.name}')}}" template="template"
+                    iterate="p in validResultProfilesFor(profile)">
+                  <option>{{p.name}}</option>
+                </datalist>
+              </template>
               <template instantiate="if profile.profileType == 'FixedProfile'">
                 <section class="settings-group">
                   <h3 data-i18n="options_group_proxyServers"></h3>
@@ -292,10 +298,6 @@
                 </section>
               </template>
               <template instantiate="if profile.profileType == 'SwitchProfile'">
-                <datalist id="{{cssSafeId('profiles-available-to-${profile.name}')}}" template="template"
-                    iterate="p in validResultProfilesFor(profile)">
-                  <option>{{p.name}}</option>
-                </datalist>
                 <section class="settings-group">
                   <h3 data-i18n="options_group_switchRules"></h3>
                   <table class="switch-table table table-bordered table-condensed">
@@ -323,7 +325,8 @@
                           <template instantiate="if rule.conditionType == 'HostLevelsCondition'">
                             <input type="number" min="1" max="99" class="input-small"
                                 bind-value="convert.fromInt[() => rule.condition.minValue][(v) => rule.condition.minValue = v]" />
-                            <span data-i18n="options_hostLevelsBetween"></span>
+                            <!-- TODO(catus): Figure out why this i18n string is sometimes not loaded. -->
+                            <span data-i18n="options_hostLevelsBetween">≤ host levels ≤</span>
                             <input type="number" min="{{rule.condition.minValue.toString()}}" max="99" class="input-small"
                                 bind-value="convert.fromInt[() => rule.condition.maxValue][(v) => rule.condition.maxValue = v]" />
                           </template>
@@ -360,10 +363,6 @@
                 </section>
               </template>
               <template instantiate="if profile.profileType.endsWith('RuleListProfile')">
-                <datalist id="cssSafeId('profiles-available-to-${profile.name}')" template="template"
-                    iterate="p in validResultProfilesFor(profile)">
-                  <option>{{p.name}}</option>
-                </datalist>
                 <section class="settings-group">
                   <h3 data-i18n="options_group_ruleListResult"></h3>
                   <div class="h-control">

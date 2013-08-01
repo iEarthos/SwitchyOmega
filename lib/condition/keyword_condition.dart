@@ -24,10 +24,8 @@ part of switchy_condition;
  * Matches if the scheme of the url is 'http' and the [pattern] is a
  * substring of the [url].
  */
-class KeywordCondition extends UrlCondition implements PatternBasedCondition {
+class KeywordCondition extends UrlCondition with PatternBasedCondition {
   final String conditionType = 'KeywordCondition';
-
-  String pattern;
 
   bool matchUrl(String url, scheme) {
     return scheme == 'http' && url.contains(pattern);
@@ -37,7 +35,9 @@ class KeywordCondition extends UrlCondition implements PatternBasedCondition {
     w.inline("scheme === 'http' && url.indexOf(${JSON.stringify(pattern)}) >= 0");
   }
 
-  KeywordCondition([this.pattern = '']);
+  KeywordCondition([String pattern = '']) {
+    this.pattern = pattern;
+  }
 
   Map<String, Object> toPlain([Map<String, Object> p]) {
     p = super.toPlain(p);

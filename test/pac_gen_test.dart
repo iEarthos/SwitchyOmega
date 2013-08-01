@@ -21,6 +21,7 @@
 import 'dart:json' as JSON;
 import 'package:switchyomega/condition/lib.dart';
 import 'package:switchyomega/profile/lib.dart';
+import 'package:web_ui/observe.dart';
 
 void main() {
   var http = new FixedProfile('http');
@@ -73,12 +74,14 @@ void main() {
   sw.add(new Rule(new KeywordCondition('foo'), ssh.name));
 
   var col = new ProfileCollection([http, ssh, list1, list2, sw]);
+  deliverChangesSync();
 
   // Serialize the profiles to JSON and then parse back to test the roundtrip.
   var json = JSON.stringify(col);
   //print(col.allReferences(list2).toList());
   //return;
   col = new ProfileCollection.fromPlain(JSON.parse(json));
+  deliverChangesSync();
 
   var auto = col['auto'] as InclusiveProfile;
   print(auto.toScript());

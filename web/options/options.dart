@@ -68,7 +68,6 @@ void deleteProfile(Profile profile) {
   } else if (profile is SwitchProfile) {
     (profile as SwitchProfile).forEach((rule) => ruleEditors.remove(rule));
   }
-  options.notifyProfilesChange();
 }
 
 void requestProfileDelete(Profile profile) {
@@ -99,7 +98,6 @@ void requestProfileRename(Profile profile) {
       if (modalRenameProfile_newName != modalRenameProfile_oldName) {
         options.profiles.renameProfile(modalRenameProfile_oldName,
             modalRenameProfile_newName);
-        options.notifyProfilesChange();
         js.send('tab.set', '#profile-$modalRenameProfile_newName');
       }
     }
@@ -128,10 +126,10 @@ void handleFixedServerUI() {
     var profile_name = closestElement(bypassList, '.tab-pane')
         .attributes['data-profile'];
     var profile = options.profiles[profile_name] as FixedProfile;
-    profile.bypassList = bypassList.value.split('\n')
+    profile.bypassList.clear();
+    profile.bypassList.addAll(bypassList.value.split('\n')
         .map((l) => l.trim()).where((l) => !l.isEmpty)
-        .map((l) => new BypassCondition(l))
-        .toList();
+        .map((l) => new BypassCondition(l)));
     // Update the text in the textarea.
     bypassList.value = bypassListToText(profile.bypassList);
   });
@@ -302,7 +300,6 @@ void handleNewProfileUI() {
     }
     if (p != null) {
       options.profiles.add(p);
-      options.notifyProfilesChange();
 
       js.send('tab.set', '#profile-$modalNewProfile_name');
     }

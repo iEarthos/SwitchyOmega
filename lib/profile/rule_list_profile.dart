@@ -24,47 +24,17 @@ part of switchy_profile;
  * Matches when the url matches the [ruleList].
  * If [sourceUrl] is not null, the ruleList will be downloaded from [sourceUrl].
  */
+@observable
 abstract class RuleListProfile extends InclusiveProfile {
-  String _sourceUrl = '';
-  String get sourceUrl => _sourceUrl;
+  String sourceUrl = '';
 
-  void set sourceUrl(String value) {
-    _sourceUrl = value;
-    if (value != null && value.length > 0) {
-      _ruleList = '';
-      _rules = null;
-    }
-  }
+  String matchProfileName;
 
-  String _matchProfileName;
-  String get matchProfileName => _matchProfileName;
-  void set matchProfileName(String value) {
-    if (value != _matchProfileName && tracker != null) {
-      tracker.removeReferenceByName(this, _matchProfileName);
-      tracker.addReferenceByName(this, value);
-    }
-    _matchProfileName = value;
-  }
-
-  String _defaultProfileName;
-  String get defaultProfileName => _defaultProfileName;
-  void set defaultProfileName(String value) {
-    if (value != _defaultProfileName && tracker != null) {
-      tracker.removeReferenceByName(this, _defaultProfileName);
-      tracker.addReferenceByName(this, value);
-    }
-    _defaultProfileName = value;
-  }
+  String defaultProfileName;
 
   List<Rule> _rules;
 
-  String _ruleList = '';
-  String get ruleList => _ruleList;
-
-  void set ruleList(String value) {
-    _ruleList = value;
-    _rules = null;
-  }
+  String ruleList = '';
 
   void writeTo(CodeWriter w) {
     if (_rules == null) _rules = parseRules(ruleList);
@@ -141,9 +111,30 @@ abstract class RuleListProfile extends InclusiveProfile {
     return p;
   }
 
-  RuleListProfile(String name, this._defaultProfileName,
-                  this._matchProfileName)
-    : super(name);
+  RuleListProfile(String name, this.defaultProfileName,
+                  this.matchProfileName)
+    : super(name) {
+    observeChanges(this as Observable, (List<ChangeRecord> changes) {
+      if (changes.any((rec) => rec.key == 'sourceUrl' &&
+                             rec.newValue != rec.oldValue &&
+                             rec.newValue != null && rec.newValue != '')) {
+        this.ruleList = '';
+      }
+      if (tracker != null) {
+        changes.forEach((rec) {
+          switch (rec.key) {
+            case 'defaultProfileName':
+            case 'matchProfileName':
+              if (rec.newValue != rec.oldValue) {
+                tracker.removeReferenceByName(this, rec.oldValue);
+                tracker.addReferenceByName(this, rec.newValue);
+              }
+              break;
+          }
+        });
+      }
+    });
+  }
 
   void loadPlain(Map<String, Object> p) {
     super.loadPlain(p);

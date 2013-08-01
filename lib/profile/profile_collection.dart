@@ -25,7 +25,7 @@ part of switchy_profile;
  * but they are not converted to plain.
  */
 
-class ProfileCollection extends HashSet<Profile>
+class ProfileCollection extends HashSet<Profile> with Observable
    implements Set<Profile>, Plainable, ProfileTracker {
   Map<String, _ProfileData> _profiles;
   bool _renamingProfile = false;
@@ -35,7 +35,9 @@ class ProfileCollection extends HashSet<Profile>
    */
   Profile getProfileByName(String name) {
     var data = _profiles[name];
-    return data == null ? null : data.profile;
+    if (data == null) return null;
+    if (observeReads) notifyRead(this, ChangeRecord.INDEX, data.profile);
+    return data.profile;
   }
 
   /**
@@ -45,10 +47,14 @@ class ProfileCollection extends HashSet<Profile>
     return getProfileByName(name);
   }
 
+  static final List<Profile> predefinedProfiles = [new AutoDetectProfile(),
+                                                   new DirectProfile(),
+                                                   new SystemProfile()];
+
   void _addPredefined() {
-    this.add(new AutoDetectProfile());
-    this.add(new DirectProfile());
-    this.add(new SystemProfile());
+    for (var profile in predefinedProfiles) {
+      _profiles[profile.name] = new _ProfileData(profile);
+    }
   }
 
   /**
@@ -92,6 +98,10 @@ class ProfileCollection extends HashSet<Profile>
       if (profile is InclusiveProfile) {
         profile.tracker = this;
       }
+      if (hasObservers(this)) {
+        notifyChange(this, ChangeRecord.FIELD, 'length', length - 1, length);
+        notifyChange(this, ChangeRecord.INSERT, profile, null, profile);
+      }
     }
   }
 
@@ -126,6 +136,10 @@ class ProfileCollection extends HashSet<Profile>
     if (value is InclusiveProfile) {
       value.tracker = null;
     }
+    if (hasObservers(this)) {
+      notifyChange(this, ChangeRecord.REMOVE, value, value, null);
+      notifyChange(this, ChangeRecord.FIELD, 'length', length + 1, length);
+    }
     return true;
   }
 
@@ -134,23 +148,31 @@ class ProfileCollection extends HashSet<Profile>
    * profiles cannot be removed.
    */
   void clear() {
+    int len = length;
     _profiles.values.forEach((data) {
-      if (data.profile is InclusiveProfile) {
-        (data.profile as InclusiveProfile).tracker = null;
+      Profile profile = data.profile;
+      if (profile is InclusiveProfile) {
+        profile.tracker = null;
+      }
+      if (hasObservers(this) && !profile.predefined) {
+        notifyChange(this, ChangeRecord.REMOVE, profile, profile, null);
       }
     });
     _profiles.clear();
     _addPredefined();
+    if (hasObservers(this)) {
+      notifyChange(this, ChangeRecord.FIELD, 'length', len, length);
+    }
   }
 
   Object toJson() {
     return this.toPlain();
   }
 
-  Iterator get iterator =>
-      _profiles.values.map((data) => data.profile).iterator;
+  Iterator get iterator => new ProfileCollectionIterator(this);
 
   int get length {
+    if (observeReads) notifyRead(this, ChangeRecord.FIELD, 'length');
     return _profiles.length;
   }
 
@@ -332,4 +354,25 @@ class CountMap<E> implements Map<E, int> {
 
   bool get isEmpty => _count.isEmpty;
   bool get isNotEmpty => !_count.isEmpty;
+}
+
+class ProfileCollectionIterator implements Iterator<Profile> {
+  final ProfileCollection _set;
+  final Iterator<_ProfileData> _iterator;
+  bool _hasNext = false;
+
+  ProfileCollectionIterator(ProfileCollection set)
+      : _set = set, _iterator = set._profiles.values.iterator;
+
+  bool moveNext() {
+    // The result of this function depends on the set's length.
+    _set.length;
+    return _hasNext = _iterator.moveNext();
+  }
+
+  Profile get current {
+    var result = _iterator.current.profile;
+    if (observeReads && _hasNext) notifyRead(_set, ChangeRecord.INDEX, result);
+    return result;
+  }
 }

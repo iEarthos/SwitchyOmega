@@ -24,16 +24,8 @@ part of switchy_condition;
  * Matches when the url matches the [regex].
  */
 class UrlRegexCondition extends UrlCondition
-    implements PatternBasedCondition, RegexCondition {
+    with RegexCondition {
   final String conditionType = 'UrlRegexCondition';
-
-  RegExp regex;
-
-  /** Get the pattern of the [regex]. */
-  String get pattern => regex.pattern;
-
-  /** Set the [regex] to a new [RegExp] with a pattern of [value]. */
-  void set pattern(String value) { regex = new RegExp(value); }
 
   bool matchUrl(String url, scheme) {
     return regex.hasMatch(url);

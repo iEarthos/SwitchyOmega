@@ -32,15 +32,11 @@ abstract class IncludableProfile extends Profile {
   void writeTo(CodeWriter w);
 
   String _scriptName;
-  void set name(String value) {
-    _name = value;
-    _scriptName = null;
-  }
 
   /**
    * This prefix is appended to the script name.
    */
-  static final magicPrefix = 'switchy_';
+  static final String magicPrefix = 'switchy_';
 
   /**
    * Get a quoted and escaped JavaScript string from this profile's [name].
@@ -66,5 +62,9 @@ abstract class IncludableProfile extends Profile {
     return _scriptName = sb.toString();
   }
 
-  IncludableProfile(String name) : super(name);
+  IncludableProfile(String name) : super(name) {
+    observe(() => this.name, (_) {
+      _scriptName = null;
+    });
+  }
 }

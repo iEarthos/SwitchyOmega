@@ -24,6 +24,7 @@ part of switchy_condition;
  * Matches when the number of dots in the host is within the range
  * [minValue](inclusive) ~ [maxValue](inclusive).
  */
+@observable
 class HostLevelsCondition extends HostCondition {
   final String conditionType = 'HostLevelsCondition';
 

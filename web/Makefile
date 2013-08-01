@@ -15,7 +15,8 @@ SCRIPTS=$(shell find -P out/options/ -name '*.dart' ! -path "*/_from_packages/*"
 
 js: entries $(SCRIPTS)
 
-out/options/options.html: options/options.dart options/editors.dart ../lib
+out/options/options.html: options/options.dart options/editors.dart \
+	$(shell find ../lib -name "*.dart")
 
 options/packages: entries
 	@if [ "`readlink $@`" != '../../ipackages' ]; then \
