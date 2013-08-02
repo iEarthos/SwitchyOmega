@@ -170,15 +170,15 @@
                 <ul id="cycle-enabled" class="cycle-profile-container" template="template" iterate="name in options.quickSwitchProfiles">
                   <li>
                     <span class="profile-color" style="background-color: {{options.getProfileByName(name).color}};"></span>
-                    <span>{{name}}</span>
+                    <span class="profile-name">{{name}}</span>
                   </li>
                 </ul>
                 <p></p>
                 <h4 data-i18n="options_notCycledProfiles"></h4>
-                <ul id="cycle-disabled" class="cycle-profile-container" template="template" iterate="p in options.profiles">
+                <ul id="cycle-disabled" class="cycle-profile-container" template="template" iterate="p in quickSwitchDisabledProfiles">
                   <li instantiate="if !options.quickSwitchProfiles.contains(p.name)">
                     <span class="profile-color" style="background-color: {{p.color}};"></span>
-                    <span>{{p.name}}</span>
+                    <span class="profile-name">{{p.name}}</span>
                   </li>
                 </ul>
               </div>

@@ -66,8 +66,12 @@
       var containers = $('.cycle-profile-container');
       containers.sortable({
         connectWith: '.cycle-profile-container',
-        change: function () {
-          // onFieldModified(false);
+        tolerance: 'pointer',
+        axis: 'y',
+        forceHelperSize: true,
+        forcePlaceholderSize: true,
+        update: function () {
+          dart.send('quickswitch.update');
         }
       }).disableSelection();
       var quickSwitch = $('#quick-switch');
@@ -80,6 +84,7 @@
           $('#quick-switch-settings').slideUp();
         }
       });
+      $('#quick-switch').change();
 
       // Memorize Tab
       $('#options-nav').on('shown', 'a[data-toggle="tab"]', function (e) {
@@ -91,6 +96,9 @@
       $('#restore-local').on('click', function (e) {
         $('#restore-local-file').click();
       });
+    },
+    'quickswitch.refresh': function () {
+      $('.cycle-profile-container').sortable('refresh');
     },
     'tab.set': function (tabhref) {
       var tabs = $('#options-nav a[data-toggle="tab"]');

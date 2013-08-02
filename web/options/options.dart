@@ -335,6 +335,27 @@ void handleOptionsResetUI() {
   });
 }
 
+@observable List<Profile> quickSwitchDisabledProfiles = [];
+
+void handleQuickSwitchUI() {
+  js.on('quickswitch.update', (String type, [Function respond]) {
+    if (options != null) {
+      options.quickSwitchProfiles.clear();
+      options.quickSwitchProfiles.addAll(
+          queryAll('#cycle-enabled li .profile-name').map((e) => e.text));
+    }
+  });
+  var refresh = (_) {
+    var set = new Set<String>.from(options.profiles.map((p) => p.name));
+    set.removeAll(options.quickSwitchProfiles);
+    quickSwitchDisabledProfiles = set.map(options.getProfileByName)
+        .toList(growable: false);
+    js.send('quickswitch.refresh');
+  };
+  observe(() => options.quickSwitchProfiles, refresh);
+  observe(() => options.profiles, refresh);
+}
+
 void main() {
   c.send('options.get', null, (Map<String, Object> o, [Function respond]) {
     ChangeUnobserver unobserve;
@@ -354,10 +375,10 @@ void main() {
     options = new SwitchyOptions.fromPlain(o['options']);
   });
 
+  handleOptionsResetUI();
+  handleNewProfileUI();
+  handleQuickSwitchUI();
   handleFixedServerUI();
   handleSwitchProfileUI();
   autoBindToDataList(document.documentElement);
-
-  handleNewProfileUI();
-  handleOptionsResetUI();
 }
