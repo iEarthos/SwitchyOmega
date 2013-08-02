@@ -252,10 +252,11 @@ class ProfileCollection extends HashSet<Profile> with Observable
       hasReference(from, getProfileByName(to));
 
   void renameProfile(String oldName, String newName) {
+    deliverChangesSync();
     var profileData = _profiles.remove(oldName);
     if (profileData == null) return;
     // InclusiveProfiles may call addReference or removeReference upon
-    // renaming. We just ignore the reference  modification requests until
+    // renaming. We just ignore the reference modification requests until
     // the renaming is complete.
     _renamingProfile = true;
 
@@ -267,6 +268,7 @@ class ProfileCollection extends HashSet<Profile> with Observable
     // Update the name of the profile data.
     profileData.profile.name = newName;
     _profiles[newName] = profileData;
+    deliverChangesSync();
     _renamingProfile = false;
   }
 }

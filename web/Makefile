@@ -11,7 +11,7 @@ out/%.html: %.html
 	sed -i 's/\/OUTDIR\///g' $@
 
 SCRIPTS=$(shell find -P out/options/ -name '*.dart' ! -path "*/_from_packages/*" \
-				        | sed -e "s/$$/.js/")
+				        ! -name 'editors.dart' | sed -e "s/$$/.js/")
 
 js: entries $(SCRIPTS)
 
