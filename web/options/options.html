@@ -33,6 +33,8 @@
     <script type="text/javascript" src="../scripts/i18n_dict.js"></script>
     <script type="text/javascript" src="../scripts/filesaver.min.js"></script>
     <script type="text/javascript" src="options.js"></script>
+    <script src='../scripts/spectrum.js'></script>
+    <link rel='stylesheet' href='../scripts/spectrum.css' />
 
     <script type="application/dart" src="options.dart"></script>
   </head>
@@ -233,6 +235,7 @@
             <div class="tab-pane" id="{{cssSafeId('profile-${profile.name}')}}" data-profile="{{profile.name}}">
               <header class="span10 profile-header">
                 <h2>
+                  <input type="color" bind-value="profile.color" />
                   <span data-i18n="options_profileTabPrefix"></span>
                   <span class="profile-name">{{profile.name}}</span>
                 </h2>

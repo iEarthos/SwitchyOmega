@@ -339,21 +339,20 @@ void handleOptionsResetUI() {
 
 void handleQuickSwitchUI() {
   js.on('quickswitch.update', (String type, [Function respond]) {
-    if (options != null) {
-      options.quickSwitchProfiles.clear();
-      options.quickSwitchProfiles.addAll(
-          queryAll('#cycle-enabled li .profile-name').map((e) => e.text));
-    }
+    options.quickSwitchProfiles.clear();
+    options.quickSwitchProfiles.addAll(
+        queryAll('#cycle-enabled li .profile-name').map((e) => e.text));
   });
   var refresh = (_) {
-    var set = new Set<String>.from(options.profiles.map((p) => p.name));
-    set.removeAll(options.quickSwitchProfiles);
-    quickSwitchDisabledProfiles = set.map(options.getProfileByName)
-        .toList(growable: false);
-    js.send('quickswitch.refresh');
+      var set = new Set<String>.from(options.profiles.map((p) => p.name));
+      set.removeAll(options.quickSwitchProfiles);
+      quickSwitchDisabledProfiles = set.map(options.getProfileByName)
+          .toList(growable: false);
+      js.send('quickswitch.refresh');
   };
   observe(() => options.quickSwitchProfiles, refresh);
   observe(() => options.profiles, refresh);
+  refresh(null);
 }
 
 void main() {
@@ -369,6 +368,7 @@ void main() {
       var tab = query(nav.attributes['href']);
       tab.classes.add('active');
       unobserve();
+      handleQuickSwitchUI();
       js.send('options.init');
     });
 
@@ -377,7 +377,6 @@ void main() {
 
   handleOptionsResetUI();
   handleNewProfileUI();
-  handleQuickSwitchUI();
   handleFixedServerUI();
   handleSwitchProfileUI();
   autoBindToDataList(document.documentElement);

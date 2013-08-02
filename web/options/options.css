@@ -301,6 +301,17 @@ input[type="number"] {
   width: -moz-initial;
 }
 
+input[type="color"] {
+  /* reset Bootstrap styles */
+  width: 23px;
+  height: 23px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+}
+
 .h-control {
   margin-bottom: 9px;
 }
