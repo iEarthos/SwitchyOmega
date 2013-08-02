@@ -2,7 +2,7 @@ include ../Makefile.inc
 
 ENTRY_POINTS=$(shell ls -1 options/*.html | sed -e "s/^/out\//")
 
-all: entries out/packages pack_options
+all: entries out/packages pack_options js
 
 entries: $(ENTRY_POINTS)
 

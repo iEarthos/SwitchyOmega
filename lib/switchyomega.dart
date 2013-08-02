@@ -1,3 +1,5 @@
+library switchyomega;
+
 import 'package:switchyomega/communicator.dart';
 import 'condition/lib.dart';
 import 'package:switchyomega/lang/lib.dart';
