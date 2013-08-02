@@ -35,10 +35,13 @@ var strings = [
   "options_title",
   "options_navHeader_setting",
   "options_navHeader_profiles",
+  "options_navHeader_actions",
   "options_tab_ui",
   "options_tab_general",
   "options_tab_importExport",
   "options_newProfile",
+  "options_save",
+  "options_reset",
   "options_group_miscOptions",
   "options_confirmDeletion",
   "options_refreshOnProfileChange",
@@ -120,5 +123,10 @@ var strings = [
   "options_profileDescSwitchyRuleListProfile",
   "options_profileTypeAutoProxyRuleListProfile",
   "options_profileDescAutoProxyRuleListProfile",
-  "options_createProfile"
+  "options_createProfile",
+  "options_modalHeader_resetOptions",
+  "options_resetOptionsConfirm",
+  "options_resetSuccess",
+  "options_saveSuccess",
+  "options_importSuccess"
 ];

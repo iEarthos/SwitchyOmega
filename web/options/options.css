@@ -81,7 +81,6 @@ body > * {
   margin-left: 0 !important;
   min-height: 100%;
   display: inline-block;
-  float: none;
 }
 
 .navbar {
@@ -91,11 +90,11 @@ body > * {
 
 .nav-wrapper {
   position: fixed;
-  width: inherit;
+  margin-left: 0;
   height: 100%;
   top: 0;
   left: 0;
-
+  width: inherit;
   overflow-y: auto;
   background-color: #fff;
 }
@@ -106,9 +105,10 @@ body > * {
 
 .width-holder {
   position: static;
-  visibility: hidden;
-  z-index: -9999; /* Make sure that users cannot click on it. */
-  width: 100%;
+  width: inherit;
+  max-width: 100%;
+  min-height: 1px;
+  max-height: 100%;
 }
 
 .navbar .btn-navbar .icon-bar {
@@ -116,10 +116,6 @@ body > * {
 }
 
 #main {
-  min-width: 780px;
-  width: auto;
-  display: inline-block;
-  float: none;
 }
 
 header h1 {
@@ -137,9 +133,15 @@ header > hr {
   margin: 0;
 }
 
+.tab-content {
+  overflow: visible;
+  max-width: none;
+  max-height: none;
+}
+
 .tab-pane {
   max-height: 100%;
-  overflow-y: auto;
+  overflow: visible;
   padding-top: 70px;
 }
 
@@ -154,6 +156,13 @@ header > hr {
   max-height: 60px;
   margin-top: -70px;
   padding-top: 10px;
+  z-index: 3;
+}
+
+#tabs li a {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Responsive */
@@ -169,12 +178,34 @@ header > hr {
   }
   #options-nav {
     min-width: 130px !important;
-    width: auto;
-    padding-left: 30px;
+  }
+}
+
+@media (max-width: 1280px) {
+  .nav-wrapper > * {
+    padding-left: 10px;
+  }
+
+  #options-nav {
+    width: 200px;
+  }
+
+  #main {
+    margin-left: 10px;
+    max-width: 700px;
+  }
+
+  .navbar {
+    margin-top: 0;
   }
 }
 
 @media (max-width: 767px) {
+  #options-nav {
+    display: block;
+    width: auto;
+  }
+
   .nav-wrapper {
     position: static !important;
     padding-left: 0;
@@ -182,9 +213,9 @@ header > hr {
 
   #main {
     float: left;
-    min-width: 600px;
     width: auto;
     margin-left: 10px;
+    max-width: none;
   }
 
   .navbar {
@@ -233,10 +264,6 @@ header > hr {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1);
   }
 
-  .width-holder {
-    display: none;
-  }
-
   .tab-pane {
     max-height: none;
     padding-top: 0px;
@@ -283,6 +310,23 @@ input[type="number"] {
   margin-bottom: 0;
 }
 
+/* Alerts */
+.alert-top-fixed {
+  position: fixed;
+  top: -100%;
+  left: 45%;
+  width: 200px;
+  z-index: 5;
+  left: -webkit-calc(50% - 200px);
+  left: -moz-calc(50% - 200px);
+  left: -o-calc(50% - 200px);
+  left: calc(50% - 200px);
+  -webkit-transition: top 1s ease-in-out;
+     -moz-transition: top 1s ease-in-out;
+       -o-transition: top 1s ease-in-out;
+          transition: top 1s ease-in-out;
+}
+
 /* Sortable helpers */
 
 .sort-bar {
@@ -300,11 +344,16 @@ input[type="number"] {
 
 .profile-header h2 {
   display: inline-block;
+  white-space: nowrap;
+  max-width: 70%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .profile-toolbar {
   display: inline-block;
-  float: right;
+  min-width: 25%;
+  text-align: right;
   line-height: 36px;
 }
 
@@ -369,20 +418,22 @@ td select, td textarea, td input {
   width: auto;
 }
 
-.bypass-list {
-  min-height: 150px;
-}
-
 /* PAC Profile */
-
-.pac-script {
-  min-height: 500px;
-}
-
 /* Rule list profile */
 
+.bypass-list,
+.pac-script,
 .rule-list-text {
   min-height: 500px;
+}
+
+@media (max-width: 767px) {
+  .bypass-list,
+  .pac-script,
+  .rule-list-text {
+    min-height: 300px;
+    max-width: 80%;
+  }
 }
 
 /* Switch profile */

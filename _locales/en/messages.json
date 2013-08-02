@@ -64,6 +64,9 @@
   "options_navHeader_profiles": {
     "message": "Profiles"
   },
+  "options_navHeader_actions" : {
+    "message": "Actions"
+  },
   "options_tab_ui": {
     "message": "User Interface"
   },
@@ -75,6 +78,12 @@
   },
   "options_newProfile": {
     "message": "New profile..."
+  },
+  "options_save": {
+    "message": "Save options"
+  },
+  "options_reset": {
+    "message": "Reset options"
   },
   "options_group_miscOptions": {
     "message": "Misc Options"
@@ -325,5 +334,20 @@
   },
   "options_createProfile" : {
     "message": "Create"
+  },
+  "options_modalHeader_resetOptions": {
+    "message": "Reset Options"
+  },
+  "options_resetOptionsConfirm": {
+    "message": "Do you really want to reset the options? All profiles and settings will be LOST!"
+  },
+  "options_resetSuccess": {
+    "message": "Options reset."
+  },
+  "options_saveSuccess": {
+    "message": "Options saved."
+  },
+  "options_importSuccess": {
+    "message": "Options imported."
   }
 }

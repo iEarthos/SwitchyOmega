@@ -267,11 +267,24 @@ void restoreLocal(FileUploadInputElement file) {
     var r = new FileReader();
     r.onLoad.listen((data) {
       var json = r.result as String;
+      ChangeUnobserver unobserve;
+      unobserve = observe(() => options, (_) {
+        js.send('tab.set');
+        query('#options-import-success').style.top = "0";
+        unobserve();
+      });
       options = new SwitchyOptions.fromPlain(JSON.parse(json));
     });
     r.readAsText(file.files[0]);
     file.value = "";
   }
+}
+
+void saveOptions(Event e) {
+  e.preventDefault();
+  c.send('options.set', JSON.stringify(options), (_, [__]) {
+    query('#options-save-success').style.top = "0";
+  });
 }
 
 void handleNewProfileUI() {
@@ -307,9 +320,25 @@ void handleNewProfileUI() {
   });
 }
 
+void handleOptionsResetUI() {
+  js.on('options.reset', (String type, [Function respond]) {
+    c.send('options.default', null,
+        (Map<String, Object> o, [Function respond]) {
+      ChangeUnobserver unobserve;
+      unobserve = observe(() => options, (_) {
+        js.send('tab.set');
+        query('#options-reset-success').style.top = "0";
+        unobserve();
+      });
+      options = new SwitchyOptions.fromPlain(o['options']);
+    });
+  });
+}
+
 void main() {
   c.send('options.get', null, (Map<String, Object> o, [Function respond]) {
-    observe(() => options, (_) {
+    ChangeUnobserver unobserve;
+    unobserve = observe(() => options, (_) {
       var lastActiveTab = o['tab'];
       var navs = queryAll('#options-nav a[data-toggle="tab"]');
 
@@ -318,7 +347,7 @@ void main() {
       closestElement(nav, 'li').classes.add('active');
       var tab = query(nav.attributes['href']);
       tab.classes.add('active');
-
+      unobserve();
       js.send('options.init');
     });
 
@@ -330,4 +359,5 @@ void main() {
   autoBindToDataList(document.documentElement);
 
   handleNewProfileUI();
+  handleOptionsResetUI();
 }

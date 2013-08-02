@@ -30,6 +30,7 @@
   var $ = jQuery;
 
   var c = new Communicator(window.top);
+  var dart = new Communicator(window);
 
   var i18n = null;
   c.send('i18n.cache', null, function (cache) {
@@ -251,7 +252,18 @@
     $('body').on('click', '#profile-new-create', function (e) {
       if ($('#profile-new-create').is('.disabled')) return;
       var type = $('input[name="profile-new-type"]:checked').val();
-      new Communicator(window).send('profile.create', type);
+      dart.send('profile.create', type);
+    });
+
+    // Reset options
+    $('body').on('click', '#reset-options-confirm', function (e) {
+      if ($('#reset-options-confirm').is('.disabled')) return;
+      dart.send('options.reset', null);
+    });
+
+    // Click anywhere to close alert.
+    $(document).on('click', function (e) {
+      $('.alert').css('top', '-100%');
     });
 
     // Clear input

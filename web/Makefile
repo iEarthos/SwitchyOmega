@@ -9,6 +9,12 @@ entries: $(ENTRY_POINTS)
 out/%.html: %.html
 	$(DART_WEB_COMPILER) --basedir=. -o out/ $<
 	sed -i 's/\/OUTDIR\///g' $@
+	# Remove dart script from the safe wrappers.
+	# These scripts do not have actual effects but they break CSP.
+	if echo $@ | grep '_safe.html$$'; then \
+		sed -i 's/^.*\.html_bootstrap\.dart".*\/script>//g' $@; \
+		sed -i 's/^.*\/dart\.js".*\/script>//g' $@; \
+	fi
 
 SCRIPTS=$(shell find -P out/options/ -name '*.dart' ! -path "*/_from_packages/*" \
 				        ! -name 'editors.dart' | sed -e "s/$$/.js/")

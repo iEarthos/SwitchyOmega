@@ -36,7 +36,7 @@
 
     <script type="application/dart" src="options.dart"></script>
   </head>
-  <body class="container-fluid">
+  <body class="container-fluid row-fluid">
     <template instantiate="if options == null">
       <div id="splash">
         <div>
@@ -65,7 +65,7 @@
         </datalist>
       </div>
       <header class="span2" id="options-nav">
-        <div class="width-holder">.</div>
+        <div class="width-holder">
         <div class="nav-wrapper">
           <div class="navbar navbar-effect">
             <h1 data-i18n="appNameShort"></h1>
@@ -106,16 +106,29 @@
                   </a>
                 </li>
               </template>
-              <li class="divider"></li>
               <li>
                 <a data-toggle="modal" href="#modal-profile-new">
                   <i class="icon-plus"></i>
                   <span data-i18n="options_newProfile"></span>
                 </a>
               </li>
+              <li class="divider"></li>
+              <li class="nav-header" data-i18n="options_navHeader_actions"></li>
+              <li>
+                <a href="#" on-click="saveOptions($event)">
+                  <i class="icon-briefcase"></i>
+                  <span data-i18n="options_save"></span>
+                </a>
+              </li>
+              <li>
+                <a data-toggle="modal" href="#modal-reset-options">
+                  <i class="icon-warning-sign"></i>
+                  <span data-i18n="options_reset"></span>
+                </a>
+              </li>
             </ul>
           </nav>
-        </div>
+        </div></div>
       </header>
       <div id="main" class="span10">
         <div class="tab-content">
@@ -134,7 +147,7 @@
               </p>
               <p>
                 <label class="checkbox">
-                  <input type="checkbox" id="refresh-on-profile-change" />
+                  <input type="checkbox" id="refresh-on-profile-change" bind-checked="options.refreshOnProfileChange" />
                   <span data-i18n="options_refreshOnProfileChange"></span>
                 </label>
               </p>
@@ -143,23 +156,31 @@
               <h3 data-i18n="options_group_switchOptions"></h3>
               <div class="h-control">
                 <label data-i18n="options_startupProfile" for="startup-profile"></label>
-                <select id="startup-profile" data-list="profiles"></select>
+                <select id="startup-profile" data-list="profiles" bind-value="options.startupProfileName"></select>
               </div>
               <p>
                 <label class="checkbox">
-                  <input type="checkbox" id="quick-switch" />
+                  <input type="checkbox" id="quick-switch" bind-checked="options.enableQuickSwitch" />
                   <span data-i18n="options_quickSwitch"></span>
                 </label>
               </p>
               <div id="quick-switch-settings" class="settings-group">
                 <h4 data-i18n="options_cycledProfiles"></h4>
                 <p class="help-block" data-i18n="options_cycledProfilesHelp"></p>
-                <ul id="cycle-enabled" class="cycle-profile-container">
-                  <li><span class="profile-color" style="background-color: blue;"></span><span>Example</span></li>
+                <ul id="cycle-enabled" class="cycle-profile-container" template="template" iterate="name in options.quickSwitchProfiles">
+                  <li>
+                    <span class="profile-color" style="background-color: {{options.getProfileByName(name).color}};"></span>
+                    <span>{{name}}</span>
+                  </li>
                 </ul>
                 <p></p>
                 <h4 data-i18n="options_notCycledProfiles"></h4>
-                <ul id="cycle-disabled" class="cycle-profile-container"></ul>
+                <ul id="cycle-disabled" class="cycle-profile-container" template="template" iterate="p in options.profiles">
+                  <li instantiate="if !options.quickSwitchProfiles.contains(p.name)">
+                    <span class="profile-color" style="background-color: {{p.color}};"></span>
+                    <span>{{p.name}}</span>
+                  </li>
+                </ul>
               </div>
             </section>
           </div>
@@ -171,7 +192,7 @@
             <section class="settings-group">
               <h3 data-i18n="options_group_proxyChanges"></h3>
                 <label class="checkbox">
-                  <input type="checkbox" id="revert-proxy-changes" />
+                  <input type="checkbox" id="revert-proxy-changes" bind-checked="options.revertProxyChanges" />
                   <span data-i18n="options_revertProxyChanges"></span>
                 </label>
             </section>
@@ -538,6 +559,35 @@
           <a href="#" class="btn btn-primary btn-primary {{modalNewProfile_isValid() ? '' : 'disabled'}}" id="profile-new-create"
               data-dismiss="modal" data-i18n="options_createProfile"></a>
         </div>
+      </div>
+      <div class="modal hide fade" id="modal-reset-options">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">×</button>
+          <h3 data-i18n="options_modalHeader_resetOptions"></h3>
+        </div>
+        <div class="modal-body">
+          <p data-i18n="options_resetOptionsConfirm"></p>
+        </div>
+        <div class="modal-footer">
+          <a href="#" class="btn" data-dismiss="modal" data-i18n="dialog_cancel"></a>
+          <a href="#" class="btn btn-primary btn-danger" id="reset-options-confirm"
+              data-dismiss="modal" data-i18n="options_reset"></a>
+        </div>
+      </div>
+      <div class="alert alert-success alert-top-fixed" id="options-save-success">
+        <button type="button" class="close">×</button>
+        <i class="icon-ok"></i>
+        <span data-i18n="options_saveSuccess"></span>
+      </div>
+      <div class="alert alert-success alert-top-fixed" id="options-reset-success">
+        <button type="button" class="close">×</button>
+        <i class="icon-ok"></i>
+        <span data-i18n="options_resetSuccess"></span>
+      </div>
+      <div class="alert alert-success alert-top-fixed" id="options-import-success">
+        <button type="button" class="close">×</button>
+        <i class="icon-ok"></i>
+        <span data-i18n="options_importSuccess"></span>
       </div>
     </template>
   </body>
