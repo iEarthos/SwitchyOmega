@@ -4,12 +4,15 @@
   "version": "2.0.1",
   "description": "__MSG_manifest_app_description__",
   "icons": {
-    "16": "web/icons/icon.png",
-    "128": "web/icons/icon-128.png"
+    "16": "web/icons/omega-16.png",
+    "32": "web/icons/omega-32.png",
+    "48": "web/icons/omega-48.png",
+    "64": "web/icons/omega-64.png",
+    "128": "web/icons/omega-128.png"
   },
   "default_locale": "en",
   "browser_action": {
-    "default_icon": "web/icons/icon-yellow.png",
+    "default_icon": "web/icons/omega-32.png",
     "default_title": "__MSG_manifest_icon_default_title__",
     "default_popup": "web/popup/popup.html"
   },

@@ -37,11 +37,6 @@ SwitchyOmega includes or links to (unchanged):
 * Dart Pub Packages
   => See pubspec.yaml for the packages.
   => See http://pub.dartlang.org/packages/ for the authors of each package.
-* Icons from Switchy!
-  => from Chrome Proxy Manager and Switcher <https://code.google.com/p/switchy/>
-  => Copyright (c) 2009 Mohammad Hejazi (mohammadhi at gmail d0t com)
-  => Dual licensed under the MIT and GPL licenses.
-  => * web/icons/*
 * FileSaver.js
   => By Eli Grey, http://eligrey.com
   => License: X11/MIT
