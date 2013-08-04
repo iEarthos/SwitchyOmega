@@ -349,5 +349,14 @@
   },
   "options_importSuccess": {
     "message": "Options imported."
+  },
+  "popup_addCondition": {
+    "message": "Add condition"
+  },
+  "popup_showOptions": {
+    "message": "Options"
+  },
+  "popup_reportIssues": {
+    "message": "Report issues"
   }
 }

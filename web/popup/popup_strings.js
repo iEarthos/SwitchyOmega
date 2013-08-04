@@ -18,4 +18,21 @@
  * along with SwitchyOmega.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-var strings = ["appNameShort", "popup_title"];
+var strings = [
+  "appNameShort",
+  "popup_title",
+  "popup_addCondition",
+  "popup_showOptions",
+  "popup_reportIssues",
+  "options_conditionType",
+  "options_conditionDetails",
+  "condition_hostWildcard",
+  "condition_hostRegex",
+  "condition_hostLevels",
+  "condition_urlWildcard",
+  "condition_urlRegex",
+  "condition_keyword",
+  "options_resultProfile",
+  "dialog_cancel",
+  "popup_addCondition"
+];

@@ -28,6 +28,12 @@ body {
   margin-bottom: 0;
 }
 
+li > a {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 20em;
+}
+
 .nav-pills.nav-stacked > li > a {
   padding-left: 8px;
   padding-right: 25px;
@@ -51,7 +57,7 @@ i {
   margin-right: 6px;
 }
 
-.btn-group a {
+#temp-rule a {
   padding-left: 8px !important;
   -webkit-box-shadow: none !important;
   -moz-box-shadow: none !important;
@@ -59,7 +65,10 @@ i {
 }
 
 .dropdown-menu {
-  margin-left: 8px !important;
+  position: static;
+  top: initial;
+  top: -moz-initial;
+  margin: 0 5px !important;
 }
 
 .current-domain {
@@ -68,4 +77,32 @@ i {
 
 select, textarea, input {
   margin-bottom: 0px !important;
+}
+
+form {
+  margin: 10px;
+}
+
+legend,
+.well {
+  margin-bottom: 10px;
+}
+
+.well {
+  padding: 10px;
+}
+
+.profile-color {
+  display: inline-block;
+  padding: 6px;
+  border: solid 1px #eee;
+  margin-right: 10px;
+}
+
+.condition-controls {
+  margin: 0 10px;
+}
+
+.condition-controls .btn-primary {
+  float: right;
 }

@@ -35,32 +35,71 @@
   </head>
   <body>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#"><i class="icon-ban-circle"></i>Direct</a></li>
-      <li><a href="#"><i class="icon-hdd"></i>System</a></li>
-      <li class="divider"></li>
-      <li class="active"><a href="#"><i class="icon-globe"></i>Example</a></li>
-      <li><a href="#"><i class="icon-tasks"></i>Pac</a></li>
-      <li><a href="#"><i class="icon-list"></i>Rulelist</a></li>
-      <li><a href="#"><i class="icon-retweet"></i>Auto</a></li>
-      <li class="divider"></li>
-      <li><a href="#"><i class="icon-plus"></i>New rule</a></li>
-      <li class="btn-group">
-          <a class="dropdown-toggle" data-toggle="dropdown">
-            <i class="icon-filter"></i><span class="current-domain">example.com</span>
-            <span class="caret"></span>
-          </a>
-          <ul class="dropdown-menu">
-            <li><a href="#">Example</a></li>
-            <li><a href="#">Pac</a></li>
-            <li><a href="#">Rulelist</a></li>
-            <li><a href="#">Auto</a></li>
-            <li><a href="#">System</a></li>
-            <li><a href="#">Direct</a></li>
-          </ul>
+      <li id="profile-direct" class="profile" data-name="direct">
+        <a href="#"><i class="icon-ban-circle"></i>Direct</a>
       </li>
+      <li id="profile-system" class="profile" data-name="system">
+        <a href="#"><i class="icon-hdd"></i>System</a>
+      </li>
+      <li class="divider" id="profiles-divider"></li>
       <li class="divider"></li>
-      <li><a href="../options/options_safe.html" target="_blank"><i class="icon-wrench"></i>Options</a></li>
-      <li><a href="https://github.com/FelisCatus/SwitchyOmega/issues" target="_blank"><i class="icon-comment"></i>Report issues</a></li>
+      <li class="show-switch" id="add-condition"><a href="#"><i class="icon-plus"></i><span data-i18n="popup_addCondition"></span></a></li>
+      <li class="show-switch" id="temp-rule">
+        <a class="dropdown-toggle" data-toggle="dropdown">
+          <i class="icon-filter"></i><span id="current-domain">example.com</span>
+          <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu" id="temp-rule-profiles">
+        </ul>
+      </li>
+      <li class="divider show-switch"></li>
+      <li><a href="../out/options/options_safe.html" target="_blank">
+        <i class="icon-wrench"></i>
+        <span data-i18n="popup_showOptions"></span>
+      </a></li>
+      <li><a href="https://github.com/FelisCatus/SwitchyOmega/issues" target="_blank">
+        <i class="icon-comment"></i>
+        <span data-i18n="popup_reportIssues"></span>
+      </a></li>
     </ul>
+    <form id="condition-form" class="form-horizontal" style="display: none;">
+      <fieldset>
+        <legend data-i18n="popup_addCondition"></legend>
+        <div class="well">
+          <span class="profile-color"></span>
+          <span class="profile-name"></span>
+        </div>
+        <div class="control-group">
+          <label class="control-label" for="condition-type" data-i18n="options_conditionType"></label>
+          <div class="controls">
+            <select id="condition-type">
+              <option data-i18n="condition_hostWildcard" value="HostWildcardCondition">Host wildcard</option>
+              <option data-i18n="condition_hostRegex" value="HostRegexCondition">Host regex</option>
+              <option data-i18n="condition_urlWildcard" value="UrlWildcardCondition">URL wildcard</option>
+              <option data-i18n="condition_urlRegex" value="UrlRegexCondition">URL regex</option>
+              <option data-i18n="condition_keyword" value="KeywordCondition">Keyword</option>
+            </select>
+          </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label" for="condition-details" data-i18n="options_conditionDetails"></label>
+          <div class="controls">
+            <input type="url" id="condition-details" />
+          </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label" for="condition-result" data-i18n="options_resultProfile"></label>
+          <div class="controls">
+            <select id="condition-result">
+              <option>direct</option>
+            </select>
+          </div>
+        </div>
+      </fieldset>
+      <div class="control-group condition-controls">
+        <a href="#" class="btn" id="condition-cancel" data-i18n="dialog_cancel"></a>
+        <a href="#" class="btn btn-primary" id="condition-ok" data-i18n="popup_addCondition"></a>
+      </div>
+    </form>
   </body>
 </html>
