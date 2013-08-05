@@ -358,5 +358,27 @@
   },
   "popup_reportIssues": {
     "message": "Report issues"
+  },
+  "browserAction_titleNormal": {
+    "message": "SwitchyOmega:: $PROFILE$",
+    "placeholders": {
+      "profile": {
+        "content": "$1",
+        "example": "direct"
+      }
+    }
+  },
+  "browserAction_titleWithResult": {
+    "message": "SwitchyOmega:: $PROFILE$\n(Active page profile: $RESULT$)",
+    "placeholders": {
+      "profile": {
+        "content": "$1",
+        "example": "autoswitch"
+      },
+      "result": {
+        "content": "$2",
+        "example": "direct"
+      }
+    }
   }
 }

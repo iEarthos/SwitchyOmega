@@ -271,6 +271,15 @@ class ProfileCollection extends HashSet<Profile> with Observable
     deliverChangesSync();
     _renamingProfile = false;
   }
+
+  Iterable<Profile> validResultProfilesFor(InclusiveProfile profile) {
+    return this.where((p) {
+      if (p == profile || p is! IncludableProfile) return false;
+      if (p is InclusiveProfile) if (p.hasReferenceTo(profile.name))
+        return false;
+      return true;
+    });
+  }
 }
 
 /**

@@ -28,6 +28,7 @@ import 'package:switchyomega/switchyomega.dart';
 import 'package:switchyomega/html/converters.dart' as convert;
 import 'package:switchyomega/browser/lib.dart';
 import 'package:switchyomega/browser/message/lib.dart';
+import 'package:switchyomega/communicator.dart';
 import 'editors.dart';
 
 @observable
@@ -53,10 +54,13 @@ Profile modalResetRules_resultProfile = null;
 @observable
 String modalNewProfile_name = '';
 
+@observable
+String currentProfileName = '';
+
 void deleteProfile(Profile profile) {
   options.profiles.remove(profile);
-  if (options.currentProfileName == profile.name) {
-    options.currentProfileName = new DirectProfile().name;
+  if (currentProfileName == profile.name) {
+    currentProfileName = new DirectProfile().name;
   }
   if (options.startupProfileName == profile.name) {
     options.startupProfileName = null;
@@ -186,11 +190,7 @@ void removeRule(SwitchProfile profile, Rule rule) {
 }
 
 List<Profile> validResultProfilesFor(InclusiveProfile profile) {
-  return options.profiles.where((p) {
-    if (p == profile || p is! IncludableProfile) return false;
-    if (p is InclusiveProfile) if (p.hasReferenceTo(profile.name)) return false;
-    return true;
-  }).toList();
+  return options.profiles.validResultProfilesFor(profile).toList();
 }
 
 void addRule(SwitchProfile profile) {
@@ -246,7 +246,7 @@ Map<FixedProfile, FixedProfileEditor> fixedProfileEditors =
 Map<Rule, RuleEditor> ruleEditors = new Map<Rule, RuleEditor>();
 
 void exportPac() {
-  var current = options.profiles[options.currentProfileName];
+  var current = options.profiles[currentProfileName];
   if (current is InclusiveProfile) {
     js.send('file.saveAs', {
       'name': 'SwitchyOmega.pac',
@@ -324,13 +324,15 @@ void handleOptionsResetUI() {
   js.on('options.reset', (String type, [Function respond]) {
     c.send('options.default', null,
         (Map<String, Object> o, [Function respond]) {
-      ChangeUnobserver unobserve;
-      unobserve = observe(() => options, (_) {
-        js.send('tab.set');
-        query('#options-reset-success').style.top = "0";
-        unobserve();
+      c.send('options.set', JSON.stringify(options), (_, [__]) {
+        ChangeUnobserver unobserve;
+        unobserve = observe(() => options, (_) {
+          js.send('tab.set');
+          query('#options-reset-success').style.top = "0";
+          unobserve();
+        });
+        options = new SwitchyOptions.fromPlain(o['options']);
       });
-      options = new SwitchyOptions.fromPlain(o['options']);
     });
   });
 }
@@ -373,6 +375,7 @@ void main() {
     });
 
     options = new SwitchyOptions.fromPlain(o['options']);
+    currentProfileName = o['currentProfileName'];
   });
 
   handleOptionsResetUI();

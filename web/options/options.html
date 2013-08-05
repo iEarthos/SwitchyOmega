@@ -178,7 +178,7 @@
                 <p></p>
                 <h4 data-i18n="options_notCycledProfiles"></h4>
                 <ul id="cycle-disabled" class="cycle-profile-container" template="template" iterate="p in quickSwitchDisabledProfiles">
-                  <li instantiate="if !options.quickSwitchProfiles.contains(p.name)">
+                  <li template="template" instantiate="if !options.quickSwitchProfiles.contains(p.name)">
                     <span class="profile-color" style="background-color: {{p.color}};"></span>
                     <span class="profile-name">{{p.name}}</span>
                   </li>

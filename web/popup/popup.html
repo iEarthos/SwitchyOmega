@@ -35,14 +35,8 @@
   </head>
   <body>
     <ul class="nav nav-pills nav-stacked">
-      <li id="profile-direct" class="profile" data-name="direct">
-        <a href="#"><i class="icon-ban-circle"></i>Direct</a>
-      </li>
-      <li id="profile-system" class="profile" data-name="system">
-        <a href="#"><i class="icon-hdd"></i>System</a>
-      </li>
       <li class="divider" id="profiles-divider"></li>
-      <li class="divider"></li>
+      <li class="divider show-switch"></li>
       <li class="show-switch" id="add-condition"><a href="#"><i class="icon-plus"></i><span data-i18n="popup_addCondition"></span></a></li>
       <li class="show-switch" id="temp-rule">
         <a class="dropdown-toggle" data-toggle="dropdown">
@@ -52,7 +46,7 @@
         <ul class="dropdown-menu" id="temp-rule-profiles">
         </ul>
       </li>
-      <li class="divider show-switch"></li>
+      <li class="divider"></li>
       <li><a href="../out/options/options_safe.html" target="_blank">
         <i class="icon-wrench"></i>
         <span data-i18n="popup_showOptions"></span>
@@ -91,7 +85,6 @@
           <label class="control-label" for="condition-result" data-i18n="options_resultProfile"></label>
           <div class="controls">
             <select id="condition-result">
-              <option>direct</option>
             </select>
           </div>
         </div>

@@ -21,6 +21,12 @@ part of switchy_browser;
  */
 @observable
 class SwitchyOptions extends Plainable {
+  /**
+   * The schemeVersion is increased every time the structure of the result of
+   * [toPlain] changes.
+   */
+  static const schemaVersion = 0;
+
   bool confirmDeletion;
 
   bool refreshOnProfileChange;
@@ -39,8 +45,6 @@ class SwitchyOptions extends Plainable {
     return profiles[name];
   }
 
-  String currentProfileName;
-
   Object toPlain([Map<String, Object> p]) {
     if (p == null) p = new Map<String, Object>();
     p['confirmDeletion'] = confirmDeletion;
@@ -57,13 +61,15 @@ class SwitchyOptions extends Plainable {
     });
     p['profiles'] = profiles.toPlain();
 
-    p['currentProfileName'] = currentProfileName;
-
+    p['schemaVersion'] = schemaVersion;
     return p;
   }
 
   void loadPlain(Map<String, Object> p) {
-    currentProfileName = p['currentProfileName'];
+    var version = p['schemaVersion'] as int;
+    if (version != schemaVersion) {
+      throw new UnsupportedError('Unsupported schemeVersion: $version.');
+    }
     confirmDeletion = p['confirmDeletion'];
     refreshOnProfileChange = p['refreshOnProfileChange'];
     startupProfileName = p['startupProfileName'];
@@ -74,8 +80,6 @@ class SwitchyOptions extends Plainable {
     quickSwitchProfiles.addAll(p['quickSwitchProfiles']);
 
     profiles.loadPlain(p['profiles']);
-
-    currentProfileName = p['currentProfileName'];
   }
 
   SwitchyOptions() {}

@@ -100,7 +100,7 @@ abstract class Profile extends Plainable {
   A static class that holds color constants for some profiles.
 */
 class ProfileColors {
-  static final profile_default = '#0000cc';
+  static final profile_default = '#99ccee';
   static final auto_detect = '#00cccc';
   static final system = '#aaaaaa';
   static final direct = '#aaaaaa';

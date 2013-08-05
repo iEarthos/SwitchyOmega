@@ -108,7 +108,7 @@ class Communicator {
     return this;
   }
 
-  Communicator on(action, CommunicatorCallback callback) {
+  Communicator on(action, [CommunicatorCallback callback = null]) {
     if (action is String) {
       var actionString = action as String;
       var callbacks = this._action_handlers[action];

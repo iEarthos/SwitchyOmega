@@ -37,7 +37,7 @@ Communicator.prototype._postMessage = function (dest, action, value, callback, r
       map = this._callback_maps[action] = {};
     }
     do {
-      reqid = Math.random();
+      reqid = Math.random().toString();
     } while (map[reqid]);
     map[reqid] = callback;
   }

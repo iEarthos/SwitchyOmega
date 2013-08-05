@@ -32,6 +32,7 @@
 
   var getDefaultOptions = function () {
     return {
+      'schemaVersion': 0,
       'confirmDeletion': true,
       'currentProfileName': 'auto',
       'enableQuickSwitch': false,
@@ -48,20 +49,20 @@
               {"pattern":"<local>","conditionType":"BypassCondition"}
             ],
             "profileType":"FixedProfile",
-            "color":"#0000cc",
+            "color":"#99ccee",
             "proxyForHttp":{"scheme":"http","port":8080,"host":"127.0.0.1"},
             "fallbackProxy":{"scheme":"socks5","port":7070,"host":"127.0.0.1"}
           },
           {
             "name":"http",
-            "color":"#0000cc",
+            "color":"#ffee99",
             "fallbackProxy":{"scheme":"http","port":8888,"host":"127.0.0.1"},
             "bypassList":[],
             "profileType":"FixedProfile"
           },
           {
             "name":"auto",
-            "color":"#0000cc",
+            "color":"#99dd99",
             "defaultProfileName":"rulelist",
             "rules": [
               {"profileName":"ssh","condition":{"pattern":"*.example.com","conditionType":"HostWildcardCondition"}},
@@ -72,7 +73,7 @@
           },
           {
             "name":"rulelist",
-            "color":"#0000cc",
+            "color":"#99ccee",
             "defaultProfileName":"direct",
             "matchProfileName":"http",
             "ruleList": "[AutoProxy]\nexample.com",
@@ -111,13 +112,21 @@
       } else {
         options = getDefaultOptions();
       }
-      respond({'tab': localStorage['options_last_tab'], 'options': options});
+
+      respond({
+        'options': options,
+        'tab': localStorage['options_last_tab'],
+        'currentProfileName': localStorage['currentProfileName'] || 'direct'
+      });
     },
     'options.default': function (data, respond) {
       respond({'options': getDefaultOptions()});
     },
     'options.set': function (data, respond) {
       localStorage['options'] = data;
+      chrome.runtime.sendMessage({
+        action: 'options.update'
+      });
       respond();
     }
   });

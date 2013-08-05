@@ -36,7 +36,11 @@
   var options = null;
   var currentDomain = null;
   var currentProfile = null;
+  var possibleResults = null;
+  var possibleResultsList = null;
   var profileIcons = {
+    'DirectProfile': 'icon-ban-circle',
+    'SystemProfile': 'icon-hdd',
     'FixedProfile': 'icon-globe',
     'PacProfile': 'icon-tasks',
     'RulelistProfile': 'icon-list',
@@ -70,7 +74,7 @@
 
     $('#add-condition').click(function () {
       $('.nav').hide();
-    var profile = options['profiles'][options['currentProfileName']];
+    var profile = options['profiles'][localStorage['currentProfileName']];
       $('#condition-form .profile-color').css('background',
           currentProfile.color);
       $('#condition-form .profile-name').text(currentProfile.name);
@@ -96,10 +100,9 @@
       $('#condition-type').change();
 
       var conditionResult = $('#condition-result');
-      // TODO(catus): Use possible result profiles for conditionResult.
-      options['profiles'].forEach(function (profile) {
+      possibleResultsList.forEach(function (result) {
         var option = $('<option/>');
-        option.text(profile.name);
+        option.text(result);
         conditionResult.append(option);
       });
 
@@ -125,29 +128,38 @@
 
     options = JSON.parse(localStorage['options']);
     currentDomain = localStorage['currentDomain'];
-
-    switch (options['currentProfileName']) {
-      case 'direct':
-      case 'system':
-      case 'autodetect':
-        $('#profile-' + options['currentProfileName']).addClass('active');
-        break;
+    if (localStorage['possibleResults']) {
+      possibleResultsList = JSON.parse(localStorage['possibleResults']);
+      possibleResults = {};
+      possibleResultsList.forEach(function (result) {
+        possibleResults[result] = result;
+      });
     }
+
+    var profiles = options['profiles'];
+    profiles.unshift({
+      name: 'system',
+      profileType: 'SystemProfile'
+    });
+    profiles.unshift({
+      name: 'direct',
+      profileType: 'DirectProfile'
+    });
 
     var pos = $('#profiles-divider');
     var tempProfiles = $('#temp-rule-profiles');
-    options['profiles'].forEach(function (profile) {
+    profiles.forEach(function (profile) {
       var a = $('<a/>');
       a.attr('href', '#');
       a.text(profile.name);
+      a.data('name', profile.name);
       var i = $('<i/>');
       i.addClass(profileIcons[profile.profileType]);
       a.prepend(i);
       var li = $('<li/>');
       li.addClass('profile');
       li.append(a);
-      li.data('name', profile.name);
-      if (profile.name === options['currentProfileName']) {
+      if (profile.name === localStorage['currentProfileName']) {
         li.addClass('active');
         if (profile.profileType === 'SwitchProfile' && currentDomain != null) {
           $('#current-domain').text(currentDomain);
@@ -158,8 +170,11 @@
       }
       li.insertAfter(pos);
       pos = li;
-      // TODO(catus): Use possible result profiles for tempProfiles.
-      tempProfiles.append(li.clone());
+
+      if (possibleResults.hasOwnProperty(profile.name)) {
+        tempProfiles.append(li.clone());
+      }
     });
+    $('#profiles-divider').insertAfter($('.nav > li')[2]);
   });
 })();
