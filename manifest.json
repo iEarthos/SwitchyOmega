@@ -25,7 +25,8 @@
   "permissions": [ "proxy", "tabs", "<all_urls>" ],
   "sandbox": {
     "pages": [
-      "web/out/options/options.html"
+      "web/out/options/options.html",
+      "web/out/background/background.html"
     ]
   }
 }

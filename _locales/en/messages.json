@@ -369,7 +369,7 @@
     }
   },
   "browserAction_titleWithResult": {
-    "message": "SwitchyOmega:: $PROFILE$\n(Active page profile: $RESULT$)",
+    "message": "SwitchyOmega:: $PROFILE$\n(Active page profile: $RESULT$)\n$DETAILS$",
     "placeholders": {
       "profile": {
         "content": "$1",
@@ -378,6 +378,10 @@
       "result": {
         "content": "$2",
         "example": "direct"
+      },
+      "details": {
+        "content": "$3",
+        "example": "DIRECT"
       }
     }
   }

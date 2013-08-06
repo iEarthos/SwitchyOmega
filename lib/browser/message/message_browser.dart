@@ -26,7 +26,6 @@ part of switchy_browser_message;
  */
 class MessageBrowser extends Browser {
   Communicator _c;
-  MessageStorage _storage;
 
   MessageBrowser([Communicator c = null]) {
     if (c == null) {
@@ -34,10 +33,7 @@ class MessageBrowser extends Browser {
     } else {
       this._c = c;
     }
-    this._storage = new MessageStorage(this._c);
   }
-
-  MessageStorage get storage => _storage;
 
   /**
    * Transform the [profile] to a plain and browser-friendly structure, then
@@ -50,70 +46,72 @@ class MessageBrowser extends Browser {
   Future applyProfile(Profile profile) {
     var completer = new Completer();
 
-    Map<String, Object> data = {};
+    Map<String, Object> config = {};
 
     if (profile is SystemProfile) {
-      data['mode'] = 'system';
+      config['mode'] = 'system';
     } else if (profile is DirectProfile) {
-      data['mode'] = 'direct';
+      config['mode'] = 'direct';
     } else if (profile is AutoDetectProfile) {
-      data['mode'] = 'auto_detect';
+      config['mode'] = 'auto_detect';
     } else if (profile is FixedProfile) {
-      data['mode'] = 'fixed_servers';
-      data['rules'] = (profile as FixedProfile).toPlain();
+      if (profile.proxyForHttp == null &&
+          profile.proxyForHttps == null && profile.proxyForFtp == null &&
+          profile.fallbackProxy == null) {
+        config['mode'] = 'direct';
+      } else {
+        config['mode'] = 'fixed_servers';
+        var rules = {};
+        var plain = (profile as FixedProfile).toPlain();
+        for (var key in ['proxyForHttp', 'proxyForHttps', 'proxyForFtp', 'fallbackProxy']) {
+          if (plain[key] != null)
+            rules[key] = plain[key];
+        }
+        if (profile.fallbackProxy != null && profile.fallbackProxy.protocol == 'http') {
+          // Chromium does not allow HTTP proxies in 'fallbackProxy'.
+          rules.remove('fallbackProxy');
+          if (profile.proxyForHttp == null &&
+              profile.proxyForHttps == null && profile.proxyForFtp == null) {
+            // Use 'singleProxy' if no proxy is configured for other protocols.
+            rules['singleProxy'] = profile.fallbackProxy.toPlain();
+          } else {
+            // Otherwise, try to set the proxies of all possible protocols.
+            var getFallback = () => plain['fallbackProxy'];
+            rules.putIfAbsent('proxyForHttp', getFallback);
+            rules.putIfAbsent('proxyForHttps', getFallback);
+            rules.putIfAbsent('proxyForFtp', getFallback);
+          }
+        }
+        rules['bypassList'] = profile.bypassList.map((b) => b.pattern).toList();
+        config['rules'] = rules;
+      }
     } else if (profile is PacProfile) {
-      data['mode'] = 'pac_script';
-      data['pacScript'] = { 'url': (profile as PacProfile).pacUrl };
+      config['mode'] = 'pac_script';
+      config['pacScript'] = { 'url': (profile as PacProfile).pacUrl };
     } else if (profile is ScriptProfile) {
-      data['mode'] = 'pac_script';
-      data['pacScript'] = { 'data': (profile as ScriptProfile).toScript() };
+      config['mode'] = 'pac_script';
+      config['pacScript'] = { 'data': (profile as ScriptProfile).toScript() };
     } else {
       throw new UnsupportedError(profile.profileType);
     }
 
-    _c.send('proxy.apply', data, (_) {
-      completer.complete(null);
-    });
-
-    return completer.future;
-  }
-}
-
-/**
- * A [MessageStorage] stores and retives values via a [Communicator].
- */
-class MessageStorage extends AsyncStorage {
-  Communicator _c;
-
-  MessageStorage([Communicator c = null]) {
-    if (c == null) {
-      this._c = new Communicator();
-    } else {
-      this._c = c;
+    var possibleResults = [];
+    if (profile is SwitchProfile && profile.tracker is ProfileCollection) {
+      var col = profile.tracker as ProfileCollection;
+      possibleResults = col.validResultProfilesFor(profile).map((p) => p.name).toList();
     }
-  }
 
-  Future<Map<String, Object>> retive(List<String> names) {
-    var completer = new Completer<Map<String, Object>>();
-    _c.send('storage.retive', names, (Map<String, Object> map) {
-      completer.complete(map);
-    });
-    return completer.future;
-  }
-
-  Future put(Map<String, Object> map) {
-    var completer = new Completer();
-    _c.send('storage.put', map, (_) {
+    _c.send('proxy.set', {
+      'profileName': profile.name,
+      'color': profile.color,
+      'inclusive': profile is InclusiveProfile,
+      'switch': profile is SwitchProfile,
+      'possibleResults': possibleResults,
+      'config': config
+    }, (_, [__]) {
       completer.complete(null);
     });
-    return completer.future;
-  }
 
-  Future remove(List<String> names) {
-    var completer = new Completer();
-    _c.send('storage.remove', names, (_) {
-      completer.complete(null);
-    });
     return completer.future;
   }
 }

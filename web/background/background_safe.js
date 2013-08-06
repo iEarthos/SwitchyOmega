@@ -53,17 +53,19 @@
   };
 
   var resetAllIcons = function () {
-    if (inclusiveProfile) {
-      chrome.tabs.query({}, function (tabs) {
-        dirtyTabs = {};
-        tabs.forEach(function (tab) {
+    chrome.tabs.query({}, function (tabs) {
+      dirtyTabs = {};
+      tabs.forEach(function (tab) {
+        if (inclusiveProfile) {
           dirtyTabs[tab.id] = tab.id;
           if (tab.active) {
             processTab(tab.id, {}, tab);
           }
-        });
+        } else {
+          setIcon(null, tab.id);
+        }
       });
-    }
+    });
     setIcon();
   };
 
@@ -82,11 +84,9 @@
         title: chrome.i18n.getMessage('browserAction_titleNormal',
                   currentProfileName)
       });
-      /*
       chrome.proxy.settings.set({value: data.config}, function () {
         respond();
       });
-      */
     },
     'proxy.get': function (_, respond) {
       chrome.proxy.settings.get({}, function (o) {
@@ -167,7 +167,7 @@
         setIcon(result.color, tabId);
         chrome.browserAction.setTitle({
           title: chrome.i18n.getMessage('browserAction_titleWithResult',
-                   [currentProfileName, result.name]),
+                   [currentProfileName, result.name, result.details]),
           tabId: tabId
         });
       });

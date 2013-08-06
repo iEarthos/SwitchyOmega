@@ -4,6 +4,8 @@ SUBDIRS = test web
 
 all: ipackages $(SUBDIRS)
 
+dwc: subdirs
+
 .PHONY: subdirs $(SUBDIRS)
 
 ipackages: packages
@@ -18,4 +20,4 @@ ipackages: packages
 subdirs: $(SUBDIRS)
 
 $(SUBDIRS):
-	$(MAKE) -C $@
+	$(MAKE) $(findstring dwc,$(MAKECMDGOALS)) -C $@

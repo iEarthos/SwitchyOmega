@@ -1,8 +1,10 @@
 include ../Makefile.inc
 
-ENTRY_POINTS=$(shell ls -1 options/*.html background/*.html | sed -e "s/^/out\//")
+ENTRY_POINTS=$(addprefix out/,$(wildcard options/*.html background/*.html))
 
-all: entries out/packages pack_options pack_background js
+all: dwc js
+
+dwc: entries out/packages pack_options pack_background
 
 entries: $(ENTRY_POINTS)
 
@@ -16,8 +18,8 @@ out/%.html: %.html
 		sed -i 's/^.*\/dart\.js".*\/script>//g' $@; \
 	fi
 
-SCRIPTS=$(shell find -P out/ -name '*.dart' ! -path "*/_from_packages/*" \
-				        ! -name 'editors.dart' | sed -e "s/$$/.js/")
+SCRIPTS=$(addsuffix .js,$(shell find -P out/ -name '*.dart' ! -path "*/_from_packages/*" \
+				        ! -name 'editors.dart'))
 
 js: entries $(SCRIPTS)
 
@@ -27,23 +29,17 @@ out/options/options.html: options/options.dart options/editors.dart \
 out/background/background.html: background/background.dart background/upgrade.dart \
 	$(shell find ../lib -name "*.dart")
 
-options/packages: entries
+options/packages background/packages: entries
 	@if [ "`readlink $@`" != '../../ipackages' ]; then \
 		ln -sfT ../../ipackages $@; \
 	fi
 
-background/packages: entries
-	@if [ "`readlink $@`" != '../../ipackages' ]; then \
-		ln -sfT ../../ipackages $@; \
+out/options/packages out/background/packages: entries
+	@if [ "`readlink $@`" != '../../../ipackages' ]; then \
+		ln -sfT ../../../ipackages $@; \
 	fi
 
-pack_background: background/packages
-	@if [ -n `readlink out/$</web_ui | grep -o '^/'` ]; then \
-		rm -rf out/$<; \
-		ln -sfT ../../../ipackages out/$<; \
-	fi
-
-pack_options: options/packages
+pack_options pack_background: background/packages
 	@if [ -n `readlink out/$</web_ui | grep -o '^/'` ]; then \
 		rm -rf out/$<; \
 		ln -sfT ../../../ipackages out/$<; \

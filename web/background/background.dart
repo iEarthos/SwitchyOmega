@@ -10,7 +10,8 @@ import 'package:switchyomega/communicator.dart';
 
 part 'upgrade.dart';
 
-Communicator c = new Communicator(window.top);
+Communicator safe = new Communicator(window.top);
+Browser browser = new MessageBrowser(safe);
 
 @observable SwitchyOptions options;
 @observable Profile currentProfile;
@@ -20,23 +21,8 @@ void updateProxy(details) {
 }
 
 void applyProfile(String name) {
-  var profile = options.getProfileByName(name);
-  var possibleResults = [];
-  if (profile is SwitchProfile) {
-    possibleResults = options.profiles.validResultProfilesFor(profile).map(
-        (p) => p.name).toList();
-  }
-
-  currentProfile = profile;
-
-  c.send('proxy.set', {
-    'profileName': profile.name,
-    'color': profile.color,
-    'inclusive': profile is InclusiveProfile,
-    'switch': profile is SwitchProfile,
-    'possibleResults': possibleResults,
-    'config': null // TODO(catus)
-  });
+  currentProfile = options.getProfileByName(name);
+  browser.applyProfile(currentProfile);
 }
 
 Profile resolveProfile(Profile p, String url) {
@@ -52,29 +38,50 @@ Profile resolveProfile(Profile p, String url) {
   }
 }
 
+const String directDetails = 'DIRECT';
+
+String getProfileDetails(Profile p, String url) {
+  var uri = Uri.parse(url);
+  switch (p.profileType) {
+    case 'FixedProfile':
+      var proxy = (p as FixedProfile).getProxyFor(url, uri.host, uri.scheme);
+      return proxy == null ? directDetails : proxy.toPacResult();
+    case 'DirectProfile':
+      return directDetails;
+    case 'PacProfile':
+    case 'AutoDetectProfile':
+      var url = (p as PacProfile).pacUrl;
+      if (url != null && url.isNotEmpty) {
+        return 'PAC Script: ' + url;
+      }
+      return 'PAC Script';
+    default:
+      return '(${p.profileType})';
+  }
+}
 
 void main() {
-  c.send('options.get', null, (Map<String, Object> o, [Function respond]) {
+  safe.send('options.get', null, (Map<String, Object> o, [Function respond]) {
     if (o['options'] == null) {
       if (o['oldOptions'] != null) {
         options = upgradeOptions(o['oldOptions']);
       } else {
         options = new SwitchyOptions.defaults();
       }
-      c.send('options.set', JSON.stringify(options));
+      safe.send('options.set', JSON.stringify(options));
     } else {
       var version =
           (o['options'] as Map<String, String>)['schemaVersion'] as int;
       if (version < SwitchyOptions.schemaVersion) {
         options = upgradeOptions(o['options']);
-        c.send('options.set', JSON.stringify(options));
+        safe.send('options.set', JSON.stringify(options));
       } else if (version > SwitchyOptions.schemaVersion) {
         // TODO(catus): Show warnings for newer schemaVersions.
       } else {
         options = new SwitchyOptions.fromPlain(o['options']);
       }
     }
-    c.send('background.init');
+    safe.send('background.init');
     if (options.startupProfileName.isNotEmpty) {
       applyProfile(options.startupProfileName);
     } else if (o['currentProfileName'] != null) {
@@ -84,7 +91,7 @@ void main() {
     }
   });
 
-  c.on({
+  safe.on({
     'proxy.onchange': (details, [_]) {
       updateProxy(details);
     },
@@ -104,7 +111,7 @@ void main() {
         };
         profile.insert(0, new Rule(new Condition.fromPlain(plainCondition),
             data['result']));
-        c.send('options.set', JSON.stringify(options));
+        safe.send('options.set', JSON.stringify(options));
         if (profile.name == currentProfile.name || (
             currentProfile is InclusiveProfile &&
             options.profiles.hasReference(currentProfile, profile))) {
@@ -118,13 +125,20 @@ void main() {
     'profile.match': (url, [respond]) {
       if (currentProfile is InclusiveProfile) {
         var result = resolveProfile(currentProfile, url);
-        respond({'name': result.name, 'color': result.color});
+        var color = result.color;
+        var details = getProfileDetails(result, url);
+        if (details == directDetails) color = ProfileColors.direct;
+        respond({
+          'name': result.name,
+          'color': color,
+          'details': details
+        });
       }
     }
   });
 
-  c.send('proxy.listen');
-  c.send('proxy.get', null, (proxy, [_]) {
+  safe.send('proxy.listen');
+  safe.send('proxy.get', null, (proxy, [_]) {
     updateProxy({
       'value': proxy,
       'levelOfControl': 'controllable_by_this_extension'
