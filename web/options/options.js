@@ -60,6 +60,8 @@
     i18nTemplate.process(document, i18n);
   });
 
+  var lastTab = null;
+
   c.on({
     'options.init': function () {
       // Sortable
@@ -88,25 +90,32 @@
 
       // Memorize Tab
       $('#options-nav').on('shown', 'a[data-toggle="tab"]', function (e) {
-        var tabHash = e.target.getAttribute('href');
-        c.send('tab.set', tabHash);
+        lastTab = e.target.getAttribute('href');
+        c.send('tab.set', lastTab);
       });
 
       // Restore options from local files.
       $('#restore-local').on('click', function (e) {
         $('#restore-local-file').click();
       });
+
+      // Leave confirm
+      $(window).on('beforeunload', function () {
+        return i18n.getValue('options_leaveConfirm');
+      });
     },
     'quickswitch.refresh': function () {
       $('.cycle-profile-container').sortable('refresh');
     },
     'tab.set': function (tabhref) {
+      tabhref = tabhref || lastTab;
       var tabs = $('#options-nav a[data-toggle="tab"]');
       var tab = null;
       if (tabhref) {
         tabs.each(function (_, e) {
           if (e.getAttribute('href') === tabhref) {
             tab = $(e);
+            lastTab = tabhref;
           }
         });
       }

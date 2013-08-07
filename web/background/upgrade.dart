@@ -21,6 +21,9 @@ SwitchyOptions upgradeOptions(Map<String, Object> oldOptions) {
     if (config['startupProfileId'] != null) {
       options.startupProfileName = config['startupProfileId'];
     }
+    if (config['ruleListReload'] != null) {
+      options.downloadInterval = int.parse(config['ruleListReload']);
+    }
 
     var profiles = oldOptions['profiles'] as Map<String, Map<String, Object>>;
 

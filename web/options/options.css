@@ -325,8 +325,8 @@ input[type="color"] {
 .alert-top-fixed {
   position: fixed;
   top: -100%;
-  left: 45%;
-  width: 200px;
+  left: 40%;
+  width: 20%;
   z-index: 5;
   left: -webkit-calc(50% - 200px);
   left: -moz-calc(50% - 200px);

@@ -171,7 +171,8 @@
       li.insertAfter(pos);
       pos = li;
 
-      if (possibleResults.hasOwnProperty(profile.name)) {
+      if (possibleResults != null &&
+          possibleResults.hasOwnProperty(profile.name)) {
         tempProfiles.append(li.clone());
       }
     });

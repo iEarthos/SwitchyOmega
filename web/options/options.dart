@@ -219,7 +219,7 @@ void requestResetRules(SwitchProfile profile) {
   });
 }
 
-Communicator c = new Communicator(window.top);
+Communicator safe = new Communicator(window.top);
 Communicator js = new Communicator(window);
 
 @observable
@@ -262,27 +262,49 @@ void exportOptions() {
   });
 }
 
+void restoreOptions(String data) {
+  SwitchyOptions newOptions = null;
+  try {
+    newOptions = new SwitchyOptions.fromPlain(JSON.parse(data));
+  } catch (e) {
+    query('#options-import-format-error').style.top = "0";
+    return;
+  }
+  ChangeUnobserver unobserve;
+  unobserve = observe(() => options, (_) {
+    query('#options-import-success').style.top = "0";
+    unobserve();
+  });
+  options = newOptions;
+}
+
 void restoreLocal(FileUploadInputElement file) {
   if (file.files.length > 0 && file.files[0].name.length > 0) {
     var r = new FileReader();
-    r.onLoad.listen((data) {
-      var json = r.result as String;
-      ChangeUnobserver unobserve;
-      unobserve = observe(() => options, (_) {
-        js.send('tab.set');
-        query('#options-import-success').style.top = "0";
-        unobserve();
-      });
-      options = new SwitchyOptions.fromPlain(JSON.parse(json));
+    r.onLoad.listen((_) {
+      restoreOptions(r.result as String);
     });
     r.readAsText(file.files[0]);
     file.value = "";
   }
 }
 
+void restoreOnline() {
+  (query('#restore-online') as ButtonElement).disabled = true;
+  var url = (query('#restore-url') as InputElement).value;
+  safe.send('ajax.get', url, (Map<String, Object> status, [__]) {
+    if (status['error'] != null) {
+      query('#options-import-download-error').style.top = "0";
+    } else {
+      restoreOptions(status['data']);
+    }
+    (query('#restore-online') as ButtonElement).disabled = false;
+  });
+}
+
 void saveOptions(Event e) {
   e.preventDefault();
-  c.send('options.set', JSON.stringify(options), (_, [__]) {
+  safe.send('options.set', JSON.stringify(options), (_, [__]) {
     query('#options-save-success').style.top = "0";
   });
 }
@@ -322,9 +344,9 @@ void handleNewProfileUI() {
 
 void handleOptionsResetUI() {
   js.on('options.reset', (String type, [Function respond]) {
-    c.send('options.default', null,
+    safe.send('options.default', null,
         (Map<String, Object> o, [Function respond]) {
-      c.send('options.set', JSON.stringify(options), (_, [__]) {
+      safe.send('options.set', JSON.stringify(options), (_, [__]) {
         ChangeUnobserver unobserve;
         unobserve = observe(() => options, (_) {
           js.send('tab.set');
@@ -358,20 +380,19 @@ void handleQuickSwitchUI() {
 }
 
 void main() {
-  c.send('options.get', null, (Map<String, Object> o, [Function respond]) {
+  safe.send('options.get', null, (Map<String, Object> o, [Function respond]) {
     ChangeUnobserver unobserve;
     unobserve = observe(() => options, (_) {
-      var lastActiveTab = o['tab'];
-      var navs = queryAll('#options-nav a[data-toggle="tab"]');
-
-      var nav = navs.firstWhere((e) => e.attributes['href'] == lastActiveTab,
-          orElse: () => navs.first);
-      closestElement(nav, 'li').classes.add('active');
-      var tab = query(nav.attributes['href']);
-      tab.classes.add('active');
-      unobserve();
+      js.send('tab.set', o['tab']);
       handleQuickSwitchUI();
-      js.send('options.init');
+      unobserve();
+    });
+
+    observe(() => options, (_) {
+      if (options != null) {
+        js.send('options.init');
+        js.send('tab.set');
+      }
     });
 
     options = new SwitchyOptions.fromPlain(o['options']);

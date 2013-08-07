@@ -118,6 +118,36 @@
   "options_revertProxyChanges": {
     "message": "Revert proxy changes done by other apps."
   },
+  "options_downloadOptions": {
+    "message": "Download Options"
+  },
+  "options_downloadOptionsHelp": {
+    "message": "Configure the update frequency of online rule lists and PAC scripts."
+  },
+  "options_downloadInterval": {
+    "message": "Download Interval"
+  },
+  "options_downloadInterval_15": {
+    "message": "15 Minutes"
+  },
+  "options_downloadInterval_60": {
+    "message": "1 Hour"
+  },
+  "options_downloadInterval_180": {
+    "message": "3 Hours"
+  },
+  "options_downloadInterval_360": {
+    "message": "6 Hours"
+  },
+  "options_downloadInterval_720": {
+    "message": "12 Hours"
+  },
+  "options_downloadInterval_1440": {
+    "message": "Every day"
+  },
+  "options_downloadInterval_never": {
+    "message": "Never"
+  },
   "options_group_importExportProfile": {
     "message": "Profile"
   },
@@ -349,6 +379,15 @@
   },
   "options_importSuccess": {
     "message": "Options imported."
+  },
+  "options_importFormatError": {
+    "message": "Invalid backup file!"
+  },
+  "options_importDownloadError": {
+    "message": "Error downloading backup file!"
+  },
+  "options_leaveConfirm": {
+    "message": "Please make sure that you have saved the options before you leave!"
   },
   "popup_addCondition": {
     "message": "Add condition"

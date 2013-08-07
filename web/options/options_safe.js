@@ -83,7 +83,7 @@
       'quickSwitchProfiles' : []
     };
   };
-
+  
   c.on({
     'tab.get': function (_, respond) {
       var hash;
@@ -128,6 +128,19 @@
         action: 'options.update'
       });
       respond();
+    },
+    'ajax.get': function (url, respond) {
+      jQuery.ajax({
+        url: url,
+        cache: false,
+        dataType: 'text',
+        success: function (data) {
+          respond({'data': data});
+        },
+        error: function (_, status, error) {
+          respond({'status': status, 'error': error});
+        }
+      });
     }
   });
 

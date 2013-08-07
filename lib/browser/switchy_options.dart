@@ -37,6 +37,12 @@ class SwitchyOptions extends Plainable {
 
   bool revertProxyChanges;
 
+  /**
+   * The interval (in minutes) between PAC or rule list updates.
+   * A negative value disables automatic updating.
+   */
+  int downloadInterval;
+
   final List<String> quickSwitchProfiles = toObservable([]);
 
   final ProfileCollection profiles = new ProfileCollection();
@@ -52,6 +58,7 @@ class SwitchyOptions extends Plainable {
     p['startupProfileName'] = startupProfileName;
     p['enableQuickSwitch'] = enableQuickSwitch;
     p['revertProxyChanges'] = revertProxyChanges;
+    p['downloadInterval'] = downloadInterval;
 
     p['quickSwitchProfiles'] = quickSwitchProfiles;
 
@@ -75,6 +82,7 @@ class SwitchyOptions extends Plainable {
     startupProfileName = p['startupProfileName'];
     enableQuickSwitch = p['enableQuickSwitch'];
     revertProxyChanges = p['revertProxyChanges'];
+    downloadInterval = p['downloadInterval'];
 
     quickSwitchProfiles.clear();
     quickSwitchProfiles.addAll(p['quickSwitchProfiles']);
@@ -94,6 +102,7 @@ class SwitchyOptions extends Plainable {
     startupProfileName = '';
     enableQuickSwitch = false;
     revertProxyChanges = false;
+    downloadInterval = 24 * 60;
 
     quickSwitchProfiles.clear();
   }

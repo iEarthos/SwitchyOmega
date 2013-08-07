@@ -53,6 +53,16 @@ var strings = [
   "options_notCycledProfiles",
   "options_group_proxyChanges",
   "options_revertProxyChanges",
+  "options_downloadOptions",
+  "options_downloadOptionsHelp",
+  "options_downloadInterval",
+  "options_downloadInterval_15",
+  "options_downloadInterval_60",
+  "options_downloadInterval_180",
+  "options_downloadInterval_360",
+  "options_downloadInterval_720",
+  "options_downloadInterval_1440",
+  "options_downloadInterval_never",
   "options_group_importExportProfile",
   "options_exportPacFile",
   "options_exportPacFileHelp",
@@ -128,5 +138,8 @@ var strings = [
   "options_resetOptionsConfirm",
   "options_resetSuccess",
   "options_saveSuccess",
-  "options_importSuccess"
+  "options_importSuccess",
+  "options_importFormatError",
+  "options_importDownloadError",
+  "options_leaveConfirm"
 ];

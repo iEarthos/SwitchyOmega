@@ -193,10 +193,26 @@
             </header>
             <section class="settings-group">
               <h3 data-i18n="options_group_proxyChanges"></h3>
-                <label class="checkbox">
-                  <input type="checkbox" id="revert-proxy-changes" bind-checked="options.revertProxyChanges" />
-                  <span data-i18n="options_revertProxyChanges"></span>
-                </label>
+              <label class="checkbox">
+                <input type="checkbox" id="revert-proxy-changes" bind-checked="options.revertProxyChanges" />
+                <span data-i18n="options_revertProxyChanges"></span>
+              </label>
+            </section>
+            <section class="settings-group">
+              <h3 data-i18n="options_downloadOptions"></h3>
+              <p class="help-block" data-i18n="options_downloadOptionsHelp"></p>
+              <div class="h-control">
+                <label data-i18n="options_downloadInterval" for="download-interval"></label>
+                <select id="download-interval" bind-value="convert.fromInt[() => options.downloadInterval][(v) => options.downloadInterval = v]">
+                  <option value="15" data-i18n="options_downloadInterval_15"></option>
+                  <option value="60" data-i18n="options_downloadInterval_60"></option>
+                  <option value="180" data-i18n="options_downloadInterval_180"></option>
+                  <option value="360" data-i18n="options_downloadInterval_360"></option>
+                  <option value="720" data-i18n="options_downloadInterval_720"></option>
+                  <option value="1440" data-i18n="options_downloadInterval_1440"></option>
+                  <option value="-1" data-i18n="options_downloadInterval_never"></option>
+                </select>
+              </div>
             </section>
           </div>
           <div class="tab-pane" id="tab-importexport">
@@ -226,7 +242,7 @@
                 <label class="control-label" data-i18n="options_restoreOnline"></label>
                 <div class="form-inline">
                   <input type="url" class="input-xxlarge" data-i18n-values="placeholder: options_restoreOnlinePlaceholder" id="restore-url" />
-                  <button class="btn" id="restore-online" data-i18n="options_restoreOnlineSubmit"></button>
+                  <button class="btn" id="restore-online" data-i18n="options_restoreOnlineSubmit" on-click="restoreOnline()"></button>
                 </div>
               </div>
             </section>
@@ -591,6 +607,16 @@
         <button type="button" class="close">×</button>
         <i class="icon-ok"></i>
         <span data-i18n="options_importSuccess"></span>
+      </div>
+      <div class="alert alert-error alert-top-fixed" id="options-import-format-error">
+        <button type="button" class="close">×</button>
+        <i class="icon-remove-sign"></i>
+        <span data-i18n="options_importFormatError"></span>
+      </div>
+      <div class="alert alert-error alert-top-fixed" id="options-import-download-error">
+        <button type="button" class="close">×</button>
+        <i class="icon-remove-sign"></i>
+        <span data-i18n="options_importDownloadError"></span>
       </div>
     </template>
   </body>

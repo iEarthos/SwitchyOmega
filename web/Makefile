@@ -4,7 +4,7 @@ ENTRY_POINTS=$(addprefix out/,$(wildcard options/*.html background/*.html))
 
 all: dwc js
 
-dwc: entries out/packages pack_options pack_background
+dwc: entries out/packages out/options/packages out/background/packages
 
 entries: $(ENTRY_POINTS)
 
@@ -29,18 +29,12 @@ out/options/options.html: options/options.dart options/editors.dart \
 out/background/background.html: background/background.dart background/upgrade.dart \
 	$(shell find ../lib -name "*.dart")
 
-options/packages background/packages: entries
-	@if [ "`readlink $@`" != '../../ipackages' ]; then \
-		ln -sfT ../../ipackages $@; \
+options/packages background/packages out/packages: ../ipackages | entries
+	@if [ "`readlink $@`" != '../$<' ]; then \
+		ln -sfT ../$< $@; \
 	fi
 
-out/options/packages out/background/packages: entries
-	@if [ "`readlink $@`" != '../../../ipackages' ]; then \
-		ln -sfT ../../../ipackages $@; \
-	fi
-
-pack_options pack_background: background/packages
-	@if [ -n `readlink out/$</web_ui | grep -o '^/'` ]; then \
-		rm -rf out/$<; \
-		ln -sfT ../../../ipackages out/$<; \
+out/options/packages out/background/packages: ../ipackages | entries
+	@if [ "`readlink $@`" != '../../$<' ]; then \
+		ln -sfT ../../$< $@; \
 	fi
