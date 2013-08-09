@@ -31,6 +31,7 @@
   var currentProfileName = '';
   var urlParser = null;
   var dirtyTabs = {};
+  var pendingAlarms = [];
 
   var setIcon = function (resultColor, tabId) {
     if (canvasIcon == null) return;
@@ -68,9 +69,18 @@
     });
     setIcon();
   };
-
+  
   c.on({
     'background.init': function (_, respond) {
+      var alarms = {};
+      pendingAlarms.forEach(function (alarm) {
+        // Fire at most once on each alarm.
+        if (!alarms.hasOwnProperty(alarm)) {
+          c.send('alarm.fire', alarm);
+          alarms[alram] = alarm;
+        }
+      });
+      pendingAlarms = null;
     },
     'proxy.set': function (data, respond) {
       inclusiveProfile = data.inclusive;
@@ -115,12 +125,38 @@
         }
         respond({'oldOptions': oldOptions});
       } else {
-        respond({'options': JSON.parse(localStorage['options'])});
+        respond({
+          'options': JSON.parse(localStorage['options']),
+          'currentProfileName': localStorage['currentProfileName']
+        });
       }
     },
     'options.set': function (options, respond) {
       localStorage['options'] = options;
       respond();
+    },
+    'ajax.get': function (url, respond) {
+      jQuery.ajax({
+        url: url,
+        cache: false,
+        dataType: 'text',
+        success: function (data) {
+          respond({'data': data});
+        },
+        error: function (_, status, error) {
+          respond({'status': status, 'error': error});
+        }
+      });
+    },
+    'alarm.set': function (details, respond) {
+      if (details['periodInMinutes'] < 0) {
+        chrome.alarms.clear(details['name']);
+      } else {
+        chrome.alarms.create(details['name'], {
+          delayInMinutes: details['periodInMinutes'],
+          periodInMinutes: details['periodInMinutes']
+        });
+      }
     }
   });
 
@@ -185,6 +221,15 @@
         setCurrentDomain(tab.url);
       }
     });
+  });
+
+  chrome.alarms.onAlarm.addListener(function (alarm) {
+    console.log(alarm.name);
+    if (pendingAlarms != null) {
+      pendingAlarms.push(alarm.name);
+    } else {
+      c.send('alarm.fire', alarm.name);
+    }
   });
 
   document.addEventListener('DOMContentLoaded', function () {

@@ -100,6 +100,9 @@
   "options_startupProfile": {
     "message": "Startup Profile"
   },
+  "options_startupProfile_none": {
+    "message": "(Current profile)"
+  },
   "options_quickSwitch": {
     "message": "Quick Switch"
   },

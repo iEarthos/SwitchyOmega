@@ -25,7 +25,7 @@ part of switchy_profile;
  * If [pacUrl] is not null, the script is downloaded from [pacUrl].
  */
 @observable
-class PacProfile extends ScriptProfile {
+class PacProfile extends ScriptProfile implements UpdatingProfile {
   String get profileType => 'PacProfile';
 
   String pacUrl = '';
@@ -33,6 +33,12 @@ class PacProfile extends ScriptProfile {
   String pacScript = '';
 
   String toScript() => this.pacScript;
+
+  String get updateUrl => pacUrl;
+
+  void applyUpdate(String data) {
+    this.pacScript = data;
+  }
 
   /**
    * Write a wrapper function around the [pacScript].
@@ -51,9 +57,8 @@ class PacProfile extends ScriptProfile {
 
     if (pacUrl != null && pacUrl.length > 0) {
       p['pacUrl'] = this.pacUrl;
-    } else {
-      p['pacScript'] = this.pacScript;
     }
+    p['pacScript'] = this.pacScript;
 
     return p;
   }
@@ -73,7 +78,11 @@ class PacProfile extends ScriptProfile {
     if (u != null) {
       this.pacUrl = u;
     }
-    this.pacScript = p['pacScript'];
+    ChangeUnobserver unobserve;
+    unobserve = observe(() => this, (_) {
+      pacScript = p['pacScript'];
+      unobserve();
+    });
   }
 
   factory PacProfile.fromPlain(Map<String, Object> p) {

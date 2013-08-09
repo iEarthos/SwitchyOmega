@@ -97,6 +97,18 @@ abstract class Profile extends Plainable {
 }
 
 /**
+ * A profile that uses data downloaded from [updateUrl].
+ */
+abstract class UpdatingProfile {
+  String get updateUrl;
+
+  /**
+   * Pass the downloaded [data] to this profile.
+   */
+  void applyUpdate(String data);
+}
+
+/**
   A static class that holds color constants for some profiles.
 */
 class ProfileColors {

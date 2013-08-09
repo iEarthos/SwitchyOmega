@@ -25,7 +25,8 @@ part of switchy_profile;
  * If [sourceUrl] is not null, the ruleList will be downloaded from [sourceUrl].
  */
 @observable
-abstract class RuleListProfile extends InclusiveProfile {
+abstract class RuleListProfile extends InclusiveProfile
+    implements UpdatingProfile {
   String sourceUrl = '';
 
   String matchProfileName;
@@ -99,15 +100,21 @@ abstract class RuleListProfile extends InclusiveProfile {
             tracker.getProfileByName(defaultProfileName)];
   }
 
+  String get updateUrl => sourceUrl;
+
+  void applyUpdate(String data) {
+    this.ruleList = data;
+  }
+
   Map<String, Object> toPlain([Map<String, Object> p]) {
     p = super.toPlain(p);
     p['defaultProfileName'] = defaultProfileName;
     p['matchProfileName'] = matchProfileName;
     if (sourceUrl != null && sourceUrl.length > 0) {
       p['sourceUrl'] = sourceUrl;
-    } else {
-      p['ruleList'] = ruleList;
     }
+    p['ruleList'] = ruleList;
+
     return p;
   }
 
@@ -143,9 +150,13 @@ abstract class RuleListProfile extends InclusiveProfile {
     var u = p['sourceUrl'];
     if (u != null && u.length > 0) {
       sourceUrl = u;
-    } else {
-      ruleList = p['ruleList'];
     }
+    ruleList = p['ruleList'];
+    ChangeUnobserver unobserve;
+    unobserve = observe(() => this, (_) {
+      ruleList = p['ruleList'];
+      unobserve();
+    });
   }
 
   factory RuleListProfile.fromPlain(Map<String, Object> p) {

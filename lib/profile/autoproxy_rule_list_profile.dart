@@ -32,6 +32,10 @@ class AutoProxyRuleListProfile extends RuleListProfile {
       String matchProfileName)
       : super(name, defaultProfileName, matchProfileName);
 
+  // The rule list can be Base 64 encoded.
+  // Detect encoded "[AutoProxy" sequence at the beginning.
+  static const _autoProxyRulesBase64Magic = 'W0F1dG9Qcm94';
+
   /**
    * The rule list format is defined by:
    * https://autoproxy.org/zh-CN/node/19
@@ -39,9 +43,7 @@ class AutoProxyRuleListProfile extends RuleListProfile {
   List<Rule> parseRules(String rules) {
     bool begin = false;
     rules = rules.trim();
-    // The rule list can be Base 64 encoded.
-    // Detect encoded "[AutoProxy" sequence at the beginning.
-    if (rules.startsWith('W0F1dG9Qcm94')) {
+    if (rules.startsWith(_autoProxyRulesBase64Magic)) {
       rules = new String.fromCharCodes(CryptoUtils.base64StringToBytes(rules));
     }
     var lines = rules.split(new RegExp(r'\n|\r'));
@@ -74,5 +76,13 @@ class AutoProxyRuleListProfile extends RuleListProfile {
     // Exclusive rules have higher priority, so they come first.
     exclusive_rules.addAll(normal_rules);
     return exclusive_rules;
+  }
+
+  void applyUpdate(String data) {
+    var rules = data.trim();
+    if (rules.startsWith(_autoProxyRulesBase64Magic)) {
+      rules = new String.fromCharCodes(CryptoUtils.base64StringToBytes(rules));
+    }
+    this.ruleList = rules;
   }
 }

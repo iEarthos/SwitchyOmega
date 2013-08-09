@@ -47,6 +47,7 @@ var strings = [
   "options_refreshOnProfileChange",
   "options_group_switchOptions",
   "options_startupProfile",
+  "options_startupProfile_none",
   "options_quickSwitch",
   "options_cycledProfiles",
   "options_cycledProfilesHelp",

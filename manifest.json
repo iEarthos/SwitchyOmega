@@ -20,9 +20,9 @@
     "page": "web/out/background/background_safe.html"
   },
   "homepage_url": "https://chrome.google.com/webstore/detail/dpplabbmogkhghncfbfdeeokoefdjegm",
-  "minimum_chrome_version": "21.0.0",
+  "minimum_chrome_version": "22.0.0",
   "options_page": "web/out/options/options_safe.html",
-  "permissions": [ "proxy", "tabs", "<all_urls>" ],
+  "permissions": [ "proxy", "tabs", "alarms", "<all_urls>" ],
   "sandbox": {
     "pages": [
       "web/out/options/options.html",

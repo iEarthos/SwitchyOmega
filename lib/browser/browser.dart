@@ -25,4 +25,24 @@ part of switchy_browser;
  */
 abstract class Browser {
   Future applyProfile(Profile profile);
+
+  /**
+   * Set an repeating alarm which fires every [periodInMinutes].
+   * Replaces a previously set alarm with the same [name].
+   * A non-positive value of [periodInMinutes] clears the alarm.
+   * Note: Cancelling the [StreamSubscription] also clears the alarm.
+   */
+  Stream<String> setAlarm(String name, num periodInMinutes);
+
+  /**
+   * Fetch the content of [url]. Throws [DownloadFailException] on failure.
+   */
+  Future<String> download(String url);
+}
+
+class DownloadFailException implements Exception {
+  final status;
+  final error;
+
+  DownloadFailException(this.status, this.error);
 }

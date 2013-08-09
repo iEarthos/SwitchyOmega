@@ -22,11 +22,18 @@ part of switchy_html;
 
 final String autoBindToDataListAttrName = "data-list";
 final String valueLaterDataListAttrName = "data-later-value";
+final String copiedOptionClassName = "data-list-item";
 
 void copyFromDataList(Element target, DataListElement datalist) {
-  target.nodes.clear();
+  target.nodes.retainWhere((node) => node is Element &&
+      !node.classes.contains(copiedOptionClassName));
+
   target.nodes.addAll(
-      datalist.queryAll('option').map((o) => o.clone(true)));
+      datalist.queryAll('option').map((o) {
+        var copied = o.clone(true);
+        (copied as Element).classes.add(copiedOptionClassName);
+        return copied;
+      }));
 
   var value = target.attributes[valueLaterDataListAttrName];
   if (value != null) {

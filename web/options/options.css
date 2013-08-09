@@ -435,7 +435,7 @@ td select, td textarea, td input {
 .bypass-list,
 .pac-script,
 .rule-list-text {
-  min-height: 500px;
+  min-height: 400px;
 }
 
 @media (max-width: 767px) {

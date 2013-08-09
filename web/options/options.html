@@ -158,7 +158,9 @@
               <h3 data-i18n="options_group_switchOptions"></h3>
               <div class="h-control">
                 <label data-i18n="options_startupProfile" for="startup-profile"></label>
-                <select id="startup-profile" data-list="profiles" bind-value="options.startupProfileName"></select>
+                <select id="startup-profile" data-list="profiles" bind-value="options.startupProfileName">
+                  <option data-i18n="options_startupProfile_none" value=""></option>
+                </select>
               </div>
               <p>
                 <label class="checkbox">

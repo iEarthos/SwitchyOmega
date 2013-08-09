@@ -114,4 +114,46 @@ class MessageBrowser extends Browser {
 
     return completer.future;
   }
+
+  Map<String, StreamController<String>> _alarms = null;
+
+  Stream<String> setAlarm(String name, num periodInMinutes) {
+    if (_alarms == null) {
+      _alarms = {};
+      _c.on('alarm.fire', (alarm, [_]) {
+        print(alarm);
+        _alarms[alarm].add(alarm);
+      });
+    }
+    _c.send('alarm.set', {
+      'name': name,
+      'periodInMinutes': periodInMinutes
+    });
+    if (periodInMinutes <= 0) {
+      var controller = _alarms.remove(name);
+      if (controller != null) {
+        controller.close();
+      }
+      return null;
+    }
+    var controller = new StreamController(onCancel: () {
+      setAlarm(name, -1);
+    });
+    _alarms[name] = controller;
+    return controller.stream;
+  }
+
+  Future<String> download(String url) {
+    var comp = new Completer<String>();
+    _c.send('ajax.get', url, (result, [_]) {
+      if (result['error'] != null) {
+        comp.completeError(new DownloadFailException(
+            result['status'], result['error']));
+      } else {
+        comp.complete(result['data']);
+      }
+    });
+
+    return comp.future;
+  }
 }

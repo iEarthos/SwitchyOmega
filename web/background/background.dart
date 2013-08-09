@@ -2,6 +2,7 @@ library switchy_background;
 
 import 'dart:html';
 import 'dart:json' as JSON;
+import 'dart:async';
 import 'package:web_ui/web_ui.dart';
 import 'package:switchyomega/switchyomega.dart';
 import 'package:switchyomega/browser/lib.dart';
@@ -20,9 +21,9 @@ void updateProxy(details) {
   // TODO(catus)
 }
 
-void applyProfile(String name) {
+Future applyProfile(String name) {
   currentProfile = options.getProfileByName(name);
-  browser.applyProfile(currentProfile);
+  return browser.applyProfile(currentProfile);
 }
 
 Profile resolveProfile(Profile p, String url) {
@@ -60,6 +61,46 @@ String getProfileDetails(Profile p, String url) {
   }
 }
 
+/**
+ * Returns the names of profiles that fails to update.
+ */
+Future<Set<String>> updateProfiles() {
+  var completer = new Completer<Set<String>>();
+  var count = 0;
+  var fail = new Set<String>();
+  options.profiles.forEach((profile) {
+    if (profile is UpdatingProfile) {
+      if (profile.updateUrl == null || profile.updateUrl.isEmpty) return;
+      count++;
+      browser.download(profile.updateUrl).then((data) {
+        profile.applyUpdate(data);
+      }).catchError((e) {
+        fail.add(profile.name);
+      }).whenComplete(() {
+        count--;
+        if (count == 0) {
+          completer.complete(fail);
+        }
+      });
+    }
+  });
+
+  return completer.future;
+}
+
+Profile getStartupProfile(String lastProfileName) {
+  var startup = null;
+  if (options.startupProfileName.isNotEmpty) {
+    startup = options.startupProfileName;
+  } else if (lastProfileName != null) {
+    startup = lastProfileName;
+  }
+  if (startup == null || options.profiles[startup] == null) {
+    startup = new DirectProfile().name;
+  }
+  return options.profiles[startup];
+}
+
 void main() {
   safe.send('options.get', null, (Map<String, Object> o, [Function respond]) {
     if (o['options'] == null) {
@@ -81,14 +122,25 @@ void main() {
         options = new SwitchyOptions.fromPlain(o['options']);
       }
     }
+    browser.setAlarm('download', options.downloadInterval).listen((_) {
+      updateProfiles();
+    });
+
     safe.send('background.init');
-    if (options.startupProfileName.isNotEmpty) {
-      applyProfile(options.startupProfileName);
-    } else if (o['currentProfileName'] != null) {
-      applyProfile(o['currentProfileName']);
-    } else {
-      applyProfile(new DirectProfile().name);
-    }
+
+    var startup = getStartupProfile(o['currentProfileName']);
+    applyProfile(startup.name).then((_) {
+      updateProfiles().then((fail) {
+        if (fail.any((name) => name == startup.name || (
+            startup is InclusiveProfile &&
+            options.profiles.hasReferenceToName(startup, name)))) {
+          // TODO(catus): Show warnings about profile update error.
+        } else {
+          applyProfile(startup.name);
+          safe.send('options.set', JSON.stringify(options));
+        }
+      });
+    });
   });
 
   safe.on({

@@ -221,6 +221,7 @@ void requestResetRules(SwitchProfile profile) {
 
 Communicator safe = new Communicator(window.top);
 Communicator js = new Communicator(window);
+Browser browser = new MessageBrowser(safe);
 
 @observable
 SwitchyOptions options = null;
@@ -290,15 +291,15 @@ void restoreLocal(FileUploadInputElement file) {
 }
 
 void restoreOnline() {
-  (query('#restore-online') as ButtonElement).disabled = true;
+  var button = query('#restore-online') as ButtonElement;
+  button.disabled = true;
   var url = (query('#restore-url') as InputElement).value;
-  safe.send('ajax.get', url, (Map<String, Object> status, [__]) {
-    if (status['error'] != null) {
-      query('#options-import-download-error').style.top = "0";
-    } else {
-      restoreOptions(status['data']);
-    }
-    (query('#restore-online') as ButtonElement).disabled = false;
+  browser.download(url)..then((data) {
+    restoreOptions(data);
+  }).catchError((e) {
+    query('#options-import-download-error').style.top = "0";
+  }).whenComplete(() {
+    button.disabled = false;
   });
 }
 
@@ -327,7 +328,7 @@ void handleNewProfileUI() {
             new DirectProfile().name, new DirectProfile().name);
         break;
       case 'AutoProxyRuleListProfile':
-        p = new SwitchyRuleListProfile(modalNewProfile_name,
+        p = new AutoProxyRuleListProfile(modalNewProfile_name,
             new DirectProfile().name, new DirectProfile().name);
         break;
       default:
