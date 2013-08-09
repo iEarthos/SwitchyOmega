@@ -157,6 +157,20 @@
           periodInMinutes: details['periodInMinutes']
         });
       }
+    },
+    'state.set': function (details, respond) {
+      chrome.browserAction.setBadgeText({
+        text: details['badge']
+      });
+      var colors = {
+        'info': '#49afcd',
+        'success': '#5bb75b',
+        'warning': '#faa732',
+        'error': '#da4f49'
+      };
+      chrome.browserAction.setBadgeBackgroundColor({
+        color: colors[details['type']]
+      });
     }
   });
 

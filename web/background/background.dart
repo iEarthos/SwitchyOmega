@@ -117,7 +117,12 @@ void main() {
         options = upgradeOptions(o['options']);
         safe.send('options.set', JSON.stringify(options));
       } else if (version > SwitchyOptions.schemaVersion) {
-        // TODO(catus): Show warnings for newer schemaVersions.
+        safe.send('state.set', {
+          'type': 'error',
+          'reason': 'schemaVersion',
+          'badge': 'X'
+        });
+        return;
       } else {
         options = new SwitchyOptions.fromPlain(o['options']);
       }
@@ -134,7 +139,11 @@ void main() {
         if (fail.any((name) => name == startup.name || (
             startup is InclusiveProfile &&
             options.profiles.hasReferenceToName(startup, name)))) {
-          // TODO(catus): Show warnings about profile update error.
+          safe.send('state.set', {
+            'type': 'warning',
+            'reason': 'download',
+            'badge': '!'
+          });
         } else {
           applyProfile(startup.name);
           safe.send('options.set', JSON.stringify(options));
