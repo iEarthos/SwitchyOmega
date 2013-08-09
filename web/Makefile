@@ -23,6 +23,10 @@ SCRIPTS=$(addsuffix .js,$(shell find -P out/ -name '*.dart' ! -path "*/_from_pac
 
 js: entries $(SCRIPTS)
 
+# Disable checked mode to workaround dart2js issues with ObservableSet.
+out/background/background.html_bootstrap.dart.js: out/background/background.html_bootstrap.dart
+	$(DART_COMPILER) -o$@ $<
+
 out/options/options.html: options/options.dart options/editors.dart \
 	$(shell find ../lib -name "*.dart")
 

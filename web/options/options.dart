@@ -345,17 +345,15 @@ void handleNewProfileUI() {
 
 void handleOptionsResetUI() {
   js.on('options.reset', (String type, [Function respond]) {
-    safe.send('options.default', null,
+    safe.send('options.reset', null,
         (Map<String, Object> o, [Function respond]) {
-      safe.send('options.set', JSON.stringify(options), (_, [__]) {
-        ChangeUnobserver unobserve;
-        unobserve = observe(() => options, (_) {
-          js.send('tab.set');
-          query('#options-reset-success').style.top = "0";
-          unobserve();
-        });
-        options = new SwitchyOptions.fromPlain(o['options']);
+      ChangeUnobserver unobserve;
+      unobserve = observe(() => options, (_) {
+        js.send('tab.set');
+        query('#options-reset-success').style.top = "0";
+        unobserve();
       });
+      options = new SwitchyOptions.fromPlain(o);
     });
   });
 }

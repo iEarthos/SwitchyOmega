@@ -2,9 +2,9 @@ part of switchy_background;
 
 
 SwitchyOptions upgradeOptions(Map<String, Object> oldOptions) {
-  var options = new SwitchyOptions.defaults();
   var config = oldOptions['config'] as Map<String, Object>;
-  if (config != null && config['firstTime']) {
+  if (config != null && config['firstTime'] != null) {
+    var options = new SwitchyOptions.defaults();
     // Upgrade from SwitchySharp options
     if (config['confirmDeletion'] != null) {
       options.confirmDeletion = config['confirmDeletion'] == true;
@@ -137,6 +137,7 @@ socksVersion: 5
     if (config['quickSwitchProfiles'] == true) {
       options.quickSwitchProfiles.addAll(config['quickSwitchProfiles']);
     }
+    return options;
   }
-  return options;
+  return null;
 }

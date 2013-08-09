@@ -32,6 +32,7 @@
   var urlParser = null;
   var dirtyTabs = {};
   var pendingAlarms = [];
+  var optionsResetRespond = null;
 
   var setIcon = function (resultColor, tabId) {
     if (canvasIcon == null) return;
@@ -189,6 +190,13 @@
       case 'options.update':
         c.send('options.update', JSON.parse(localStorage['options']));
         break;
+      case 'options.reset':
+        c.send('options.reset', null, function (options) {
+          localStorage.clear();
+          localStorage['options'] = options;
+          respond();
+        });
+        return true;
     }
   });
 

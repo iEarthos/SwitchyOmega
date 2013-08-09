@@ -101,13 +101,27 @@ Profile getStartupProfile(String lastProfileName) {
   return options.profiles[startup];
 }
 
+const String initialOptions = '''
+    {"enableQuickSwitch":false,"profiles":[{"bypassList":[{"pattern":"<local>",
+    "conditionType":"BypassCondition"}],"profileType":"FixedProfile","name":
+    "proxy","color":"#99ccee","fallbackProxy":{"port":8080,"scheme":"http",
+    "host":"proxy.example.com"}},{"profileType":"SwitchProfile","rules":[{
+    "condition":{"pattern":"internal.example.com","conditionType":
+    "HostWildcardCondition"},"profileName":"direct"},{"condition":{"pattern":
+    "*.example.com","conditionType":"HostWildcardCondition"},"profileName":
+    "proxy"}],"name":"auto switch","color":"#99dd99","defaultProfileName":
+    "direct"}],"refreshOnProfileChange":true,"startupProfileName":"",
+    "quickSwitchProfiles":[],"revertProxyChanges":false,"schemaVersion":0,
+    "confirmDeletion":true,"downloadInterval":1440}''';
+
 void main() {
   safe.send('options.get', null, (Map<String, Object> o, [Function respond]) {
     if (o['options'] == null) {
       if (o['oldOptions'] != null) {
         options = upgradeOptions(o['oldOptions']);
-      } else {
-        options = new SwitchyOptions.defaults();
+      }
+      if (options == null) {
+        options = new SwitchyOptions.fromPlain(JSON.parse(initialOptions));
       }
       safe.send('options.set', JSON.stringify(options));
     } else {
@@ -159,6 +173,11 @@ void main() {
     'options.update': (plain, [_]) {
       options = new SwitchyOptions.fromPlain(plain);
       applyProfile(currentProfile.name);
+    },
+    'options.reset': (_, [respond]) {
+      options = new SwitchyOptions.fromPlain(JSON.parse(initialOptions));
+      respond(initialOptions);
+      applyProfile(getStartupProfile(null).name);
     },
     'profile.apply': (name, [_]) {
       applyProfile(name);

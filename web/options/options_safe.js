@@ -30,60 +30,6 @@
 
   var c = new Communicator();
 
-  var getDefaultOptions = function () {
-    return {
-      'schemaVersion': 0,
-      'confirmDeletion': true,
-      'currentProfileName': 'auto',
-      'enableQuickSwitch': false,
-      'refreshOnProfileChange': true,
-      'revertProxyChanges': false,
-      'startupProfileName': 'auto',
-      'profiles': [
-          {
-            "name":"ssh",
-            "bypassList":[
-              {"pattern":"127.0.0.1:3333","conditionType":"BypassCondition"},
-              {"pattern":"https://www.example.com","conditionType":"BypassCondition"},
-              {"pattern":"*:3333","conditionType":"BypassCondition"},
-              {"pattern":"<local>","conditionType":"BypassCondition"}
-            ],
-            "profileType":"FixedProfile",
-            "color":"#99ccee",
-            "proxyForHttp":{"scheme":"http","port":8080,"host":"127.0.0.1"},
-            "fallbackProxy":{"scheme":"socks5","port":7070,"host":"127.0.0.1"}
-          },
-          {
-            "name":"http",
-            "color":"#ffee99",
-            "fallbackProxy":{"scheme":"http","port":8888,"host":"127.0.0.1"},
-            "bypassList":[],
-            "profileType":"FixedProfile"
-          },
-          {
-            "name":"auto",
-            "color":"#99dd99",
-            "defaultProfileName":"rulelist",
-            "rules": [
-              {"profileName":"ssh","condition":{"pattern":"*.example.com","conditionType":"HostWildcardCondition"}},
-              {"profileName":"direct","condition":{"minValue":0,"conditionType":"HostLevelsCondition","maxValue":0}},
-              {"profileName":"ssh","condition":{"pattern":"foo","conditionType":"KeywordCondition"}}
-            ],
-            "profileType":"SwitchProfile"
-          },
-          {
-            "name":"rulelist",
-            "color":"#99ccee",
-            "defaultProfileName":"direct",
-            "matchProfileName":"http",
-            "ruleList": "[AutoProxy]\nexample.com",
-            "profileType":"AutoProxyRuleListProfile"
-          }
-        ],
-      'quickSwitchProfiles' : []
-    };
-  };
-  
   c.on({
     'tab.get': function (_, respond) {
       var hash;
@@ -110,7 +56,7 @@
       if (options) {
         options = JSON.parse(options);
       } else {
-        options = getDefaultOptions();
+        options = null;
       }
 
       respond({
@@ -119,8 +65,12 @@
         'currentProfileName': localStorage['currentProfileName'] || 'direct'
       });
     },
-    'options.default': function (data, respond) {
-      respond({'options': getDefaultOptions()});
+    'options.reset': function (data, respond) {
+      chrome.runtime.sendMessage({
+        action: 'options.reset'
+      }, function () {
+        respond(JSON.parse(localStorage['options']));
+      });
     },
     'options.set': function (data, respond) {
       localStorage['options'] = data;
