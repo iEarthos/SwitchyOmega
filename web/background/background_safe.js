@@ -95,9 +95,16 @@
         title: chrome.i18n.getMessage('browserAction_titleNormal',
                   currentProfileName)
       });
-      chrome.proxy.settings.set({value: data.config}, function () {
-        respond();
-      });
+      if (data.config['mode'] == 'system') {
+        // Clear proxy settings, returning proxy control to Chromium.
+        chrome.proxy.settings.clear({}, function () {
+          respond();
+        });
+      } else {
+        chrome.proxy.settings.set({value: data.config}, function () {
+          respond();
+        });
+      }
     },
     'proxy.get': function (_, respond) {
       chrome.proxy.settings.get({}, function (o) {
