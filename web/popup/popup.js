@@ -130,10 +130,12 @@
     currentDomain = localStorage['currentDomain'];
     if (localStorage['possibleResults']) {
       possibleResultsList = JSON.parse(localStorage['possibleResults']);
-      possibleResults = {};
-      possibleResultsList.forEach(function (result) {
-        possibleResults[result] = result;
-      });
+      if (possibleResultsList.length > 0) {
+        possibleResults = {};
+        possibleResultsList.forEach(function (result) {
+          possibleResults[result] = result;
+        });
+      }
     }
 
     var profiles = options['profiles'];
@@ -161,10 +163,11 @@
       li.append(a);
       if (profile.name === localStorage['currentProfileName']) {
         li.addClass('active');
-        if (profile.profileType === 'SwitchProfile' && currentDomain != null) {
-          $('#current-domain').text(currentDomain);
+        if (localStorage['currentProfileReadOnly'] === 'false' &&
+            currentDomain != null) {
+          $('#condition-divider').show();
         } else {
-          $('.show-switch').hide();
+          $('#add-condition').hide();
         }
         currentProfile = profile;
       }
@@ -173,9 +176,18 @@
 
       if (possibleResults != null &&
           possibleResults.hasOwnProperty(profile.name)) {
-        tempProfiles.append(li.clone());
+        li = li.clone();
+        li.removeClass('profile');
+        $('a', li).data('name', profile.name);
+        tempProfiles.append(li);
       }
     });
     $('#profiles-divider').insertAfter($('.nav > li')[2]);
+    if (currentDomain != null && possibleResults != null) {
+      $('#current-domain').text(currentDomain);
+      $('#condition-divider').show();
+    } else {
+      $('#temp-rule').hide();
+    }
   });
 })();

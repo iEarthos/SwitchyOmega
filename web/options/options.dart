@@ -75,7 +75,9 @@ void deleteProfile(Profile profile) {
 }
 
 void requestProfileDelete(Profile profile) {
-  var ref = options.profiles.referredBy(profile);
+  deliverChangesSync();
+  var ref = profile is IncludableProfile ?
+      options.profiles.referredBy(profile) : [];
   if (!ref.isEmpty) {
     // Cannot delete profile.
     modalCannotDeleteProfile_referring = ref.toList();

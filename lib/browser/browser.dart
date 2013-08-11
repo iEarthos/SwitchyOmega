@@ -24,7 +24,8 @@ part of switchy_browser;
  * Handles communication with the browser and other browser related stuff.
  */
 abstract class Browser {
-  Future applyProfile(Profile profile);
+  Future applyProfile(Profile profile, List<String> possibleResults,
+                      {bool readonly: false, String profileName: null});
 
   /**
    * Set an repeating alarm which fires every [periodInMinutes].

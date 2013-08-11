@@ -113,7 +113,6 @@ class ProfileCollection extends HashSet<Profile> with Observable
         added_profile.add(profile);
       }
     });
-
     added_profile.forEach((profile) {
       if (profile is InclusiveProfile) {
         profile.tracker = this;
@@ -225,15 +224,15 @@ class ProfileCollection extends HashSet<Profile> with Observable
     return _profiles[from.name].allRef.containsKey(to);
   }
 
-  Iterable<Profile> directReferences(InclusiveProfile profile) {
+  Iterable<IncludableProfile> directReferences(InclusiveProfile profile) {
     return _profiles[profile.name].directRef.keys;
   }
 
-  Iterable<Profile> allReferences(InclusiveProfile profile) {
+  Iterable<IncludableProfile> allReferences(InclusiveProfile profile) {
     return _profiles[profile.name].allRef.keys;
   }
 
-  Iterable<Profile> referredBy(IncludableProfile profile) {
+  Iterable<InclusiveProfile> referredBy(IncludableProfile profile) {
     return _profiles[profile.name].referredBy.keys;
   }
 

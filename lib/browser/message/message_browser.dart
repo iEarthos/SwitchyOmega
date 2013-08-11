@@ -43,7 +43,8 @@ class MessageBrowser extends Browser {
    * mean to block other browsers. The target can transform the data
    * structure to whatever format the browser likes after receiving it.
    */
-  Future applyProfile(Profile profile) {
+  Future applyProfile(Profile profile, List<String> possibleResults,
+                      {bool readonly: false, String profileName: null}) {
     var completer = new Completer();
 
     Map<String, Object> config = {};
@@ -63,11 +64,13 @@ class MessageBrowser extends Browser {
         config['mode'] = 'fixed_servers';
         var rules = {};
         var plain = (profile as FixedProfile).toPlain();
-        for (var key in ['proxyForHttp', 'proxyForHttps', 'proxyForFtp', 'fallbackProxy']) {
+        for (var key in ['proxyForHttp', 'proxyForHttps',
+                         'proxyForFtp', 'fallbackProxy']) {
           if (plain[key] != null)
             rules[key] = plain[key];
         }
-        if (profile.fallbackProxy != null && profile.fallbackProxy.protocol == 'http') {
+        if (profile.fallbackProxy != null &&
+            profile.fallbackProxy.protocol == 'http') {
           // Chromium does not allow HTTP proxies in 'fallbackProxy'.
           rules.remove('fallbackProxy');
           if (profile.proxyForHttp == null &&
@@ -82,7 +85,8 @@ class MessageBrowser extends Browser {
             rules.putIfAbsent('proxyForFtp', getFallback);
           }
         }
-        rules['bypassList'] = profile.bypassList.map((b) => b.pattern).toList();
+        rules['bypassList'] = profile.bypassList.map((b) => b.pattern)
+            .toList();
         config['rules'] = rules;
       }
     } else if (profile is PacProfile) {
@@ -95,17 +99,12 @@ class MessageBrowser extends Browser {
       throw new UnsupportedError(profile.profileType);
     }
 
-    var possibleResults = [];
-    if (profile is SwitchProfile && profile.tracker is ProfileCollection) {
-      var col = profile.tracker as ProfileCollection;
-      possibleResults = col.validResultProfilesFor(profile).map((p) => p.name).toList();
-    }
-
     _c.send('proxy.set', {
-      'profileName': profile.name,
+      'displayName': profile.name,
+      'currentProfile': ifNull(profileName, profile.name),
       'color': profile.color,
       'inclusive': profile is InclusiveProfile,
-      'switch': profile is SwitchProfile,
+      'readonly': readonly || possibleResults.length == 0,
       'possibleResults': possibleResults,
       'config': config
     }, (_, [__]) {

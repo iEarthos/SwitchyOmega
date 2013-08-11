@@ -25,7 +25,7 @@
 
   var proxyListening = false;
   var inclusiveProfile = false;
-  var switchProfile = false;
+  var readonly = false;
   var canvasIcon = null;
   var profileColor = '';
   var currentProfileName = '';
@@ -33,6 +33,7 @@
   var dirtyTabs = {};
   var pendingAlarms = [];
   var optionsResetRespond = null;
+  var possibleResults = false;
 
   var setIcon = function (resultColor, tabId) {
     if (canvasIcon == null) return;
@@ -85,10 +86,11 @@
     },
     'proxy.set': function (data, respond) {
       inclusiveProfile = data.inclusive;
-      switchProfile = data['switch'];
       profileColor = data.color;
-      currentProfileName = data.profileName;
-      localStorage['currentProfileName'] = data.profileName;
+      currentProfileName = data.displayName;
+      localStorage['currentProfileName'] = data.currentProfile;
+      localStorage['currentProfileReadOnly'] = data.readonly;
+      possibleResults = !!data.possibleResults;
       localStorage['possibleResults'] = JSON.stringify(data.possibleResults);
       resetAllIcons();
       chrome.browserAction.setTitle({
@@ -192,7 +194,6 @@
         break;
       case 'condition.add':
         c.send('condition.add', request.data);
-        console.log(request.data);
         break;
       case 'options.update':
         c.send('options.update', JSON.parse(localStorage['options']));
@@ -208,7 +209,7 @@
   });
 
   var setCurrentDomain = function (url) {
-    if (!switchProfile || url == null || url.indexOf('chrome') == 0) {
+    if (!possibleResults || url == null || url.indexOf('chrome') == 0) {
       localStorage.removeItem('currentDomain');
     } else if (urlParser != null) {
       urlParser.href = url;
@@ -217,18 +218,17 @@
   };
 
   var processTab = function (tabId, changeInfo, tab) {
-    if (!inclusiveProfile) return;
     if (dirtyTabs.hasOwnProperty(tab.id)) {
-      changeInfo.url = tab.url;
       delete dirtyTabs[tab.id];
     }
-    if (changeInfo.url != null) {
-      setCurrentDomain(changeInfo.url);
-      if (changeInfo.url.indexOf('chrome') == 0) {
+    if (tab.url != null) {
+      setCurrentDomain(tab.url);
+      if (!inclusiveProfile) return;
+      if (tab.url.indexOf('chrome') == 0) {
         setIcon(null, tabId);
         return;
       }
-      c.send('profile.match', changeInfo.url, function (result) {
+      c.send('profile.match', tab.url, function (result) {
         setIcon(result.color, tabId);
         chrome.browserAction.setTitle({
           title: chrome.i18n.getMessage('browserAction_titleWithResult',
@@ -241,10 +241,9 @@
 
   chrome.tabs.onUpdated.addListener(processTab);
   chrome.tabs.onActivated.addListener(function (info) {
-    if (!inclusiveProfile) return;
-    if (!switchProfile && !dirtyTabs.hasOwnProperty(info.tabId)) return;
+    if (!possibleResults && !dirtyTabs.hasOwnProperty(info.tabId)) return;
     chrome.tabs.get(info.tabId, function (tab) {
-      if (dirtyTabs.hasOwnProperty(info.tabId)) {
+      if (inclusiveProfile && dirtyTabs.hasOwnProperty(info.tabId)) {
         processTab(tab.id, {}, tab);
       } else {
         setCurrentDomain(tab.url);
@@ -253,7 +252,6 @@
   });
 
   chrome.alarms.onAlarm.addListener(function (alarm) {
-    console.log(alarm.name);
     if (pendingAlarms != null) {
       pendingAlarms.push(alarm.name);
     } else {

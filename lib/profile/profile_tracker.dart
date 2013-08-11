@@ -33,11 +33,11 @@ abstract class ProfileTracker {
 
   bool hasReference(InclusiveProfile from, IncludableProfile to);
 
-  Iterable<Profile> directReferences(InclusiveProfile profile);
+  Iterable<IncludableProfile> directReferences(InclusiveProfile profile);
 
-  Iterable<Profile> allReferences(InclusiveProfile profile);
+  Iterable<IncludableProfile> allReferences(InclusiveProfile profile);
 
-  Iterable<Profile> referredBy(IncludableProfile profile);
+  Iterable<InclusiveProfile> referredBy(IncludableProfile profile);
 
   // Some helpers for name-based references.
   void addReferenceByName(InclusiveProfile from, String to) {

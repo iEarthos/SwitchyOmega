@@ -82,6 +82,8 @@ class SwitchProfile extends InclusiveProfile with ListMixin, Observable
     return p;
   }
 
+  final Map<Rule, ChangeUnobserver> _unobserve = {};
+
   SwitchProfile(String name, this.defaultProfileName) : super(name) {
     if (tracker != null) tracker.addReferenceByName(this, defaultProfileName);
 
@@ -97,10 +99,20 @@ class SwitchProfile extends InclusiveProfile with ListMixin, Observable
         if (rec.type == ChangeRecord.REMOVE ||
             rec.type == ChangeRecord.INDEX) {
           if (rec.oldValue != null) {
-            Rule r = (rec.oldValue as Rule);
+            Rule r = rec.oldValue as Rule;
             if (tracker != null) tracker.removeReferenceByName(this,
                 r.profileName);
-            observeChanges(r as Observable, (List<ChangeRecord> changes) {
+            _unobserve[r]();
+          }
+        }
+        if (rec.type == ChangeRecord.INSERT ||
+            rec.type == ChangeRecord.INDEX) {
+          if (rec.newValue != null) {
+            Rule r = rec.newValue as Rule;
+            if (tracker != null) tracker.addReferenceByName(this,
+                r.profileName);
+            _unobserve[r] = observeChanges(r as Observable,
+                (List<ChangeRecord> changes) {
               if (tracker == null) return;
               changes.forEach((rec2) {
                 if (rec2.key == 'profileName' &&
@@ -112,13 +124,6 @@ class SwitchProfile extends InclusiveProfile with ListMixin, Observable
             });
           }
         }
-        if (rec.type == ChangeRecord.INSERT ||
-            rec.type == ChangeRecord.INDEX) {
-          if (rec.newValue != null) {
-            if (tracker != null) tracker.addReferenceByName(this,
-                (rec.newValue as Rule).profileName);
-          }
-        }
       });
     });
   }
@@ -127,6 +132,7 @@ class SwitchProfile extends InclusiveProfile with ListMixin, Observable
     super.loadPlain(p);
     var rl = p['rules'] as List<Map<String, Object>>;
     this.addAll(rl.map((r) => new Rule.fromPlain(r)));
+    deliverChangesSync();
   }
 
   factory SwitchProfile.fromPlain(Map<String, Object> p) {

@@ -16,6 +16,7 @@ Browser browser = new MessageBrowser(safe);
 
 @observable SwitchyOptions options;
 @observable Profile currentProfile;
+@observable SwitchProfile tempProfile = null;
 
 void updateProxy(details) {
   // TODO(catus)
@@ -23,7 +24,27 @@ void updateProxy(details) {
 
 Future applyProfile(String name) {
   currentProfile = options.getProfileByName(name);
-  return browser.applyProfile(currentProfile);
+
+  var possibleResults = [];
+  if (currentProfile is InclusiveProfile) {
+    possibleResults = options.profiles.validResultProfilesFor(currentProfile)
+        .map((p) => p.name).toList();
+  } else if (currentProfile is IncludableProfile) {
+    possibleResults = options.profiles.where((p) => p is IncludableProfile &&
+        p.name != name).map((p) => p.name).toList();
+  }
+
+  bool readonly = currentProfile is! SwitchProfile;
+  var profile = currentProfile;
+  if (tempProfile != null && currentProfile is IncludableProfile) {
+    tempProfile.defaultProfileName = currentProfile.name;
+    tempProfile.name = '$name (+temp rules)';
+    tempProfile.color = currentProfile.color;
+    profile = tempProfile;
+  }
+
+  return browser.applyProfile(profile, possibleResults,
+      readonly: readonly, profileName: name);
 }
 
 Profile resolveProfile(Profile p, String url) {
@@ -172,7 +193,21 @@ void main() {
     },
     'options.update': (plain, [_]) {
       options = new SwitchyOptions.fromPlain(plain);
-      applyProfile(currentProfile.name);
+      if (tempProfile != null) {
+        for (var i = 0; i < tempProfile.length; ) {
+          if (options.profiles[tempProfile[i].profileName] == null) {
+            tempProfile.removeAt(i);
+          } else {
+            i++;
+          }
+        }
+        deliverChangesSync();
+      }
+      if (options.profiles[currentProfile.name] == null) {
+        applyProfile(getStartupProfile(null).name);
+      } else {
+        applyProfile(currentProfile.name);
+      }
     },
     'options.reset': (_, [respond]) {
       options = new SwitchyOptions.fromPlain(JSON.parse(initialOptions));
@@ -191,6 +226,7 @@ void main() {
         };
         profile.insert(0, new Rule(new Condition.fromPlain(plainCondition),
             data['result']));
+        deliverChangesSync();
         safe.send('options.set', JSON.stringify(options));
         if (profile.name == currentProfile.name || (
             currentProfile is InclusiveProfile &&
@@ -200,11 +236,23 @@ void main() {
       }
     },
     'tempRules.add': (details, [_]) {
-      // TODO(catus)
+      if (options.profiles.getProfileByName(details['name']) == null) return;
+      if (tempProfile == null) {
+        tempProfile = new SwitchProfile('', new DirectProfile().name);
+        tempProfile.tracker = new TempProfileTracker(options.profiles);
+      }
+      var condition = new HostWildcardCondition('*.' + details['domain']);
+      tempProfile.insert(0, new Rule(condition, details['name']));
+      deliverChangesSync();
+      applyProfile(currentProfile.name);
     },
     'profile.match': (url, [respond]) {
-      if (currentProfile is InclusiveProfile) {
-        var result = resolveProfile(currentProfile, url);
+      var profile = currentProfile;
+      if (tempProfile != null) {
+        profile = tempProfile;
+      }
+      if (profile is InclusiveProfile) {
+        var result = resolveProfile(profile, url);
         var color = result.color;
         var details = getProfileDetails(result, url);
         if (details == directDetails) color = ProfileColors.direct;
