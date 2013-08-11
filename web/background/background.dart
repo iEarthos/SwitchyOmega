@@ -92,6 +92,8 @@ Future<Set<String>> updateProfiles() {
   options.profiles.forEach((profile) {
     if (profile is UpdatingProfile) {
       if (profile.updateUrl == null || profile.updateUrl.isEmpty) return;
+      if (profile is AutoDetectProfile &&
+          options.profiles.referredBy(profile).isEmpty) return;
       count++;
       browser.download(profile.updateUrl).then((data) {
         profile.applyUpdate(data);
