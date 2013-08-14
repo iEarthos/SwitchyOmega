@@ -97,15 +97,17 @@
         title: chrome.i18n.getMessage('browserAction_titleNormal',
                   currentProfileName)
       });
+      var onProxySet = function () {
+        if (data.refresh) {
+          chrome.tabs.reload(/* the selected tab of the current window */);
+        }
+        respond();
+      };
       if (data.config['mode'] == 'system') {
         // Clear proxy settings, returning proxy control to Chromium.
-        chrome.proxy.settings.clear({}, function () {
-          respond();
-        });
+        chrome.proxy.settings.clear({}, onProxySet);
       } else {
-        chrome.proxy.settings.set({value: data.config}, function () {
-          respond();
-        });
+        chrome.proxy.settings.set({value: data.config}, onProxySet);
       }
     },
     'proxy.get': function (_, respond) {
@@ -229,6 +231,7 @@
         return;
       }
       c.send('profile.match', tab.url, function (result) {
+        localStorage['currentMatch'] = result.name;
         setIcon(result.color, tabId);
         chrome.browserAction.setTitle({
           title: chrome.i18n.getMessage('browserAction_titleWithResult',

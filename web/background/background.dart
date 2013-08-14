@@ -22,7 +22,7 @@ void updateProxy(details) {
   // TODO(catus)
 }
 
-Future applyProfile(String name) {
+Future applyProfile(String name, {bool refresh: false}) {
   currentProfile = options.getProfileByName(name);
 
   var possibleResults = [];
@@ -30,8 +30,8 @@ Future applyProfile(String name) {
     possibleResults = options.profiles.validResultProfilesFor(currentProfile)
         .map((p) => p.name).toList();
   } else if (currentProfile is IncludableProfile) {
-    possibleResults = options.profiles.where((p) => p is IncludableProfile &&
-        p.name != name).map((p) => p.name).toList();
+    possibleResults = options.profiles.where((p) => p is IncludableProfile)
+        .map((p) => p.name).toList();
   }
 
   bool readonly = currentProfile is! SwitchProfile;
@@ -44,7 +44,8 @@ Future applyProfile(String name) {
   }
 
   return browser.applyProfile(profile, possibleResults,
-      readonly: readonly, profileName: name);
+      readonly: readonly, profileName: name,
+      refresh: refresh);
 }
 
 Profile resolveProfile(Profile p, String url) {
@@ -217,7 +218,7 @@ void main() {
       applyProfile(getStartupProfile(null).name);
     },
     'profile.apply': (name, [_]) {
-      applyProfile(name);
+      applyProfile(name, refresh: options.refreshOnProfileChange);
     },
     'condition.add': (Map<String, String> data, [_]) {
       var profile = options.getProfileByName(data['profile']);
@@ -233,7 +234,8 @@ void main() {
         if (profile.name == currentProfile.name || (
             currentProfile is InclusiveProfile &&
             options.profiles.hasReference(currentProfile, profile))) {
-          applyProfile(currentProfile.name);
+          applyProfile(currentProfile.name,
+              refresh: options.refreshOnProfileChange);
         }
       }
     },
@@ -246,7 +248,8 @@ void main() {
       var condition = new HostWildcardCondition('*.' + details['domain']);
       tempProfile.insert(0, new Rule(condition, details['name']));
       deliverChangesSync();
-      applyProfile(currentProfile.name);
+      applyProfile(currentProfile.name,
+                   refresh: options.refreshOnProfileChange);
     },
     'profile.match': (url, [respond]) {
       var profile = currentProfile;

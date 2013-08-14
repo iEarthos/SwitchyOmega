@@ -150,6 +150,8 @@
 
     var pos = $('#profiles-divider');
     var tempProfiles = $('#temp-rule-profiles');
+    var currentMatch = localStorage['currentMatch'] ||
+                       localStorage['currentProfileName'];
     profiles.forEach(function (profile) {
       var a = $('<a/>');
       a.attr('href', '#');
@@ -175,8 +177,10 @@
       pos = li;
 
       if (possibleResults != null &&
-          possibleResults.hasOwnProperty(profile.name)) {
+          possibleResults.hasOwnProperty(profile.name) &&
+          currentMatch != profile.name) {
         li = li.clone();
+        li.removeClass('active');
         li.removeClass('profile');
         $('a', li).data('name', profile.name);
         tempProfiles.append(li);

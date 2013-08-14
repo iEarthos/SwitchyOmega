@@ -44,7 +44,8 @@ class MessageBrowser extends Browser {
    * structure to whatever format the browser likes after receiving it.
    */
   Future applyProfile(Profile profile, List<String> possibleResults,
-                      {bool readonly: false, String profileName: null}) {
+                      {bool readonly: false, String profileName: null,
+                       bool refresh: false}) {
     var completer = new Completer();
 
     Map<String, Object> config = {};
@@ -106,7 +107,8 @@ class MessageBrowser extends Browser {
       'inclusive': profile is InclusiveProfile,
       'readonly': readonly || possibleResults.length == 0,
       'possibleResults': possibleResults,
-      'config': config
+      'config': config,
+      'refresh': refresh
     }, (_, [__]) {
       completer.complete(null);
     });
