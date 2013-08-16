@@ -20,6 +20,14 @@
 
 (function () {
   'use strict';
+  if (localStorage['seriousError']) {
+    if (localStorage['seriousError'] === 'options') {
+      localStorage.clear();
+    }
+    chrome.runtime.reload();
+    window.close();
+    return;
+  }
   var i18nCache = {};
   strings.forEach(function (name) {
     i18nCache[name] = chrome.i18n.getMessage(name);
@@ -52,6 +60,10 @@
   $(document).ready(function () {
     isDocReady = true;
     i18nTemplate.process(document, i18n);
+
+    // Opening the popup clears badges.
+    chrome.browserAction.setBadgeText({ text: '' });
+
     $(document).on('click', '.profile a', function (e) {
       e.preventDefault();
       chrome.runtime.sendMessage({

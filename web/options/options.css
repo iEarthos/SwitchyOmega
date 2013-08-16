@@ -131,6 +131,7 @@ header h1 {
 
 header > hr {
   margin: 0;
+  clear: both;
 }
 
 .tab-content {
@@ -359,13 +360,14 @@ input[type="color"] {
   max-width: 70%;
   overflow: hidden;
   text-overflow: ellipsis;
+  float: left;
 }
 
 .profile-toolbar {
   display: inline-block;
   min-width: 25%;
   text-align: right;
-  line-height: 36px;
+  line-height: 50px;
 }
 
 @media (max-width: 767px) {

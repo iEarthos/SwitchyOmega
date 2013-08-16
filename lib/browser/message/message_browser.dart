@@ -45,12 +45,15 @@ class MessageBrowser extends Browser {
    */
   Future applyProfile(Profile profile, List<String> possibleResults,
                       {bool readonly: false, String profileName: null,
-                       bool refresh: false}) {
+                       bool refresh: false,
+                       bool noConfig: false}) {
     var completer = new Completer();
 
     Map<String, Object> config = {};
 
-    if (profile is SystemProfile) {
+    if (noConfig) {
+      config = null;
+    } else if (profile is SystemProfile) {
       config['mode'] = 'system';
     } else if (profile is DirectProfile) {
       config['mode'] = 'direct';
@@ -90,15 +93,19 @@ class MessageBrowser extends Browser {
             .toList();
         config['rules'] = rules;
       }
-    } else if (profile is PacProfile) {
+    } else if (profile is PacProfile && profile.pacUrl != null &&
+        profile.pacUrl.isNotEmpty) {
       config['mode'] = 'pac_script';
-      config['pacScript'] = { 'url': (profile as PacProfile).pacUrl };
+      config['pacScript'] = { 'url': (profile as PacProfile).pacUrl,
+                              'mandatory': true };
     } else if (profile is ScriptProfile) {
       config['mode'] = 'pac_script';
-      config['pacScript'] = { 'data': (profile as ScriptProfile).toScript() };
+      config['pacScript'] = { 'data': (profile as ScriptProfile).toScript(),
+                              'mandatory': true};
     } else {
       throw new UnsupportedError(profile.profileType);
     }
+
 
     _c.send('proxy.set', {
       'displayName': profile.name,
@@ -144,6 +151,26 @@ class MessageBrowser extends Browser {
     return controller.stream;
   }
 
+  StreamController<MessageProxyChangeEvent> _proxyChanges = null;
+
+  Stream<MessageProxyChangeEvent> get onProxyChange {
+    if (_proxyChanges == null) {
+      _proxyChanges = new StreamController();
+      _c.on('proxy.onchange', (proxy, [_]) {
+        var level = proxy['levelOfControl'];
+        var controllable = (level == 'controllable_by_this_extension' ||
+            level == 'controlled_by_this_extension');
+        var incognitoSpecific = proxy['incognitoSpecific'] == true;
+        _proxyChanges.add(new MessageProxyChangeEvent(proxy['value'],
+            controllable: controllable,
+            incognitoSpecific: incognitoSpecific));
+      });
+      _c.send('proxy.get');
+      _c.send('proxy.listen');
+    }
+    return _proxyChanges.stream;
+  }
+
   Future<String> download(String url) {
     var comp = new Completer<String>();
     _c.send('ajax.get', url, (result, [_]) {
@@ -156,5 +183,96 @@ class MessageBrowser extends Browser {
     });
 
     return comp.future;
+  }
+
+}
+
+class MessageProxyChangeEvent extends ProxyChangeEvent {
+  Map<Object, Object> _proxy;
+
+  MessageProxyChangeEvent(this._proxy,
+      {bool incognitoSpecific, bool controllable})
+    : super(incognitoSpecific, controllable);
+
+  Profile toProfile(ProfileCollection col) {
+    Profile newProfile = null;
+    switch (_proxy['mode']) {
+      case 'system':
+        return new SystemProfile();
+      case 'direct':
+        return new DirectProfile();
+      case 'auto_detect':
+        return new AutoDetectProfile();
+      case 'pac_script':
+        var pacScript = _proxy['pacScript'] as Map<String, String>;
+        var url = pacScript['data'] as String;
+        if (url != null) {
+          for (var profile in col) {
+            if (profile is PacProfile && profile.pacUrl == url) {
+              return profile;
+            }
+          }
+          newProfile = new PacProfile('');
+          newProfile.pacUrl = url;
+        } else {
+          var script = pacScript['data'] as String;
+          for (var profile in col) {
+            // TODO(catus): toScript() is too expensive. Remove script check?
+            if (profile is ScriptProfile && profile.toScript() == script) {
+              return profile;
+            }
+          }
+          newProfile = new PacProfile('');
+          newProfile.pacScript = script;
+        }
+        break;
+      case 'fixed_servers':
+        var rules = _proxy['rules'] as Map<String, Object>;
+        var bypass = (rules['bypassList'] as List<String>).toSet();
+        var servers = new Map<String, ProxyServer>();
+        for (var scheme in ['singleProxy', 'proxyForHttp', 'proxyForHttps',
+                            'proxyForFtp', 'fallbackProxy']) {
+          var server = rules[scheme];
+          if (server != null) {
+            servers[scheme] = new ProxyServer(server['host'],
+                server['scheme'], server['port']);
+          }
+        }
+        if (servers['singleProxy'] != null || (
+            servers['fallbackProxy'] == null &&
+            servers['proxyForHttp'].protocol == 'http' &&
+            servers['proxyForHttp'] == servers['proxyForHttps'] &&
+            servers['proxyForHttp'] == servers['proxyForFtp'])) {
+          var fb = ifNull(servers['singleProxy'], servers['proxyForHttp']);
+          servers.clear();
+          servers['fallbackProxy'] = fb;
+        }
+        for (var profile in col) {
+          if (profile is FixedProfile) {
+            var bypassSet = profile.bypassList.map((c) => c.pattern).toSet();
+            if (bypassSet.containsAll(bypass) &&
+                bypass.containsAll(bypassSet) &&
+                profile.proxyForHttp == servers['proxyForHttp'] &&
+                profile.proxyForHttps == servers['proxyForHttps'] &&
+                profile.proxyForFtp == servers['proxyForFtp'] &&
+                profile.fallbackProxy == servers['fallbackProxy'])
+              return profile;
+          }
+        }
+        newProfile = new FixedProfile('');
+        newProfile.proxyForHttp = servers['proxyForHttp'];
+        newProfile.proxyForHttps = servers['proxyForHttps'];
+        newProfile.proxyForFtp = servers['proxyForFtp'];
+        newProfile.fallbackProxy = servers['fallbackProxy'];
+        newProfile.bypassList.addAll(
+            bypass.map((pattern) => new BypassCondition(pattern)));
+        break;
+      default:
+        throw new UnsupportedError(
+            'Unsupported proxy mode: ${_proxy['mode']}.');
+    }
+
+    newProfile.color = ProfileColors.unknown;
+    return newProfile;
   }
 }

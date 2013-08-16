@@ -18,11 +18,7 @@ Browser browser = new MessageBrowser(safe);
 @observable Profile currentProfile;
 @observable SwitchProfile tempProfile = null;
 
-void updateProxy(details) {
-  // TODO(catus)
-}
-
-Future applyProfile(String name, {bool refresh: false}) {
+Future applyProfile(String name, {bool refresh: false, bool noConfig: false}) {
   currentProfile = options.getProfileByName(name);
 
   var possibleResults = [];
@@ -45,7 +41,8 @@ Future applyProfile(String name, {bool refresh: false}) {
 
   return browser.applyProfile(profile, possibleResults,
       readonly: readonly, profileName: name,
-      refresh: refresh);
+      refresh: refresh,
+      noConfig: noConfig);
 }
 
 Profile resolveProfile(Profile p, String url) {
@@ -125,6 +122,30 @@ Profile getStartupProfile(String lastProfileName) {
   return options.profiles[startup];
 }
 
+void listenForProxyChange() {
+  browser.onProxyChange.listen((e) {
+    if (options.revertProxyChanges) {
+      applyProfile(currentProfile.name);
+      return;
+    }
+    var profile = e.toProfile(options.profiles);
+    if (profile.name == '') {
+      currentProfile = profile;
+      browser.applyProfile(profile, [],
+          readonly: true, profileName: '',
+          noConfig: true);
+
+      safe.send('state.set', {
+        'type': 'info',
+        'reason': 'externalProxy',
+        'badge': '?'
+      });
+    } else {
+      applyProfile(profile.name, noConfig: true);
+    }
+  });
+}
+
 const String initialOptions = '''
     {"enableQuickSwitch":false,"profiles":[{"bypassList":[{"pattern":"<local>",
     "conditionType":"BypassCondition"}],"profileType":"FixedProfile","name":
@@ -162,7 +183,16 @@ void main() {
         });
         return;
       } else {
-        options = new SwitchyOptions.fromPlain(o['options']);
+        try {
+          options = new SwitchyOptions.fromPlain(o['options']);
+        } catch (e) {
+          safe.send('state.set', {
+            'type': 'error',
+            'reason': 'options',
+            'badge': 'X'
+          });
+          return;
+        }
       }
     }
     browser.setAlarm('download', options.downloadInterval).listen((_) {
@@ -182,8 +212,11 @@ void main() {
             'reason': 'download',
             'badge': '!'
           });
+          listenForProxyChange();
         } else {
-          applyProfile(startup.name);
+          applyProfile(startup.name).then((_) {
+            listenForProxyChange();
+          });
           safe.send('options.set', JSON.stringify(options));
         }
       });
@@ -191,9 +224,6 @@ void main() {
   });
 
   safe.on({
-    'proxy.onchange': (details, [_]) {
-      updateProxy(details);
-    },
     'options.update': (plain, [_]) {
       options = new SwitchyOptions.fromPlain(plain);
       if (tempProfile != null) {
@@ -268,13 +298,5 @@ void main() {
         });
       }
     }
-  });
-
-  safe.send('proxy.listen');
-  safe.send('proxy.get', null, (proxy, [_]) {
-    updateProxy({
-      'value': proxy,
-      'levelOfControl': 'controllable_by_this_extension'
-    });
   });
 }

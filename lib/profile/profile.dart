@@ -116,5 +116,6 @@ class ProfileColors {
   static const String auto_detect = '#00cccc';
   static const String system = '#aaaaaa';
   static const String direct = '#aaaaaa';
+  static const String unknown = '#49afcd';
 }
 

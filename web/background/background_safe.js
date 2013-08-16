@@ -71,6 +71,16 @@
     });
     setIcon();
   };
+
+  var onProxyChange = function (details) {
+    if (details['levelOfControl'] !== 'controlled_by_this_extension') {
+      c.send('proxy.onchange', details);
+    }
+  };
+  
+  delete localStorage['seriousError'];
+
+  chrome.browserAction.setBadgeText({text: ''});
   
   c.on({
     'background.init': function (_, respond) {
@@ -97,6 +107,10 @@
         title: chrome.i18n.getMessage('browserAction_titleNormal',
                   currentProfileName)
       });
+      if (data.config == null) {
+        chrome.browserAction.setBadgeText({text: ''});
+        return;
+      }
       var onProxySet = function () {
         if (data.refresh) {
           chrome.tabs.reload(/* the selected tab of the current window */);
@@ -111,15 +125,11 @@
       }
     },
     'proxy.get': function (_, respond) {
-      chrome.proxy.settings.get({}, function (o) {
-        respond(o);
-      });
+      chrome.proxy.settings.get({}, onProxyChange);
     },
     'proxy.listen': function () {
       if (!proxyListening) {
-        chrome.proxy.settings.onChange.addListener(function (details) {
-          c.send('proxy.onchange', details);
-        });
+        chrome.proxy.settings.onChange.addListener(onProxyChange);
         proxyListening = true;
       }
     },
@@ -183,6 +193,31 @@
       chrome.browserAction.setBadgeBackgroundColor({
         color: colors[details['type']]
       });
+
+      switch (details['reason']) {
+        case 'download':
+          chrome.browserAction.setTitle({
+            title: chrome.i18n.getMessage('browserAction_titleDownloadFail')
+          });
+          break;
+        case 'schemaVersion':
+          localStorage['seriousError'] = 'schemaVersion';
+          chrome.browserAction.setTitle({
+            title: chrome.i18n.getMessage('browserAction_titleNewerOptions')
+          });
+          break;
+        case 'options':
+          localStorage['seriousError'] = 'options';
+          chrome.browserAction.setTitle({
+            title: chrome.i18n.getMessage('browserAction_titleOptionError')
+          });
+          break;
+        case 'externalProxy':
+          chrome.browserAction.setTitle({
+            title: chrome.i18n.getMessage('browserAction_titleExternalProxy')
+          });
+          break;
+      }
     }
   });
 

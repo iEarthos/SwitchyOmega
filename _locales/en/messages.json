@@ -426,5 +426,17 @@
         "example": "DIRECT"
       }
     }
+  },
+  "browserAction_titleNewerOptions": {
+    "message": "ERROR: A newer version of SwitchOmega is required to load the stored options."
+  },
+  "browserAction_titleOptionError": {
+    "message": "ERROR: The stored options are corrupted. Click here to RESET OPTIONS."
+  },
+  "browserAction_titleDownloadFail": {
+    "message": "Warning: Failed to download PAC scripts and/or rule lists."
+  },
+  "browserAction_titleExternalProxy": {
+    "message": "Note: The proxy settings are currently controlled by other app(s)."
   }
 }

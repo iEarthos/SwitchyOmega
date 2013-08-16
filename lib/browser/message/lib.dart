@@ -24,6 +24,7 @@ import 'dart:core';
 import 'package:switchyomega/lang/lib.dart';
 import 'package:switchyomega/communicator.dart';
 import 'package:switchyomega/profile/lib.dart';
+import 'package:switchyomega/condition/lib.dart';
 import '../lib.dart';
 
 part 'message_browser.dart';

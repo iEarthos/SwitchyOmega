@@ -26,7 +26,7 @@ part of switchy_browser;
 abstract class Browser {
   Future applyProfile(Profile profile, List<String> possibleResults,
                       {bool readonly: false, String profileName: null,
-                       bool refresh: false});
+                       bool refresh: false, bool noConfig: false});
 
   /**
    * Set an repeating alarm which fires every [periodInMinutes].
@@ -40,6 +40,16 @@ abstract class Browser {
    * Fetch the content of [url]. Throws [DownloadFailException] on failure.
    */
   Future<String> download(String url);
+
+  Stream<ProxyChangeEvent> get onProxyChange;
+}
+
+abstract class ProxyChangeEvent {
+  ProxyChangeEvent(this.incognitoSpecific, this.controllable);
+
+  Profile toProfile(ProfileCollection col);
+  final bool incognitoSpecific;
+  final bool controllable;
 }
 
 class DownloadFailException implements Exception {
