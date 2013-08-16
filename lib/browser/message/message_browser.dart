@@ -205,7 +205,7 @@ class MessageProxyChangeEvent extends ProxyChangeEvent {
         return new AutoDetectProfile();
       case 'pac_script':
         var pacScript = _proxy['pacScript'] as Map<String, String>;
-        var url = pacScript['data'] as String;
+        var url = pacScript['url'] as String;
         if (url != null) {
           for (var profile in col) {
             if (profile is PacProfile && profile.pacUrl == url) {

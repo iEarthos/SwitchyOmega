@@ -61,9 +61,6 @@
     isDocReady = true;
     i18nTemplate.process(document, i18n);
 
-    // Opening the popup clears badges.
-    chrome.browserAction.setBadgeText({ text: '' });
-
     $(document).on('click', '.profile a', function (e) {
       e.preventDefault();
       chrome.runtime.sendMessage({
@@ -204,6 +201,36 @@
       $('#condition-divider').show();
     } else {
       $('#temp-rule').hide();
+    }
+    if (localStorage['currentProfileName'] == '') {
+      $('#external-profile').show();
+      $('#external-profile a').click(function () {
+        $('#external-profile a span').hide();
+        $('#external-profile input').show().focus();
+        return false;
+      });
+
+      var once = false;
+      $('#external-profile input').change(function (e) {
+        if (once) return;
+        var name = e.target.value;
+        if (name.length > 0) {
+          profiles.forEach(function (profile) {
+            if (profile.name == name || name == 'auto_detect') {
+              $('#external-profile a').addClass('error');
+              name = '';
+            }
+          });
+          if (name.length > 0) {
+            once = true;
+            chrome.runtime.sendMessage({
+              action: 'externalProfile.add',
+              data: name
+            });
+            window.close();
+          }
+        }
+      });
     }
   });
 })();

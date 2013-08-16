@@ -36,6 +36,14 @@
   <body>
     <ul class="nav nav-pills nav-stacked">
       <li class="divider" id="profiles-divider"></li>
+      <li id="external-profile" style="display: none">
+        <a href="#" class="control-group">
+          <i class="icon-question-sign"></i>
+          <span data-i18n="popup_externalProfile"></span>
+          <input type="text" id="external-profile-name" class="input-small"
+              style="display: none" data-i18n-values="placeholder:popup_externalProfileName" />
+        </a>
+      </li>
       <li class="divider" id="condition-divider" style="display: none"></li>
       <li id="add-condition"><a href="#"><i class="icon-plus"></i><span data-i18n="popup_addCondition"></span></a></li>
       <li id="temp-rule">

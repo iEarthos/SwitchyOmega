@@ -34,5 +34,7 @@ var strings = [
   "condition_keyword",
   "options_resultProfile",
   "dialog_cancel",
-  "popup_addCondition"
+  "popup_addCondition",
+  "popup_externalProfile",
+  "popup_externalProfileName"
 ];

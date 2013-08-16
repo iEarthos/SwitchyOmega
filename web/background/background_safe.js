@@ -97,6 +97,9 @@
     'proxy.set': function (data, respond) {
       inclusiveProfile = data.inclusive;
       profileColor = data.color;
+      if (currentProfileName == '') {
+        chrome.browserAction.setBadgeText({text: ''});
+      }
       currentProfileName = data.displayName;
       localStorage['currentProfileName'] = data.currentProfile;
       localStorage['currentProfileReadOnly'] = data.readonly;
@@ -107,10 +110,7 @@
         title: chrome.i18n.getMessage('browserAction_titleNormal',
                   currentProfileName)
       });
-      if (data.config == null) {
-        chrome.browserAction.setBadgeText({text: ''});
-        return;
-      }
+      if (data.config == null) return;
       var onProxySet = function () {
         if (data.refresh) {
           chrome.tabs.reload(/* the selected tab of the current window */);
@@ -231,6 +231,9 @@
         break;
       case 'condition.add':
         c.send('condition.add', request.data);
+        break;
+      case 'externalProfile.add':
+        c.send('externalProfile.add', request.data);
         break;
       case 'options.update':
         c.send('options.update', JSON.parse(localStorage['options']));

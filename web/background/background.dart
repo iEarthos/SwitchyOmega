@@ -37,6 +37,7 @@ Future applyProfile(String name, {bool refresh: false, bool noConfig: false}) {
     tempProfile.name = '$name (+temp rules)';
     tempProfile.color = currentProfile.color;
     profile = tempProfile;
+    deliverChangesSync();
   }
 
   return browser.applyProfile(profile, possibleResults,
@@ -105,6 +106,8 @@ Future<Set<String>> updateProfiles() {
       });
     }
   });
+
+  if (count == 0) completer.complete(fail);
 
   return completer.future;
 }
@@ -280,6 +283,16 @@ void main() {
       deliverChangesSync();
       applyProfile(currentProfile.name,
                    refresh: options.refreshOnProfileChange);
+    },
+    'externalProfile.add': (name,  [_]) {
+      if (currentProfile.name == '') {
+        currentProfile.name = name;
+        options.profiles.add(currentProfile);
+        deliverChangesSync();
+        safe.send('options.set', JSON.stringify(options));
+        applyProfile(currentProfile.name,
+            refresh: options.refreshOnProfileChange);
+      }
     },
     'profile.match': (url, [respond]) {
       var profile = currentProfile;

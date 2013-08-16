@@ -106,3 +106,7 @@ legend,
 .condition-controls .btn-primary {
   float: right;
 }
+
+#external-profile .control-group {
+  margin: 0;
+}
