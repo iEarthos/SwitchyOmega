@@ -9,8 +9,6 @@ import 'package:switchyomega/browser/lib.dart';
 import 'package:switchyomega/browser/message/lib.dart';
 import 'package:switchyomega/communicator.dart';
 
-part 'upgrade.dart';
-
 Communicator safe = new Communicator(window.top);
 Browser browser = new MessageBrowser(safe);
 

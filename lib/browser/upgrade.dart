@@ -1,8 +1,7 @@
-part of switchy_background;
-
+part of switchy_browser;
 
 SwitchyOptions upgradeOptions(Map<String, Object> oldOptions) {
-  var config = oldOptions['config'] as Map<String, Object>;
+  var config = JSON.parse(oldOptions['config']) as Map<String, Object>;
   if (config != null && config['firstTime'] != null) {
     var options = new SwitchyOptions.defaults();
     // Upgrade from SwitchySharp options
@@ -25,9 +24,10 @@ SwitchyOptions upgradeOptions(Map<String, Object> oldOptions) {
       options.downloadInterval = int.parse(config['ruleListReload']);
     }
 
-    var profiles = oldOptions['profiles'] as Map<String, Map<String, Object>>;
+    if (oldOptions['profiles'] != null) {
+      var profiles = JSON.parse(oldOptions['profiles'])
+          as Map<String, Map<String, Object>>;
 
-    if (profiles != null) {
       var colorTranslations = {
                                'blue': '#99ccee',
                                'green': '#99dd99',
@@ -53,7 +53,7 @@ proxySocks: "127.0.0.1:7070"
 socksVersion: 5
         */
         switch (profile['proxyMode']) {
-          case 'manual': {
+          case 'manual':
             var fixedProfile = new FixedProfile(profile['id']);
             if (profile['useSameProxy'] == true) {
               fixedProfile.fallbackProxy = new ProxyServer.parse(
@@ -65,7 +65,7 @@ socksVersion: 5
             } else {
               fixedProfile.proxyForHttp = new ProxyServer.parse(
                   profile['proxyHttp'], 'http');
-              fixedProfile.proxyForHttp = new ProxyServer.parse(
+              fixedProfile.proxyForHttps = new ProxyServer.parse(
                   profile['proxyHttps'], 'https');
               fixedProfile.proxyForFtp = new ProxyServer.parse(
                   profile['proxyFtp'], 'ftp');
@@ -76,26 +76,29 @@ socksVersion: 5
                   .split(';').map((x) => new BypassCondition(x.trim())));
             }
             pf = fixedProfile;
-          }
-          break;
-          case 'pac': {
+            break;
+          case 'auto':
             var pacProfile = new PacProfile(profile['id']);
             pacProfile.pacUrl = profile['proxyConfigUrl'];
             pf = pacProfile;
-          }
-          break;
+            break;
+          default:
+            throw new UnsupportedError(
+                'Unsupported proxy mode ${profile['proxyMode']}');
+            break;
         }
         var rgbColor = colorTranslations[profile['color']];
         if (rgbColor == null) rgbColor = colorTranslations[''];
         pf.color = rgbColor;
+        options.profiles.add(pf);
       });
     }
 
-    var rules = oldOptions['rules'] as Map<String, Map<String, String>>;
-
-    if (rules != null) {
-      var defaultProfileName =
-          (oldOptions['defaultRule'] as Map<String, String>)['profileId'];
+    if (oldOptions['rules'] != null) {
+      var rules = JSON.parse(oldOptions['rules'])
+          as Map<String, Map<String, String>>;
+      var defaultProfileName = (JSON.parse(oldOptions['defaultRule'])
+          as Map<String, String>)['profileId'];
       var switchProfile = new SwitchProfile('auto', defaultProfileName);
       rules.forEach((_, rule) {
         Condition c;
@@ -110,8 +113,10 @@ socksVersion: 5
           }
           break;
         }
+        print("{ ${rule['urlPattern']}, ${rule['profileId']} }");
         switchProfile.add(new Rule(c, rule['profileId']));
       });
+      print(defaultProfileName);
 
       options.profiles.add(switchProfile);
     }
@@ -126,7 +131,7 @@ socksVersion: 5
             config['ruleListProfileId']);
       }
       ruleList.sourceUrl = config['ruleListUrl'];
-      if (rules != null) {
+      if (oldOptions['rules'] != null) {
         var switchProfile = options.profiles['auto'] as SwitchProfile;
         ruleList.defaultProfileName = switchProfile.defaultProfileName;
         switchProfile.defaultProfileName = ruleList.name;

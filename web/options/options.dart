@@ -24,6 +24,7 @@ import 'dart:html';
 import 'dart:json' as JSON;
 import 'dart:async';
 import 'package:web_ui/web_ui.dart';
+import 'package:crypto/crypto.dart';
 import 'package:switchyomega/switchyomega.dart';
 import 'package:switchyomega/html/converters.dart' as convert;
 import 'package:switchyomega/browser/lib.dart';
@@ -267,11 +268,27 @@ void exportOptions() {
 
 void restoreOptions(String data) {
   SwitchyOptions newOptions = null;
-  try {
-    newOptions = new SwitchyOptions.fromPlain(JSON.parse(data));
-  } catch (e) {
-    query('#options-import-format-error').style.top = "0";
-    return;
+
+  data = data.trim();
+  if (data[0] != '{') {
+    Map<String, Object> json = null;
+    try {
+      data = new String.fromCharCodes(CryptoUtils.base64StringToBytes(data));
+      print(data);
+      json = JSON.parse(data);
+    } catch (e) {
+
+      query('#options-import-format-error').style.top = "0";
+      return;
+    }
+    newOptions = upgradeOptions(json);
+  } else {
+    try {
+      newOptions = new SwitchyOptions.fromPlain(JSON.parse(data));
+    } catch (e) {
+      query('#options-import-format-error').style.top = "0";
+      return;
+    }
   }
   ChangeUnobserver unobserve;
   unobserve = observe(() => options, (_) {

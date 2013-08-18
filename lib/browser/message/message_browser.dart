@@ -241,8 +241,8 @@ class MessageProxyChangeEvent extends ProxyChangeEvent {
         if (servers['singleProxy'] != null || (
             servers['fallbackProxy'] == null &&
             servers['proxyForHttp'].protocol == 'http' &&
-            servers['proxyForHttp'] == servers['proxyForHttps'] &&
-            servers['proxyForHttp'] == servers['proxyForFtp'])) {
+            servers['proxyForHttp'].equals(servers['proxyForHttps']) &&
+            servers['proxyForHttp'].equals(servers['proxyForFtp']))) {
           var fb = ifNull(servers['singleProxy'], servers['proxyForHttp']);
           servers.clear();
           servers['fallbackProxy'] = fb;
@@ -252,10 +252,10 @@ class MessageProxyChangeEvent extends ProxyChangeEvent {
             var bypassSet = profile.bypassList.map((c) => c.pattern).toSet();
             if (bypassSet.containsAll(bypass) &&
                 bypass.containsAll(bypassSet) &&
-                profile.proxyForHttp == servers['proxyForHttp'] &&
-                profile.proxyForHttps == servers['proxyForHttps'] &&
-                profile.proxyForFtp == servers['proxyForFtp'] &&
-                profile.fallbackProxy == servers['fallbackProxy'])
+                profile.proxyForHttp.equals(servers['proxyForHttp']) &&
+                profile.proxyForHttps.equals(servers['proxyForHttps']) &&
+                profile.proxyForFtp.equals(servers['proxyForFtp']) &&
+                profile.fallbackProxy.equals(servers['fallbackProxy']))
               return profile;
           }
         }

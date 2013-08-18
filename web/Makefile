@@ -30,7 +30,7 @@ out/background/background.html_bootstrap.dart.js: out/background/background.html
 out/options/options.html: options/options.dart options/editors.dart \
 	$(shell find ../lib -name "*.dart")
 
-out/background/background.html: background/background.dart background/upgrade.dart \
+out/background/background.html: background/background.dart \
 	$(shell find ../lib -name "*.dart")
 
 options/packages background/packages out/packages: ../ipackages | entries

@@ -222,11 +222,9 @@ class ProxyServer extends Plainable {
     }
   }
 
-  bool operator ==(ProxyServer other) =>
+  bool equals(ProxyServer other) =>
       this.protocol == other.protocol &&
       this.host == other.host &&
       this.port == other.port;
 
-  int get hashCode =>
-      this.protocol.hashCode ^ this.host.hashCode ^ this.port.hashCode;
 }

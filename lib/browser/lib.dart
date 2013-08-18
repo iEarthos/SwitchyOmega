@@ -21,10 +21,12 @@ library switchy_browser;
 
 import 'dart:async';
 import 'dart:core';
+import 'dart:json' as JSON;
+import 'package:web_ui/web_ui.dart';
 import 'package:switchyomega/lang/lib.dart';
 import 'package:switchyomega/profile/lib.dart';
-import 'package:web_ui/web_ui.dart';
+import 'package:switchyomega/condition/lib.dart';
 
 part 'browser.dart';
-
 part 'switchy_options.dart';
+part 'upgrade.dart';
