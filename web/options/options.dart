@@ -313,7 +313,7 @@ void restoreOnline() {
   var button = query('#restore-online') as ButtonElement;
   button.disabled = true;
   var url = (query('#restore-url') as InputElement).value;
-  browser.download(url)..then((data) {
+  browser.download(url).then((data) {
     restoreOptions(data);
   }).catchError((e) {
     query('#options-import-download-error').style.top = "0";
@@ -395,6 +395,20 @@ void handleQuickSwitchUI() {
   observe(() => options.quickSwitchProfiles, refresh);
   observe(() => options.profiles, refresh);
   refresh(null);
+}
+
+void downloadProfileNow(UpdatingProfile p, Event e) {
+  var button = e.target as ButtonElement;
+  button.disabled = true;
+  browser.download(p.updateUrl).then((data) {
+    p.applyUpdate(data);
+    query('#options-profile-download-success').style.top = "0";
+  }).catchError((e) {
+    query('#options-profile-download-error').style.top = "0";
+  }).whenComplete(() {
+    button.disabled = false;
+    safe.send('options.set', JSON.stringify(options));
+  });
 }
 
 void main() {

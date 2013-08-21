@@ -389,8 +389,17 @@
   "options_importDownloadError": {
     "message": "Error downloading backup file!"
   },
+  "options_profileDownloadSuccess": {
+    "message": "Successfully updated profile."
+  },
+  "options_profileDownloadError": {
+    "message": "Error downloading profile data!"
+  },
   "options_leaveConfirm": {
     "message": "Please make sure that you have saved the options before you leave!"
+  },
+  "options_downloadProfileNow": {
+    "message": "Download Profile Now"
   },
   "popup_externalProfile": {
     "message": "(External Profile)"

@@ -142,5 +142,8 @@ var strings = [
   "options_importSuccess",
   "options_importFormatError",
   "options_importDownloadError",
-  "options_leaveConfirm"
+  "options_profileDownloadSuccess",
+  "options_profileDownloadError",
+  "options_leaveConfirm",
+  "options_downloadProfileNow"
 ];

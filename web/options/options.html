@@ -336,6 +336,8 @@
                 </section>
                 <section class="settings-group">
                   <h3 data-i18n="options_group_pacScript"></h3>
+                  <p><button class="btn download-profile-now" data-i18n="options_downloadProfileNow" on-click="downloadProfileNow(profile, $event)"
+                      disabled="{{profile.pacUrl.isEmpty}}"></button></p>
                   <textarea class="pac-script input-xxlarge" disabled="{{!profile.pacUrl.isEmpty}}" bind-value="profile.pacScript"></textarea>
                 </section>
               </template>
@@ -428,6 +430,8 @@
                 </section>
                 <section class="settings-group">
                   <h3 data-i18n="options_group_ruleListText"></h3>
+                  <p><button class="btn download-profile-now" data-i18n="options_downloadProfileNow" on-click="downloadProfileNow(profile, $event)"
+                      disabled="{{profile.sourceUrl.isEmpty}}"></button></p>
                   <textarea class="rule-list-text input-xxlarge" disabled="{{!profile.sourceUrl.isEmpty}}" bind-value="profile.ruleList"></textarea>
                 </section>
               </template>
@@ -619,6 +623,16 @@
         <button type="button" class="close">×</button>
         <i class="icon-remove-sign"></i>
         <span data-i18n="options_importDownloadError"></span>
+      </div>
+      <div class="alert alert-success alert-top-fixed" id="options-profile-download-success">
+        <button type="button" class="close">×</button>
+        <i class="icon-ok"></i>
+        <span data-i18n="options_profileDownloadSuccess"></span>
+      </div>
+      <div class="alert alert-error alert-top-fixed" id="options-profile-download-error">
+        <button type="button" class="close">×</button>
+        <i class="icon-remove-sign"></i>
+        <span data-i18n="options_profileDownloadError"></span>
       </div>
     </template>
   </body>
