@@ -42,6 +42,8 @@ abstract class Browser {
   Future<String> download(String url);
 
   Stream<ProxyChangeEvent> get onProxyChange;
+
+  BrowserStorage get storage;
 }
 
 abstract class ProxyChangeEvent {
@@ -57,4 +59,11 @@ class DownloadFailException implements Exception {
   final error;
 
   DownloadFailException(this.status, this.error);
+}
+
+abstract class BrowserStorage {
+  Future<Map<String, Object>> get(List<String> keys);
+  Future set(Map<String, Object> items);
+  Future remove(List<String> keys);
+  Stream<ChangeRecord> get onChange;
 }

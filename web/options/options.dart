@@ -227,7 +227,7 @@ Communicator js = new Communicator(window);
 Browser browser = new MessageBrowser(safe);
 
 @observable
-SwitchyOptions options = null;
+StoredSwitchyOptions options = null;
 
 List<String> profileTypes = ['FixedProfile',
                              'SwitchProfile',
@@ -267,7 +267,7 @@ void exportOptions() {
 }
 
 void restoreOptions(String data) {
-  SwitchyOptions newOptions = null;
+  StoredSwitchyOptions newOptions = null;
 
   data = data.trim();
   if (data[0] != '{') {
@@ -281,10 +281,11 @@ void restoreOptions(String data) {
       query('#options-import-format-error').style.top = "0";
       return;
     }
-    newOptions = upgradeOptions(json);
+    newOptions = upgradeOptions(json, browser.storage);
   } else {
     try {
-      newOptions = new SwitchyOptions.fromPlain(JSON.parse(data));
+      newOptions = new StoredSwitchyOptions.fromPlain(JSON.parse(data),
+          browser.storage);
     } catch (e) {
       query('#options-import-format-error').style.top = "0";
       return;
@@ -296,6 +297,7 @@ void restoreOptions(String data) {
     unobserve();
   });
   options = newOptions;
+  options.storeAll();
 }
 
 void restoreLocal(FileUploadInputElement file) {
@@ -372,7 +374,7 @@ void handleOptionsResetUI() {
         query('#options-reset-success').style.top = "0";
         unobserve();
       });
-      options = new SwitchyOptions.fromPlain(o);
+      options = new StoredSwitchyOptions.fromPlain(o, browser.storage);
     });
   });
 }
@@ -427,7 +429,8 @@ void main() {
       }
     });
 
-    options = new SwitchyOptions.fromPlain(o['options']);
+    options = new StoredSwitchyOptions.fromPlain(o['options'],
+        browser.storage);
     currentProfileName = o['currentProfileName'];
   });
 

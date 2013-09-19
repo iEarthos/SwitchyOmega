@@ -33,9 +33,14 @@ abstract class Profile extends Plainable {
 
   /**
     Colors can help to tell profiles from each other.
-    If this profile includes other profiles, [color] should be null.
   */
   String color;
+
+  /**
+   * This field can be used to detect whether this profile has changed. The
+   * value of this field is controlled by user packages.
+   */
+  String revision;
 
   /**
     Whether this profile is a predefined profile.
@@ -54,6 +59,7 @@ abstract class Profile extends Plainable {
     p['name'] = this.name;
     p['profileType'] = this.profileType;
     p['color'] = this.color;
+    if (this.revision != null) p['revision'] = this.revision;
 
     return p;
   }
@@ -61,6 +67,7 @@ abstract class Profile extends Plainable {
   void loadPlain(Map<String, Object> p) {
     this.name = p['name'];
     this.color = p['color'];
+    this.revision = p['revision'];
   }
 
   factory Profile.fromPlain(Map<String, Object> p) {

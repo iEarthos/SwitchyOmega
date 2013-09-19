@@ -27,6 +27,15 @@ part of switchy_browser_message;
 class MessageBrowser extends Browser {
   Communicator _c;
 
+  MessageBrowserStorage _storage = null;
+
+  MessageBrowserStorage get storage {
+    if (_storage == null) {
+      _storage = new MessageBrowserStorage(_c);
+    }
+    return _storage;
+  }
+
   MessageBrowser([Communicator c = null]) {
     if (c == null) {
       this._c = new Communicator();
@@ -274,5 +283,57 @@ class MessageProxyChangeEvent extends ProxyChangeEvent {
 
     newProfile.color = ProfileColors.unknown;
     return newProfile;
+  }
+}
+
+class MessageBrowserStorage extends BrowserStorage {
+  Communicator _c;
+
+  MessageBrowserStorage([Communicator c = null]) {
+    if (c == null) {
+      this._c = new Communicator();
+    } else {
+      this._c = c;
+    }
+  }
+
+  Future<Map<String, Object>> get(List<String> keys) {
+    var comp = new Completer<Map<String, Object>>();
+    _c.send('storage.get', keys, (data, [_]) {
+      comp.complete(data);
+    });
+    return comp.future;
+  }
+
+  Future set(Map<String, Object> items) {
+    var comp = new Completer();
+    _c.send('storage.set', items, (_, [__]) {
+      comp.complete();
+    });
+    return comp.future;
+  }
+
+  Future remove(List<String> keys) {
+    var comp = new Completer();
+    _c.send('storage.remove', keys, (_, [__]) {
+      comp.complete();
+    });
+    return comp.future;
+  }
+
+  StreamController<ChangeRecord> _changes = null;
+
+  Stream<ChangeRecord> get onChange {
+    if (_changes == null) {
+      _changes = new StreamController();
+      _c.on('storage.onchange', (Map<String, Object> changes, [_]) {
+        changes.forEach((key, change) {
+          _changes.add(new ChangeRecord(ChangeRecord.FIELD, key,
+              change['oldValue'], change['newValue']));
+        });
+      });
+      _c.send('storage.watch');
+    }
+    return _changes.stream;
   }
 }

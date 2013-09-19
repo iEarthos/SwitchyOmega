@@ -12,7 +12,7 @@ import 'package:switchyomega/communicator.dart';
 Communicator safe = new Communicator(window.top);
 Browser browser = new MessageBrowser(safe);
 
-@observable SwitchyOptions options;
+@observable StoredSwitchyOptions options;
 @observable Profile currentProfile;
 @observable SwitchProfile tempProfile = null;
 
@@ -148,35 +148,37 @@ void listenForProxyChange() {
 }
 
 const String initialOptions = '''
-    {"enableQuickSwitch":false,"profiles":[{"bypassList":[{"pattern":"<local>",
-    "conditionType":"BypassCondition"}],"profileType":"FixedProfile","name":
-    "proxy","color":"#99ccee","fallbackProxy":{"port":8080,"scheme":"http",
-    "host":"proxy.example.com"}},{"profileType":"SwitchProfile","rules":[{
-    "condition":{"pattern":"internal.example.com","conditionType":
+    {"-enableQuickSwitch":false,"-refreshOnProfileChange":true,
+    "-startupProfileName":"","-quickSwitchProfiles":[],"-revertProxyChanges":
+    false,"schemaVersion":1,"-confirmDeletion":true,"-downloadInterval":1440,
+    "+proxy":{"bypassList":[{"pattern":"<local>","conditionType":
+    "BypassCondition"}],"profileType":"FixedProfile","name":"proxy","color":
+    "#99ccee","fallbackProxy":{"port":8080,"scheme":"http","host":
+    "proxy.example.com"}},"+auto switch": {"profileType":"SwitchProfile",
+    "rules":[{"condition":{"pattern":"internal.example.com","conditionType":
     "HostWildcardCondition"},"profileName":"direct"},{"condition":{"pattern":
     "*.example.com","conditionType":"HostWildcardCondition"},"profileName":
     "proxy"}],"name":"auto switch","color":"#99dd99","defaultProfileName":
-    "direct"}],"refreshOnProfileChange":true,"startupProfileName":"",
-    "quickSwitchProfiles":[],"revertProxyChanges":false,"schemaVersion":0,
-    "confirmDeletion":true,"downloadInterval":1440}''';
+    "direct"}}''';
 
 void main() {
   safe.send('options.get', null, (Map<String, Object> o, [Function respond]) {
     if (o['options'] == null) {
       if (o['oldOptions'] != null) {
-        options = upgradeOptions(o['oldOptions']);
+        options = upgradeOptions(o['oldOptions'], browser.storage);
       }
       if (options == null) {
-        options = new SwitchyOptions.fromPlain(JSON.parse(initialOptions));
+        options = new StoredSwitchyOptions.fromPlain(
+            JSON.parse(initialOptions), browser.storage);
       }
-      safe.send('options.set', JSON.stringify(options));
+      options.storeAll();
     } else {
       var version =
           (o['options'] as Map<String, String>)['schemaVersion'] as int;
-      if (version < SwitchyOptions.schemaVersion) {
-        options = upgradeOptions(o['options']);
-        safe.send('options.set', JSON.stringify(options));
-      } else if (version > SwitchyOptions.schemaVersion) {
+      if (version < StoredSwitchyOptions.schemaVersion) {
+        options = upgradeOptions(o['options'], browser.storage);
+        options.storeAll();
+      } else if (version > StoredSwitchyOptions.schemaVersion) {
         safe.send('state.set', {
           'type': 'error',
           'reason': 'schemaVersion',
@@ -185,7 +187,8 @@ void main() {
         return;
       } else {
         try {
-          options = new SwitchyOptions.fromPlain(o['options']);
+          options = new StoredSwitchyOptions.fromPlain(o['options'],
+              browser.storage);
         } catch (e) {
           safe.send('state.set', {
             'type': 'error',
@@ -195,6 +198,31 @@ void main() {
           return;
         }
       }
+
+      options.onUpdate.listen((record) {
+        if (record.key[0] == '+') {
+          var profileName = record.key.substring(1);
+          if (tempProfile != null) {
+            for (var i = 0; i < tempProfile.length; ) {
+              if (options.profiles[tempProfile[i].profileName] == null) {
+                tempProfile.removeAt(i);
+              } else {
+                i++;
+              }
+            }
+            deliverChangesSync();
+          }
+          if (options.profiles[currentProfile.name] == null) {
+            applyProfile(getStartupProfile(null).name);
+          } else if (options.profiles[profileName] != null &&
+              currentProfile.name == profileName ||
+              (currentProfile is InclusiveProfile &&
+              options.profiles.hasReferenceToName(currentProfile, profileName))
+              ) {
+            applyProfile(currentProfile.name);
+          }
+        }
+      });
     }
     browser.setAlarm('download', options.downloadInterval).listen((_) {
       updateProfiles();
@@ -218,6 +246,7 @@ void main() {
           applyProfile(startup.name).then((_) {
             listenForProxyChange();
           });
+          // TODO(catus): Handle profile updates with the new storage schema.
           safe.send('options.set', JSON.stringify(options));
         }
       });
@@ -225,27 +254,11 @@ void main() {
   });
 
   safe.on({
-    'options.update': (plain, [_]) {
-      options = new SwitchyOptions.fromPlain(plain);
-      if (tempProfile != null) {
-        for (var i = 0; i < tempProfile.length; ) {
-          if (options.profiles[tempProfile[i].profileName] == null) {
-            tempProfile.removeAt(i);
-          } else {
-            i++;
-          }
-        }
-        deliverChangesSync();
-      }
-      if (options.profiles[currentProfile.name] == null) {
-        applyProfile(getStartupProfile(null).name);
-      } else {
-        applyProfile(currentProfile.name);
-      }
-    },
     'options.reset': (_, [respond]) {
-      options = new SwitchyOptions.fromPlain(JSON.parse(initialOptions));
-      respond(initialOptions);
+      options = new StoredSwitchyOptions.fromPlain(
+          JSON.parse(initialOptions), browser.storage);
+      options.storeAll();
+      respond(null);
       applyProfile(getStartupProfile(null).name);
     },
     'profile.apply': (name, [_]) {
@@ -261,7 +274,6 @@ void main() {
         profile.insert(0, new Rule(new Condition.fromPlain(plainCondition),
             data['result']));
         deliverChangesSync();
-        safe.send('options.set', JSON.stringify(options));
         if (profile.name == currentProfile.name || (
             currentProfile is InclusiveProfile &&
             options.profiles.hasReference(currentProfile, profile))) {
@@ -287,7 +299,6 @@ void main() {
         currentProfile.name = name;
         options.profiles.add(currentProfile);
         deliverChangesSync();
-        safe.send('options.set', JSON.stringify(options));
         applyProfile(currentProfile.name,
             refresh: options.refreshOnProfileChange);
       }

@@ -34,6 +34,7 @@
   var pendingAlarms = [];
   var optionsResetRespond = null;
   var possibleResults = false;
+  var storage = chrome.storage.local;
 
   var setIcon = function (resultColor, tabId) {
     if (canvasIcon == null) return;
@@ -134,24 +135,26 @@
       }
     },
     'options.get': function (_, respond) {
-      if (!localStorage['options']) {
-        // First run or upgrading from SwichySharp.
-        var oldOptions = null;
-        if (localStorage['config']) {
-          oldOptions = {};
-          for (key in localStorage) {
-            if (localStorage.hasOwnProperty(key)) {
-              oldOptions[key] = localStorage[key];
+      storage.get(null, function (items) {
+        if (items['schemaVersion'] == null) {
+          // First run or upgrading from SwichySharp.
+          var oldOptions = null;
+          if (localStorage['config']) {
+            oldOptions = {};
+            for (key in localStorage) {
+              if (localStorage.hasOwnProperty(key)) {
+                oldOptions[key] = localStorage[key];
+              }
             }
           }
+          respond({'oldOptions': oldOptions});
+        } else {
+          respond({
+            'options': items,
+            'currentProfileName': localStorage['currentProfileName']
+          });
         }
-        respond({'oldOptions': oldOptions});
-      } else {
-        respond({
-          'options': JSON.parse(localStorage['options']),
-          'currentProfileName': localStorage['currentProfileName']
-        });
-      }
+      });
     },
     'options.set': function (options, respond) {
       localStorage['options'] = options;
@@ -218,6 +221,22 @@
           });
           break;
       }
+    },
+    'storage.get': function (keys, respond) {
+      storage.get(keys, respond);
+    },
+    'storage.set': function (items, respond) {
+      storage.set(items, respond);
+    },
+    'storage.remove': function (keys, respond) {
+      storage.remove(keys, respond);
+    },
+    'storage.watch': function () {
+      chrome.storage.onChanged.addListener(function(changes, namespace) {
+        if (namespace == 'local') {
+          c.send('storage.onchange', changes);
+        }
+      });
     }
   });
 
@@ -240,8 +259,6 @@
         break;
       case 'options.reset':
         c.send('options.reset', null, function (options) {
-          localStorage.clear();
-          localStorage['options'] = options;
           respond();
         });
         return true;

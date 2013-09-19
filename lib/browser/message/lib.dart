@@ -21,6 +21,7 @@ library switchy_browser_message;
 
 import 'dart:async';
 import 'dart:core';
+import 'package:web_ui/observe.dart';
 import 'package:switchyomega/lang/lib.dart';
 import 'package:switchyomega/communicator.dart';
 import 'package:switchyomega/profile/lib.dart';

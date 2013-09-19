@@ -114,13 +114,18 @@ class SwitchProfile extends InclusiveProfile with ListMixin, Observable
             _unobserve[r] = observeChanges(r as Observable,
                 (List<ChangeRecord> changes) {
               if (tracker == null) return;
+              var changed = false;
               changes.forEach((rec2) {
                 if (rec2.key == 'profileName' &&
                     rec2.oldValue != rec2.newValue) {
                   tracker.removeReferenceByName(this, rec2.oldValue);
                   tracker.addReferenceByName(this, rec2.newValue);
+                  changed = true;
                 }
               });
+              if (changed) {
+                notifyChange(this, ChangeRecord.FIELD, '[rules]', '', null);
+              }
             });
           }
         }
@@ -130,7 +135,9 @@ class SwitchProfile extends InclusiveProfile with ListMixin, Observable
 
   void loadPlain(Map<String, Object> p) {
     super.loadPlain(p);
+    this.defaultProfileName = p['defaultProfileName'];
     var rl = p['rules'] as List<Map<String, Object>>;
+    this.clear();
     this.addAll(rl.map((r) => new Rule.fromPlain(r)));
     deliverChangesSync();
   }

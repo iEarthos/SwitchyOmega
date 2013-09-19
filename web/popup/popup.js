@@ -20,12 +20,18 @@
 
 (function () {
   'use strict';
+  var storage = chrome.storage.local;
   if (localStorage['seriousError']) {
+    var then = function () {
+      chrome.runtime.reload();
+      window.close();
+    };
     if (localStorage['seriousError'] === 'options') {
       localStorage.clear();
+      storage.clear(then);
+    } else {
+      then();
     }
-    chrome.runtime.reload();
-    window.close();
     return;
   }
   var i18nCache = {};
@@ -135,7 +141,6 @@
 
     });
 
-    options = JSON.parse(localStorage['options']);
     currentDomain = localStorage['currentDomain'];
     if (localStorage['possibleResults']) {
       possibleResultsList = JSON.parse(localStorage['possibleResults']);
@@ -147,90 +152,97 @@
       }
     }
 
-    var profiles = options['profiles'];
-    profiles.unshift({
-      name: 'system',
-      profileType: 'SystemProfile'
-    });
-    profiles.unshift({
-      name: 'direct',
-      profileType: 'DirectProfile'
-    });
-
-    var pos = $('#profiles-divider');
-    var tempProfiles = $('#temp-rule-profiles');
-    var currentMatch = localStorage['currentMatch'] ||
-                       localStorage['currentProfileName'];
-    profiles.forEach(function (profile) {
-      var a = $('<a/>');
-      a.attr('href', '#');
-      a.text(profile.name);
-      a.data('name', profile.name);
-      var i = $('<i/>');
-      i.addClass(profileIcons[profile.profileType]);
-      a.prepend(i);
-      var li = $('<li/>');
-      li.addClass('profile');
-      li.append(a);
-      if (profile.name === localStorage['currentProfileName']) {
-        li.addClass('active');
-        if (localStorage['currentProfileReadOnly'] === 'false' &&
-            currentDomain != null) {
-          $('#condition-divider').show();
-        } else {
-          $('#add-condition').hide();
-        }
-        currentProfile = profile;
-      }
-      li.insertAfter(pos);
-      pos = li;
-
-      if (possibleResults != null &&
-          possibleResults.hasOwnProperty(profile.name) &&
-          currentMatch != profile.name) {
-        li = li.clone();
-        li.removeClass('active');
-        li.removeClass('profile');
-        $('a', li).data('name', profile.name);
-        tempProfiles.append(li);
-      }
-    });
-    $('#profiles-divider').insertAfter($('.nav > li')[2]);
-    if (currentDomain != null && possibleResults != null) {
-      $('#current-domain').text(currentDomain);
-      $('#condition-divider').show();
-    } else {
-      $('#temp-rule').hide();
-    }
-    if (localStorage['currentProfileName'] == '') {
-      $('#external-profile').show();
-      $('#external-profile a').click(function () {
-        $('#external-profile a span').hide();
-        $('#external-profile input').show().focus();
-        return false;
+    storage.get(null, function (options) {
+      var profiles = [];
+      profiles.unshift({
+        name: 'system',
+        profileType: 'SystemProfile'
       });
+      profiles.unshift({
+        name: 'direct',
+        profileType: 'DirectProfile'
+      });
+      for (var key in options) {
+        if (options.hasOwnProperty(key) && key[0] === '+') {
+          profiles.push(options[key]);
+        }
+      }
 
-      var once = false;
-      $('#external-profile input').change(function (e) {
-        if (once) return;
-        var name = e.target.value;
-        if (name.length > 0) {
-          profiles.forEach(function (profile) {
-            if (profile.name == name || name == 'auto_detect') {
-              $('#external-profile a').addClass('error');
-              name = '';
-            }
-          });
-          if (name.length > 0) {
-            once = true;
-            chrome.runtime.sendMessage({
-              action: 'externalProfile.add',
-              data: name
-            });
-            window.close();
+      var pos = $('#profiles-divider');
+      var tempProfiles = $('#temp-rule-profiles');
+      var currentMatch = localStorage['currentMatch'] ||
+                        localStorage['currentProfileName'];
+      profiles.forEach(function (profile) {
+        var a = $('<a/>');
+        a.attr('href', '#');
+        a.text(profile.name);
+        a.data('name', profile.name);
+        var i = $('<i/>');
+        i.addClass(profileIcons[profile.profileType]);
+        a.prepend(i);
+        var li = $('<li/>');
+        li.addClass('profile');
+        li.append(a);
+        if (profile.name === localStorage['currentProfileName']) {
+          li.addClass('active');
+          if (localStorage['currentProfileReadOnly'] === 'false' &&
+              currentDomain != null) {
+            $('#condition-divider').show();
+          } else {
+            $('#add-condition').hide();
           }
+          currentProfile = profile;
+        }
+        li.insertAfter(pos);
+        pos = li;
+
+        if (possibleResults != null &&
+            possibleResults.hasOwnProperty(profile.name) &&
+            currentMatch != profile.name) {
+          li = li.clone();
+          li.removeClass('active');
+          li.removeClass('profile');
+          $('a', li).data('name', profile.name);
+          tempProfiles.append(li);
         }
       });
-    }
+      $('#profiles-divider').insertAfter($('.nav > li')[2]);
+      if (currentDomain != null && possibleResults != null) {
+        $('#current-domain').text(currentDomain);
+        $('#condition-divider').show();
+      } else {
+        $('#temp-rule').hide();
+      }
+      if (localStorage['currentProfileName'] == '') {
+        $('#external-profile').show();
+        $('#external-profile a').click(function () {
+          $('#external-profile a span').hide();
+          $('#external-profile input').show().focus();
+          return false;
+        });
+
+        var once = false;
+        $('#external-profile input').change(function (e) {
+          if (once) return;
+          var name = e.target.value;
+          if (name.length > 0) {
+            profiles.forEach(function (profile) {
+              if (profile.name == name || name == 'auto_detect') {
+                $('#external-profile a').addClass('error');
+                name = '';
+              }
+            });
+            if (name.length > 0) {
+              once = true;
+              chrome.runtime.sendMessage({
+                action: 'externalProfile.add',
+                data: name
+              });
+              window.close();
+            }
+          }
+        });
+      }
+    });
   });
 })();

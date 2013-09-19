@@ -25,7 +25,7 @@ class SwitchyOptions extends Plainable {
    * The schemeVersion is increased every time the structure of the result of
    * [toPlain] changes.
    */
-  static const schemaVersion = 0;
+  static const schemaVersion = 1;
 
   bool confirmDeletion;
 
@@ -52,21 +52,15 @@ class SwitchyOptions extends Plainable {
   }
 
   Object toPlain([Map<String, Object> p]) {
-    if (p == null) p = new Map<String, Object>();
-    p['confirmDeletion'] = confirmDeletion;
-    p['refreshOnProfileChange'] = refreshOnProfileChange;
-    p['startupProfileName'] = startupProfileName;
-    p['enableQuickSwitch'] = enableQuickSwitch;
-    p['revertProxyChanges'] = revertProxyChanges;
-    p['downloadInterval'] = downloadInterval;
+    p = profiles.toPlain(p);
+    p['-confirmDeletion'] = confirmDeletion;
+    p['-refreshOnProfileChange'] = refreshOnProfileChange;
+    p['-startupProfileName'] = startupProfileName;
+    p['-enableQuickSwitch'] = enableQuickSwitch;
+    p['-revertProxyChanges'] = revertProxyChanges;
+    p['-downloadInterval'] = downloadInterval;
 
-    p['quickSwitchProfiles'] = quickSwitchProfiles;
-
-    var plainProfiles = new Map<String, Object>();
-    profiles.forEach((p) {
-      plainProfiles[p.name] = p.toPlain();
-    });
-    p['profiles'] = profiles.toPlain();
+    p['-quickSwitchProfiles'] = quickSwitchProfiles;
 
     p['schemaVersion'] = schemaVersion;
     return p;
@@ -77,34 +71,212 @@ class SwitchyOptions extends Plainable {
     if (version != schemaVersion) {
       throw new UnsupportedError('Unsupported schemeVersion: $version.');
     }
-    confirmDeletion = p['confirmDeletion'];
-    refreshOnProfileChange = p['refreshOnProfileChange'];
-    startupProfileName = p['startupProfileName'];
-    enableQuickSwitch = p['enableQuickSwitch'];
-    revertProxyChanges = p['revertProxyChanges'];
-    downloadInterval = p['downloadInterval'];
+    confirmDeletion = p['-confirmDeletion'];
+    refreshOnProfileChange = p['-refreshOnProfileChange'];
+    startupProfileName = p['-startupProfileName'];
+    enableQuickSwitch = p['-enableQuickSwitch'];
+    revertProxyChanges = p['-revertProxyChanges'];
+    downloadInterval = p['-downloadInterval'];
 
     quickSwitchProfiles.clear();
-    quickSwitchProfiles.addAll(p['quickSwitchProfiles']);
+    quickSwitchProfiles.addAll(p['-quickSwitchProfiles']);
 
-    profiles.loadPlain(p['profiles']);
+    profiles.loadPlain(p);
   }
 
-  SwitchyOptions() {}
-
-  SwitchyOptions.fromPlain(Object p) {
-    this.loadPlain(p);
-  }
-
-  SwitchyOptions.defaults() {
+  SwitchyOptions() {
     confirmDeletion = true;
     refreshOnProfileChange = true;
     startupProfileName = '';
     enableQuickSwitch = false;
     revertProxyChanges = false;
     downloadInterval = 24 * 60;
-
-    quickSwitchProfiles.clear();
   }
 
+  SwitchyOptions.fromPlain(Object p) {
+    this.loadPlain(p);
+  }
+
+}
+
+class StoredSwitchyOptions extends SwitchyOptions {
+  static const schemaVersion = SwitchyOptions.schemaVersion;
+
+  BrowserStorage storage;
+  final Map<Profile, ChangeUnobserver> _unobservers = {};
+  final Completer _readyCompleter = new Completer();
+  Future get ready => _readyCompleter.future;
+  Map<String, String> _revisionLock = {};
+
+  StoredSwitchyOptions(this.storage) : super() {
+    _readyCompleter.complete();
+  }
+
+  StoredSwitchyOptions.fromPlain(Map<String, Object> data, this.storage) {
+    try {
+      this.loadPlain(data);
+    } catch (ex) {
+      _readyCompleter.completeError(ex);
+      throw ex;
+    }
+    this.startSyncing();
+    _readyCompleter.complete();
+  }
+
+  StoredSwitchyOptions.loadFrom(this.storage) {
+    this.storage.get(null).then((data) {
+      try {
+        this.loadPlain(data);
+      } catch (ex) {
+        _readyCompleter.completeError(ex);
+      }
+      this.startSyncing();
+      _readyCompleter.complete();
+    });
+  }
+
+  void startSyncing() {
+    deliverChangesSync();
+    observeChanges(this as Observable, (List<ChangeRecord> changes) {
+      var items = new Map<String, Object>();
+      changes.forEach((record) {
+        items['-' + record.key] = record.newValue;
+      });
+      storage.set(items);
+    });
+
+    observe(this.quickSwitchProfiles, (_) {
+      storage.set({'-quickSwitchProfiles': this.quickSwitchProfiles});
+    });
+
+    var observeProfile = (profile) {
+      _unobservers[profile] = observeChanges(profile, (changes) {
+        if (this.profiles.contains(profile)) {
+          if (changes.any(
+              (c) => c.type != ChangeRecord.FIELD || c.key != 'revision')) {
+            if (profile.revision == null ||
+                _revisionLock[profile.name] != profile.revision) {
+              profile.revision =
+                  new DateTime.now().millisecondsSinceEpoch.toRadixString(16);
+              var key = '+' + profile.name;
+              var value = profile;
+              value = value.toPlain();
+              var items = {};
+              items[key] = value;
+              storage.set(items);
+            }
+          }
+        }
+      });
+    };
+
+    profiles.forEach(observeProfile);
+
+    observeChanges(this.profiles, (List<ChangeRecord> changes) {
+      var items = new Map<String, Object>();
+      changes.forEach((record) {
+        switch (record.type) {
+          case ChangeRecord.INDEX:
+          case ChangeRecord.INSERT:
+            var value = record.newValue as Profile;
+            value = value.toPlain();
+            items['+' + value.name] = value;
+            break;
+          case ChangeRecord.REMOVE:
+            items['+' + record.oldValue.name] = null;
+            break;
+        }
+        if (record.type == ChangeRecord.REMOVE ||
+            record.type == ChangeRecord.INDEX) {
+          _unobservers[record.oldValue]();
+        }
+        if (record.type == ChangeRecord.INSERT ||
+            record.type == ChangeRecord.INDEX) {
+          observeProfile(record.newValue);
+        }
+      });
+      var removed = new List<String>();
+      items.forEach((key, value) {
+        if (value == null) removed.add(key);
+      });
+      removed.forEach((key) {
+        items.remove(key);
+      });
+      storage.set(items);
+      storage.remove(removed);
+    });
+  }
+
+  Future storeAll() {
+    return storage.set(this.toPlain());
+  }
+
+  Stream<ChangeRecord> _onUpdate;
+
+  Stream<ChangeRecord> get onUpdate {
+    if (_onUpdate == null) {
+      _onUpdate = storage.onChange.where((record) {
+        switch (record.key[0]) {
+          case '-':
+            if (record.newValue != record.oldValue &&
+                record.newValue != null && record.oldValue != null) {
+              switch (record.key) {
+                case '-confirmDeletion':
+                  confirmDeletion = record.newValue;
+                  break;
+                case '-refreshOnProfileChange':
+                  refreshOnProfileChange = record.newValue;
+                  break;
+                case '-startupProfileName':
+                  startupProfileName = record.newValue;
+                  break;
+                case '-enableQuickSwitch':
+                  enableQuickSwitch = record.newValue;
+                  break;
+                case '-revertProxyChanges':
+                  revertProxyChanges = record.newValue;
+                  break;
+                case '-downloadInterval':
+                  downloadInterval = record.newValue;
+                  break;
+                case '-quickSwitchProfiles':
+                  quickSwitchProfiles.clear();
+                  quickSwitchProfiles.addAll(record.newValue);
+                  break;
+              }
+              return true;
+            }
+            break;
+          case '+':
+            if (record.newValue != record.oldValue) {
+              if (record.newValue == null) {
+                profiles.remove(profiles[record.key.substring(1)]);
+              } else if (record.oldValue == null) {
+                profiles.add(new Profile.fromPlain(record.newValue));
+              } else {
+                var rev = record.newValue['revision'];
+                var profile = profiles.getProfileByName(
+                    record.key.substring(1));
+                if (profile != null &&
+                    (profile.revision == null ||
+                    profile.revision.length <= rev.length &&
+                    profile.revision.compareTo(rev) < 0)) {
+                  var name = record.key.substring(1);
+                  deliverChangesSync();
+                  _revisionLock[name] = rev;
+                  // TODO(catus): Does this method really work on all profiles?
+                  profiles.getProfileByName(name).loadPlain(record.newValue);
+                  deliverChangesSync();
+                  _revisionLock.remove(name);
+                }
+              }
+              return true;
+            }
+            break;
+        }
+        return false;
+      });
+    }
+    return _onUpdate;
+  }
 }

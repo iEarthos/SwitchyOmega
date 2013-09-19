@@ -58,13 +58,16 @@ class ProfileCollection extends HashSet<Profile> with Observable
   }
 
   /**
-   * Convert this collection to a list of plain profile objects.
+   * Convert this collection to a map of plain profile objects.
    * Predefined profiles will not be included in the result.
    */
-  List<Object> toPlain([List<Object> p, Object config]) {
-    if (p == null) p = new List<Object>();
-    p.addAll(_profiles.values.where((prof) => !prof.profile.predefined)
-        .map((prof) => prof.profile.toPlain()));
+  Map<String, Object> toPlain([Map<String, Object> p, Object config]) {
+    if (p == null) p = new Map<String, Object>();
+    _profiles.values.forEach((prof) {
+      if (!prof.profile.predefined) {
+        p['+' + prof.profile.name] = prof.profile.toPlain();
+      }
+    });
 
     return p;
   }
@@ -77,9 +80,16 @@ class ProfileCollection extends HashSet<Profile> with Observable
     }
   }
 
-  void loadPlain(List<Object> p) {
-    this.addAll(p.map(
-        (Map<String, Object> profile) => new Profile.fromPlain(profile)));
+  void loadPlain(Map<String, Object> p) {
+    var plainProfiles = new Queue<Profile>();
+
+    p.forEach((key, value) {
+      if (key[0] == '+') {
+        plainProfiles.add(new Profile.fromPlain(value));
+      }
+    });
+
+    this.addAll(plainProfiles);
   }
 
   factory ProfileCollection.fromPlain(List<Object> p) {

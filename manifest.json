@@ -22,7 +22,13 @@
   "homepage_url": "https://chrome.google.com/webstore/detail/dpplabbmogkhghncfbfdeeokoefdjegm",
   "minimum_chrome_version": "22.0.0",
   "options_page": "web/out/options/options_safe.html",
-  "permissions": [ "proxy", "tabs", "alarms", "<all_urls>" ],
+  "permissions": [
+    "proxy",
+    "tabs",
+    "alarms",
+    "storage",
+    "<all_urls>"
+  ],
   "sandbox": {
     "pages": [
       "web/out/options/options.html",

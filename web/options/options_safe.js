@@ -25,6 +25,8 @@
     i18nCache[name] = chrome.i18n.getMessage(name);
   });
 
+  var storage = chrome.storage.local;
+
   // Set the title
   document.title = i18nCache['options_title'];
 
@@ -52,17 +54,12 @@
       respond(i18nCache);
     },
     'options.get': function (data, respond) {
-      var options = localStorage['options'];
-      if (options) {
-        options = JSON.parse(options);
-      } else {
-        options = null;
-      }
-
-      respond({
-        'options': options,
-        'tab': localStorage['options_last_tab'],
-        'currentProfileName': localStorage['currentProfileName'] || 'direct'
+      storage.get(null, function (items) {
+        respond({
+          'options': items,
+          'tab': localStorage['options_last_tab'],
+          'currentProfileName': localStorage['currentProfileName'] || 'direct'
+        });
       });
     },
     'options.reset': function (data, respond) {
@@ -91,6 +88,15 @@
           respond({'status': status, 'error': error});
         }
       });
+    },
+    'storage.get': function (keys, respond) {
+      storage.get(keys, respond);
+    },
+    'storage.set': function (items, respond) {
+      storage.set(items, respond);
+    },
+    'storage.remove': function (keys, respond) {
+      storage.remove(keys, respond);
     }
   });
 

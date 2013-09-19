@@ -1,10 +1,24 @@
 part of switchy_browser;
 
-SwitchyOptions upgradeOptions(Map<String, Object> oldOptions) {
+StoredSwitchyOptions upgradeOptions(Map<String, Object> oldOptions,
+                                    BrowserStorage storage) {
+  if (oldOptions['schemaVersion'] == 0) {
+    var newOptions = new Map<String, Object>();
+    oldOptions.forEach((key, value) {
+      if (key == 'profiles') {
+        (value as Map<String, Object>).forEach((name, profile) {
+          newOptions['+' + name] = profile;
+        });
+      } else {
+        newOptions['-' + key] = value;
+      }
+    });
+    return new StoredSwitchyOptions.fromPlain(newOptions, storage);
+  }
   var config = JSON.parse(oldOptions['config']) as Map<String, Object>;
   if (config != null && config['firstTime'] != null) {
-    var options = new SwitchyOptions.defaults();
-    // Upgrade from SwitchySharp options
+    var options = new StoredSwitchyOptions(storage);
+    // Upgrade from SwitchySharp options.
     if (config['confirmDeletion'] != null) {
       options.confirmDeletion = config['confirmDeletion'] == true;
     }
