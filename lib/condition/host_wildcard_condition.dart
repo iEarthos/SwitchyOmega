@@ -75,7 +75,7 @@ class HostWildcardCondition extends HostCondition
 
   HostWildcardCondition([String pattern = '']) {
     this.pattern = pattern;
-    observe(this as Observable, (_) {
+    observe(this, (_) {
       _regex = null;
       _recorder = null;
     });

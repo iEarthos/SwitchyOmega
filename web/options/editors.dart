@@ -19,7 +19,6 @@
  */
 library switchy_options_editors;
 
-import 'dart:json';
 import 'package:web_ui/web_ui.dart';
 import 'package:switchyomega/switchyomega.dart';
 import 'package:switchyomega/html/converters.dart' as convert;

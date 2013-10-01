@@ -22,7 +22,6 @@ library switchy_condition;
 
 import 'dart:core';
 import 'dart:json' as JSON;
-import 'dart:math';
 import 'package:web_ui/observe/observable.dart';
 import '../code_writer.dart';
 import '../lang/lib.dart';

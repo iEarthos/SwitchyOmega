@@ -142,7 +142,6 @@ class FixedProfile extends IncludableProfile {
     bypassList.addAll(bl.map((b) => new BypassCondition.fromPlain(b)));
   }
 
-
   factory FixedProfile.fromPlain(Map<String, Object> p) {
     var f = new FixedProfile(p['name']);
     f.loadPlain(p);

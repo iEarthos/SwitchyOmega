@@ -25,8 +25,8 @@ part of switchy_profile;
  * but they are not converted to plain.
  */
 
-class ProfileCollection extends HashSet<Profile> with Observable
-   implements Set<Profile>, Plainable, ProfileTracker {
+class ProfileCollection extends ObservableSet<Profile>
+   implements Plainable, ProfileTracker {
   Map<String, _ProfileData> _profiles;
   bool _renamingProfile = false;
 
