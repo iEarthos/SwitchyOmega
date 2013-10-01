@@ -116,11 +116,12 @@ class SwitchProfile extends InclusiveProfile with ListMixin, Observable
               if (tracker == null) return;
               var changed = false;
               changes.forEach((rec2) {
-                if (rec2.key == 'profileName' &&
-                    rec2.oldValue != rec2.newValue) {
-                  tracker.removeReferenceByName(this, rec2.oldValue);
-                  tracker.addReferenceByName(this, rec2.newValue);
+                if (rec2.oldValue != rec2.newValue) {
                   changed = true;
+                  if (rec2.key == 'profileName') {
+                    tracker.removeReferenceByName(this, rec2.oldValue);
+                    tracker.addReferenceByName(this, rec2.newValue);
+                  }
                 }
               });
               if (changed) {

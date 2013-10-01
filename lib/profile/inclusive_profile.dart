@@ -158,9 +158,28 @@ class Rule extends Plainable {
     this.profileName = p['profileName'];
   }
 
-  Rule.fromPlain(Map<String, Object> p) {
-    this.loadPlain(p);
+  factory Rule.fromPlain(Map<String, Object> p) {
+    return new Rule(new Condition.fromPlain(p['condition']), p['profileName']);
   }
 
-  Rule(this.condition, this.profileName);
+  Rule(this.condition, this.profileName) {
+    var onConditionChange = (_) {
+      notifyChange(this as Observable, ChangeRecord.FIELD,
+          '[condition]', '', null);
+    };
+    var unobserve = observe(this.condition, onConditionChange);
+    observeChanges(this as Observable, (List<ChangeRecord> changes) {
+      var conditionChanged = false;
+      changes.forEach((rec) {
+        if (rec.type == ChangeRecord.FIELD &&
+            rec.key == 'condition') {
+          conditionChanged = true;
+        }
+      });
+      if (conditionChanged) {
+        unobserve();
+        unobserve = observe(this.condition, onConditionChange);
+      }
+    });
+  }
 }
