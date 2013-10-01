@@ -114,7 +114,16 @@
       if (data.config == null) return;
       var onProxySet = function () {
         if (data.refresh) {
-          chrome.tabs.reload(/* the selected tab of the current window */);
+          chrome.tabs.query({
+            active: true,
+            lastFocusedWindow: true
+          }, function (tabs) {
+            var tab = tabs[0];
+            // Avoid reloading chrome or extension pages.
+            if (tab.url != null && tab.url.indexOf('chrome') != 0) {
+              chrome.tabs.reload(/* the selected tab of the current window */);
+            }
+          })
         }
         respond();
       };
