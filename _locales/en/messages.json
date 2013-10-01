@@ -82,6 +82,9 @@
   "options_save": {
     "message": "Save options"
   },
+  "options_undo": {
+    "message": "Undo changes"
+  },
   "options_reset": {
     "message": "Reset options"
   },
@@ -374,6 +377,15 @@
   "options_resetOptionsConfirm": {
     "message": "Do you really want to reset the options? All profiles and settings will be LOST!"
   },
+  "options_modalHeader_undoChanges": {
+    "message": "Undo Changes"
+  },
+  "options_undoChangesConfirm": {
+    "message": "Do you want to discard any changes since you opened the options page?"
+  },
+  "options_undoSuccess": {
+    "message": "Recent changes to options undone."
+  },
   "options_resetSuccess": {
     "message": "Options reset."
   },
@@ -394,9 +406,6 @@
   },
   "options_profileDownloadError": {
     "message": "Error downloading profile data!"
-  },
-  "options_leaveConfirm": {
-    "message": "Please make sure that you have saved the options before you leave!"
   },
   "options_downloadProfileNow": {
     "message": "Download Profile Now"

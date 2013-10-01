@@ -364,7 +364,29 @@ void handleNewProfileUI() {
   });
 }
 
-void handleOptionsResetUI() {
+Map<String, Object> optionsBackup = null;
+
+void handleActionsUI() {
+  js.on('options.undo', (String type, [Function respond]) {
+    var o = optionsBackup;
+    optionsBackup = {
+                     'options': options.toJson(),
+                     'currentProfileName': currentProfileName,
+                     'tab': null
+    };
+    ChangeUnobserver unobserve;
+    unobserve = observe(() => options, (_) {
+      js.send('tab.set', o['tab']);
+      query('#options-undo-success').style.top = "0";
+      unobserve();
+    });
+    options = new StoredSwitchyOptions.fromPlain(o['options'],
+        browser.storage);
+    options.storeAll();
+
+    currentProfileName = o['currentProfileName'];
+  });
+
   js.on('options.reset', (String type, [Function respond]) {
     safe.send('options.reset', null,
         (Map<String, Object> o, [Function respond]) {
@@ -417,6 +439,7 @@ void downloadProfileNow(UpdatingProfile p, Event e) {
 
 void main() {
   safe.send('options.get', null, (Map<String, Object> o, [Function respond]) {
+    optionsBackup = o;
     ChangeUnobserver unobserve;
     unobserve = observe(() => options, (_) {
       js.send('tab.set', o['tab']);
@@ -436,7 +459,7 @@ void main() {
     currentProfileName = o['currentProfileName'];
   });
 
-  handleOptionsResetUI();
+  handleActionsUI();
   handleNewProfileUI();
   handleFixedServerUI();
   handleSwitchProfileUI();

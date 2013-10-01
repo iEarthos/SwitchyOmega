@@ -153,6 +153,25 @@ class ProfileCollection extends ObservableSet<Profile>
   }
 
   /**
+   * Remove [value] from this set if [value] is not predefined.
+   * If the [value] is still referred by another profile, the references are
+   * cleared.
+   * This method may cause inconsistency unless used with great care.
+   */
+  bool forceRemove(Profile value) {
+    if (value.predefined) return false;
+    var data = _profiles[value.name];
+    if (data == null) return false;
+    if (data.referredBy.length > 0) {
+      new Map.from(data.referredBy).forEach((profile, count) {
+        for (var i = 0; i < count; i++)
+          removeReference(profile, value);
+      });
+    }
+    return remove(value);
+  }
+
+  /**
    * This method doesn't really clear all profiles, because predefined
    * profiles cannot be removed.
    */

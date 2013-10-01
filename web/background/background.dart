@@ -278,15 +278,14 @@ void main() {
   safe.on({
     'options.reset': (_, [respond]) {
       options.stopSyncing();
-      options.clear();
       options = new StoredSwitchyOptions.fromPlain(
           JSON.parse(initialOptions), browser.storage);
       options.storeAll().then((_) {
         try {
           options.onUpdate.listen(onOptionsUpdate);
         } catch (_) {}
+        respond(null);
       });
-      respond(null);
     },
     'profile.apply': (name, [_]) {
       applyProfile(name, refresh: options.refreshOnProfileChange);

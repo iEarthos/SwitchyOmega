@@ -98,11 +98,6 @@
       $('#restore-local').on('click', function (e) {
         $('#restore-local-file').click();
       });
-
-      // Leave confirm
-      $(window).on('beforeunload', function () {
-        return i18n.getValue('options_leaveConfirm');
-      });
     },
     'quickswitch.refresh': function () {
       $('.cycle-profile-container').sortable('refresh');
@@ -270,6 +265,11 @@
       if ($('#profile-new-create').is('.disabled')) return;
       var type = $('input[name="profile-new-type"]:checked').val();
       dart.send('profile.create', type);
+    });
+
+    // Undo changes
+    $('body').on('click', '#undo-changes-confirm', function (e) {
+      dart.send('options.undo', null);
     });
 
     // Reset options

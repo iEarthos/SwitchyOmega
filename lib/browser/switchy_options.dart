@@ -220,11 +220,8 @@ class StoredSwitchyOptions extends SwitchyOptions {
   }
 
   Future storeAll() {
-    return storage.set(this.toPlain());
-  }
-
-  Future clear() {
-    return storage.remove(null);
+    var items = this.toPlain();
+    return storage.remove(null).then((_) => storage.set(items));
   }
 
   Stream<ChangeRecord> _onUpdate;
@@ -268,7 +265,7 @@ class StoredSwitchyOptions extends SwitchyOptions {
           case '+':
             if (record.newValue != record.oldValue) {
               if (record.newValue == null) {
-                profiles.remove(profiles[record.key.substring(1)]);
+                profiles.forceRemove(profiles[record.key.substring(1)]);
               } else if (record.oldValue == null) {
                 profiles.add(new Profile.fromPlain(record.newValue));
               } else {
@@ -282,7 +279,6 @@ class StoredSwitchyOptions extends SwitchyOptions {
                   var name = record.key.substring(1);
                   deliverChangesSync();
                   _revisionLock[name] = rev;
-                  // TODO(catus): Does this method really work on all profiles?
                   profiles.getProfileByName(name).loadPlain(record.newValue);
                   deliverChangesSync();
                   _revisionLock.remove(name);
