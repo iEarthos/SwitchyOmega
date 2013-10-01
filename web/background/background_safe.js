@@ -238,7 +238,11 @@
       storage.set(items, respond);
     },
     'storage.remove': function (keys, respond) {
-      storage.remove(keys, respond);
+      if (keys == null) {
+        storage.clear(respond);
+      } else {
+        storage.remove(keys, respond);
+      }
     },
     'storage.watch': function () {
       chrome.storage.onChanged.addListener(function(changes, namespace) {
@@ -267,7 +271,7 @@
         c.send('options.update', JSON.parse(localStorage['options']));
         break;
       case 'options.reset':
-        c.send('options.reset', null, function (options) {
+        c.send('options.reset', null, function () {
           respond();
         });
         return true;

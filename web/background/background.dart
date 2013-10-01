@@ -181,6 +181,31 @@ const String initialOptions = '''
     "proxy"}],"name":"auto switch","color":"#99dd99","defaultProfileName":
     "direct"}}''';
 
+void onOptionsUpdate(record) {
+  if (record.key[0] == '+') {
+    var profileName = record.key.substring(1);
+    if (tempProfile != null) {
+      for (var i = 0; i < tempProfile.length; ) {
+        if (options.profiles[tempProfile[i].profileName] == null) {
+          tempProfile.removeAt(i);
+        } else {
+          i++;
+        }
+      }
+      deliverChangesSync();
+    }
+    if (options.profiles[currentProfile.name] == null) {
+      applyProfile(getStartupProfile(null).name);
+    } else if (options.profiles[profileName] != null &&
+        currentProfile.name == profileName ||
+        (currentProfile is InclusiveProfile &&
+            options.profiles.hasReferenceToName(currentProfile, profileName))
+            ) {
+      applyProfile(currentProfile.name);
+    }
+  }
+}
+
 void main() {
   safe.send('options.get', null, (Map<String, Object> o, [Function respond]) {
     if (o['options'] == null) {
@@ -219,30 +244,7 @@ void main() {
         }
       }
 
-      options.onUpdate.listen((record) {
-        if (record.key[0] == '+') {
-          var profileName = record.key.substring(1);
-          if (tempProfile != null) {
-            for (var i = 0; i < tempProfile.length; ) {
-              if (options.profiles[tempProfile[i].profileName] == null) {
-                tempProfile.removeAt(i);
-              } else {
-                i++;
-              }
-            }
-            deliverChangesSync();
-          }
-          if (options.profiles[currentProfile.name] == null) {
-            applyProfile(getStartupProfile(null).name);
-          } else if (options.profiles[profileName] != null &&
-              currentProfile.name == profileName ||
-              (currentProfile is InclusiveProfile &&
-              options.profiles.hasReferenceToName(currentProfile, profileName))
-              ) {
-            applyProfile(currentProfile.name);
-          }
-        }
-      });
+      options.onUpdate.listen(onOptionsUpdate);
     }
     browser.setAlarm('download', options.downloadInterval).listen((_) {
       updateProfiles();
@@ -275,11 +277,16 @@ void main() {
 
   safe.on({
     'options.reset': (_, [respond]) {
+      options.stopSyncing();
+      options.clear();
       options = new StoredSwitchyOptions.fromPlain(
           JSON.parse(initialOptions), browser.storage);
-      options.storeAll();
+      options.storeAll().then((_) {
+        try {
+          options.onUpdate.listen(onOptionsUpdate);
+        } catch (_) {}
+      });
       respond(null);
-      applyProfile(getStartupProfile(null).name);
     },
     'profile.apply': (name, [_]) {
       applyProfile(name, refresh: options.refreshOnProfileChange);

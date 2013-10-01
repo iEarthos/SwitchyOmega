@@ -370,11 +370,13 @@ void handleOptionsResetUI() {
         (Map<String, Object> o, [Function respond]) {
       ChangeUnobserver unobserve;
       unobserve = observe(() => options, (_) {
-        js.send('tab.set');
+        js.send('tab.set', o['tab']);
         query('#options-reset-success').style.top = "0";
         unobserve();
       });
-      options = new StoredSwitchyOptions.fromPlain(o, browser.storage);
+      options = new StoredSwitchyOptions.fromPlain(o['options'],
+          browser.storage);
+      currentProfileName = o['currentProfileName'];
     });
   });
 }

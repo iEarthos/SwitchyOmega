@@ -32,6 +32,16 @@
 
   var c = new Communicator();
 
+  var loadOptions = function (respond) {
+    storage.get(null, function (items) {
+      respond({
+        'options': items,
+        'tab': localStorage['options_last_tab'],
+        'currentProfileName': localStorage['currentProfileName'] || 'direct'
+      });
+    });
+  };
+
   c.on({
     'tab.get': function (_, respond) {
       var hash;
@@ -54,27 +64,14 @@
       respond(i18nCache);
     },
     'options.get': function (data, respond) {
-      storage.get(null, function (items) {
-        respond({
-          'options': items,
-          'tab': localStorage['options_last_tab'],
-          'currentProfileName': localStorage['currentProfileName'] || 'direct'
-        });
-      });
+      loadOptions(respond);
     },
     'options.reset': function (data, respond) {
       chrome.runtime.sendMessage({
         action: 'options.reset'
       }, function () {
-        respond(JSON.parse(localStorage['options']));
+        loadOptions(respond);
       });
-    },
-    'options.set': function (data, respond) {
-      localStorage['options'] = data;
-      chrome.runtime.sendMessage({
-        action: 'options.update'
-      });
-      respond();
     },
     'ajax.get': function (url, respond) {
       jQuery.ajax({
@@ -96,7 +93,11 @@
       storage.set(items, respond);
     },
     'storage.remove': function (keys, respond) {
-      storage.remove(keys, respond);
+      if (keys == null) {
+        storage.clear(respond);
+      } else {
+        storage.remove(keys, respond);
+      }
     }
   });
 

@@ -104,6 +104,7 @@ class StoredSwitchyOptions extends SwitchyOptions {
 
   BrowserStorage storage;
   final Map<Profile, ChangeUnobserver> _unobservers = {};
+  final List<ChangeUnobserver> _syncObservers = [];
   final Completer _readyCompleter = new Completer();
   Future get ready => _readyCompleter.future;
   Map<String, String> _revisionLock = {};
@@ -137,17 +138,18 @@ class StoredSwitchyOptions extends SwitchyOptions {
 
   void startSyncing() {
     deliverChangesSync();
-    observeChanges(this as Observable, (List<ChangeRecord> changes) {
+    _syncObservers.add(observeChanges(this as Observable,
+        (List<ChangeRecord> changes) {
       var items = new Map<String, Object>();
       changes.forEach((record) {
         items['-' + record.key] = record.newValue;
       });
       storage.set(items);
-    });
+    }));
 
-    observe(this.quickSwitchProfiles, (_) {
+    _syncObservers.add(observe(this.quickSwitchProfiles, (_) {
       storage.set({'-quickSwitchProfiles': this.quickSwitchProfiles});
-    });
+    }));
 
     var observeProfile = (profile) {
       _unobservers[profile] = observeChanges(profile, (changes) {
@@ -172,7 +174,8 @@ class StoredSwitchyOptions extends SwitchyOptions {
 
     profiles.forEach(observeProfile);
 
-    observeChanges(this.profiles, (List<ChangeRecord> changes) {
+    _syncObservers.add(observeChanges(this.profiles,
+        (List<ChangeRecord> changes) {
       var items = new Map<String, Object>();
       changes.forEach((record) {
         switch (record.type) {
@@ -205,18 +208,32 @@ class StoredSwitchyOptions extends SwitchyOptions {
       });
       storage.set(items);
       storage.remove(removed);
-    });
+    }));
+  }
+
+  void stopSyncing() {
+    _syncObservers.forEach((unobserve) => unobserve());
+    _syncObservers.clear();
+    _unobservers.forEach((_, unobserve) => unobserve());
+    _unobservers.clear();
+    _onUpdate = null;
   }
 
   Future storeAll() {
     return storage.set(this.toPlain());
   }
 
+  Future clear() {
+    return storage.remove(null);
+  }
+
   Stream<ChangeRecord> _onUpdate;
 
   Stream<ChangeRecord> get onUpdate {
     if (_onUpdate == null) {
+      Stream<ChangeRecord> onUpdate = null;
       _onUpdate = storage.onChange.where((record) {
+        if (_onUpdate != onUpdate) return false;
         switch (record.key[0]) {
           case '-':
             if (record.newValue != record.oldValue &&
@@ -277,6 +294,7 @@ class StoredSwitchyOptions extends SwitchyOptions {
         }
         return false;
       });
+      onUpdate = _onUpdate;
     }
     return _onUpdate;
   }

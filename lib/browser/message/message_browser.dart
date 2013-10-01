@@ -334,6 +334,6 @@ class MessageBrowserStorage extends BrowserStorage {
       });
       _c.send('storage.watch');
     }
-    return _changes.stream;
+    return _changes.stream.asBroadcastStream();
   }
 }

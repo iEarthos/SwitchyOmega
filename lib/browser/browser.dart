@@ -61,9 +61,30 @@ class DownloadFailException implements Exception {
   DownloadFailException(this.status, this.error);
 }
 
+/**
+ * A [BrowserStorage] provides async storage of plain data in the browser.
+ */
 abstract class BrowserStorage {
+  /**
+   * Get the items by [keys] from the storage.
+   * If [keys] is null, fetch all items in the storage.
+   */
   Future<Map<String, Object>> get(List<String> keys);
+
+  /**
+   * Store the [items] in the storage.
+   */
   Future set(Map<String, Object> items);
+
+  /**
+   * Remove the items with [keys] from the storage.
+   * If [keys] is null, clear all items in the storage.
+   */
   Future remove(List<String> keys);
+
+  /**
+   * Get a stream of [ChangeRecord]s which is filled when the items in storage
+   * has changed, internally (via this [BrowserStorage] instance) or externally.
+   */
   Stream<ChangeRecord> get onChange;
 }
