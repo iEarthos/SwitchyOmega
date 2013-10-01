@@ -179,8 +179,9 @@ class StoredSwitchyOptions extends SwitchyOptions {
           case ChangeRecord.INDEX:
           case ChangeRecord.INSERT:
             var value = record.newValue as Profile;
+            var key = value.name;
             value = value.toPlain();
-            items['+' + value.name] = value;
+            items['+' + key] = value;
             break;
           case ChangeRecord.REMOVE:
             items['+' + record.oldValue.name] = null;
