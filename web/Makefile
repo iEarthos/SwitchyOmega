@@ -2,7 +2,7 @@ include ../Makefile.inc
 
 ENTRY_POINTS=$(addprefix out/,$(wildcard options/*.html background/*.html))
 
-all: dwc js
+all: dwc js dartbug13421
 
 dwc: entries out/packages out/options/packages out/background/packages
 
@@ -42,3 +42,7 @@ out/options/packages out/background/packages: ../ipackages | entries
 	@if [ "`readlink $@`" != '../../$<' ]; then \
 		ln -sfT ../../$< $@; \
 	fi
+
+dartbug13421: js
+	sed -si -e '/^_convertNativeToDart_EventTarget/,/setInterval/ s/"setInterval" in e/"postMessage" in e \&\& "self" in e/' \
+		$(shell find out/ -name "*.html_bootstrap.dart.js")
