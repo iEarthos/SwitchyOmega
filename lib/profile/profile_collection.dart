@@ -233,13 +233,16 @@ class ProfileCollection extends ObservableSet<Profile>
     if (_renamingProfile) return;
     var from_data = _profiles[from.name];
     var to_data = _profiles[to.name];
-    from_data.directRef.decrease(to);
-    from_data.allRef.decrease(to);
+
     to_data.referredBy.decrease(from);
 
-    from_data.referredBy.forEach((profile, count) {
-      _profiles[profile.name].allRef.decrease(to, count);
-    });
+    if (from_data != null) {
+      from_data.directRef.decrease(to);
+      from_data.allRef.decrease(to);
+      from_data.referredBy.forEach((profile, count) {
+        _profiles[profile.name].allRef.decrease(to, count);
+      });
+    }
 
     if (to_data.allRef != null) {
       to_data.allRef.forEach((profile, count) {

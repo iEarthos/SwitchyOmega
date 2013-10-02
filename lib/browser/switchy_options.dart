@@ -220,6 +220,9 @@ class StoredSwitchyOptions extends SwitchyOptions {
   }
 
   Future storeAll() {
+    for (var p in profiles) {
+      p.revision = new DateTime.now().millisecondsSinceEpoch.toRadixString(16);
+    }
     var items = this.toPlain();
     return storage.remove(null).then((_) => storage.set(items));
   }

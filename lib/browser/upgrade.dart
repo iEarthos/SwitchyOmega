@@ -100,9 +100,9 @@ socksVersion: 5
               fixedProfile.proxyForHttp = new ProxyServer.parse(
                   profile['proxyHttp'], 'http');
               fixedProfile.proxyForHttps = new ProxyServer.parse(
-                  profile['proxyHttps'], 'https');
+                  profile['proxyHttps'], 'http');
               fixedProfile.proxyForFtp = new ProxyServer.parse(
-                  profile['proxyFtp'], 'ftp');
+                  profile['proxyFtp'], 'http');
             }
             if (profile['proxyExceptions'] != null) {
               fixedProfile.bypassList.addAll(
@@ -113,7 +113,14 @@ socksVersion: 5
             break;
           case 'auto':
             var pacProfile = new PacProfile(profile['id']);
-            pacProfile.pacUrl = profile['proxyConfigUrl'];
+            var url = profile['proxyConfigUrl'] as String;
+            if (url.startsWith('data:')) {
+              var base64 = url.substring(url.indexOf(',') + 1);
+              pacProfile.pacScript = new String.fromCharCodes(
+                  CryptoUtils.base64StringToBytes(base64));
+            } else {
+              pacProfile.pacUrl = url;
+            }
             pf = pacProfile;
             break;
           default:
@@ -147,10 +154,8 @@ socksVersion: 5
           }
           break;
         }
-        print("{ ${rule['urlPattern']}, ${rule['profileId']} }");
         switchProfile.add(new Rule(c, rule['profileId']));
       });
-      print(defaultProfileName);
 
       options.profiles.add(switchProfile);
     }

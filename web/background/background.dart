@@ -268,8 +268,6 @@ void main() {
           applyProfile(startup.name).then((_) {
             listenForProxyChange();
           });
-          // TODO(catus): Handle profile updates with the new storage schema.
-          safe.send('options.set', JSON.stringify(options));
         }
       });
     });

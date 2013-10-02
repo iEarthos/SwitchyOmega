@@ -274,7 +274,6 @@ void restoreOptions(String data) {
     Map<String, Object> json = null;
     try {
       data = new String.fromCharCodes(CryptoUtils.base64StringToBytes(data));
-      print(data);
       json = JSON.parse(data);
     } catch (e) {
 
