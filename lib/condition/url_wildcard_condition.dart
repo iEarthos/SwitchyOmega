@@ -56,7 +56,8 @@ class UrlWildcardCondition extends UrlCondition
       } else {
         // TODO(catus): use shExpCompile
         // shExpCompile(_pattern, _recorder, target: 'url');
-        w.inline('new RegExp(${JSON.stringify(convert2Regex())}).test(url)');
+        _recorder.inline(
+            'new RegExp(${JSON.stringify(convert2Regex())}).test(url)');
       }
       _recorder.inner = null;
     } else {

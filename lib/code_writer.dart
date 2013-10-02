@@ -218,8 +218,8 @@ class CodeWriterRecorder implements CodeWriter {
     return this;
   }
 
-  CodeWriter inline(String codeStr, [bool autoIndent]) {
-    if (inner != null) inner.inline(codeStr);
+  CodeWriter inline(String codeStr, [bool autoIndent = true]) {
+    if (inner != null) inner.inline(codeStr, autoIndent);
     _tape.add(new _CodeWriterMethodCall('inline', codeStr, autoIndent));
     return this;
   }
