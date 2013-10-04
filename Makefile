@@ -8,6 +8,9 @@ dwc: subdirs
 
 .PHONY: subdirs $(SUBDIRS)
 
+packages:
+	$(PUB) install
+
 ipackages: packages
 	if [ -d "ipackages" -a -L "ipackages/switchyomega" ]; then \
 		unlink ipackages/switchyomega; \
@@ -16,6 +19,9 @@ ipackages: packages
 	mkdir ipackages
 	ln -s ../lib/ ipackages/switchyomega
 	cp -rnL `echo packages/* | sed -e "s/packages\/switchyomega//"` ipackages/
+
+release: all
+	make -f release.Makefile
 
 subdirs: $(SUBDIRS)
 

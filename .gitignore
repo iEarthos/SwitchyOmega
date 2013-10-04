@@ -19,3 +19,7 @@ ipackages
 ## Pub Package Manager
 packages
 deploy
+
+# Chromium Extension
+*.pem
+*.crx
