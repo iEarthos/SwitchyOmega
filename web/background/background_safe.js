@@ -250,6 +250,9 @@
           c.send('storage.onchange', changes);
         }
       });
+    },
+    'error.log': function (data) {
+      window.onerror(data.message, data.url, data.line);
     }
   });
 

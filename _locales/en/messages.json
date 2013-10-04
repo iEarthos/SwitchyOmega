@@ -425,6 +425,9 @@
   "popup_reportIssues": {
     "message": "Report issues"
   },
+  "popup_errorLog": {
+    "message": "Error log"
+  },
   "browserAction_titleNormal": {
     "message": "SwitchyOmega:: $PROFILE$",
     "placeholders": {

@@ -27,7 +27,9 @@
       window.close();
     };
     if (localStorage['seriousError'] === 'options') {
+      var log = localStorage['log'];
       localStorage.clear();
+      localStorage['log'] = log;
       storage.clear(then);
     } else {
       then();
@@ -65,6 +67,10 @@
 
   $(document).ready(function () {
     isDocReady = true;
+    $('#error-log').click(function (e) {
+      var log = localStorage['log'];
+      saveAs(new Blob([log]), 'SwitchyOmegaLog.txt');
+    });
     i18nTemplate.process(document, i18n);
 
     $(document).on('click', '.profile a', function (e) {

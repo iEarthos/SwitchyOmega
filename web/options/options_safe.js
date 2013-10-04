@@ -98,6 +98,9 @@
       } else {
         storage.remove(keys, respond);
       }
+    },
+    'error.log': function (data) {
+      window.onerror(data.message, data.url, data.line);
     }
   });
 

@@ -24,6 +24,7 @@ var strings = [
   "popup_addCondition",
   "popup_showOptions",
   "popup_reportIssues",
+  "popup_errorLog",
   "options_conditionType",
   "options_conditionDetails",
   "condition_hostWildcard",
