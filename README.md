@@ -6,17 +6,19 @@ A proxy extension for Chromium.
 Development status
 ==================
 
-## PAC Generation
-A prototype of generating PAC from profiles is done. Run pac_gen_test.dart or compile it to generate a sample PAC file.
+## Chromium Extension
+The project is now usable as a Chromium Extension.
 
-## UI
-A basic UI structure of SwitchyOmega options page (without profile settings) is available. See options/options.html.
+[A packaged extension can be downloaded here.](https://github.com/FelisCatus/SwitchyOmega/releases/tag/v2.0.1-alpha)
 
-**Note: You need to load SwitchyOmega as a Chromium extension for the English locale to work.** Otherwise, you will see an empty page without any text.
+You can also run `make release` on the source code to get packaged or unpackaged
+extension.
 
 ## Development Schedule
+The project is now in alpha, and still considered unstable. Any feedback is
+welcomed.
 
-See the [development schedule on the wiki](https://github.com/FelisCatus/SwitchyOmega/wiki/Development-schedule).
+Please [report issues on the issue tracker.](https://github.com/FelisCatus/SwitchyOmega/issues)
 
 License
 =======
