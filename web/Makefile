@@ -13,10 +13,12 @@ out/%.html: %.html
 	sed -i 's/\/OUTDIR\///g' $@
 	# Remove dart script from the safe wrappers.
 	# These scripts do not have actual effects but they break CSP.
-	if echo $@ | grep -q '_safe.html$$'; then \
-		sed -i 's/^.*\.html_bootstrap\.dart".*\/script>//g' $@; \
-		sed -i 's/^.*\/dart\.js".*\/script>//g' $@; \
-	fi
+	case "$@" in \
+		*_safe.html) \
+			sed -i 's/^.*\.html_bootstrap\.dart".*\/script>//g' $@; \
+			sed -i 's/^.*\/dart\.js".*\/script>//g' $@; \
+		;; \
+	esac
 
 SCRIPTS=$(addsuffix .js,$(shell find -P out/ -name '*.dart' ! -path "*/_from_packages/*" \
 				        ! -name 'editors.dart'))

@@ -49,7 +49,6 @@
   }, false);
 
   var isDocReady = false;
-  var options = null;
   var currentDomain = null;
   var currentProfile = null;
   var possibleResults = null;
@@ -95,7 +94,7 @@
 
     $('#add-condition').click(function () {
       $('.nav').hide();
-    var profile = options['profiles'][localStorage['currentProfileName']];
+      var profile = currentProfile;
       $('#condition-form .profile-color').css('background',
           currentProfile.color);
       $('#condition-form .profile-name').text(currentProfile.name);
