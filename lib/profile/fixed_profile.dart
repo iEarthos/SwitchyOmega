@@ -121,6 +121,10 @@ class FixedProfile extends IncludableProfile {
   }
 
   FixedProfile(String name) : super(name) {
+    observeChanges(this.bypassList, (_) {
+      notifyChange(this, ChangeRecord.FIELD, 'bypassList', null,
+          this.bypassList);
+    });
   }
 
   void loadPlain(Map<String, Object> p) {

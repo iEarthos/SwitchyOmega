@@ -5,7 +5,7 @@ DART_RUNTIME = $(DART_BIN)/dart
 DART_WEB_COMPILER = $(DART_RUNTIME) --package-root=packages/ packages/web_ui/dwc.dart 
 DART2DART = $(DART_COMPILER) --output-type=dart
 CHROMIUM = chromium-browser
-CHROMIUM_EXTENSION_KEY = SwitchyOmega.pem
+CHROMIUM_EXTENSION_KEY = ~/certs/SwitchyOmega.pem
 PUB=$(DART_BIN)/pub
 
 .PHONY: dwc

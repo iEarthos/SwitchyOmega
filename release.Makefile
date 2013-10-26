@@ -43,5 +43,5 @@ release: deploy $(DEPLOY_FILES)
 
 SwitchyOmega.crx: release
 	$(CHROMIUM) --pack-extension="$(realpath deploy)" \
-		--pack-extension-key="$(realpath $(CHROMIUM_EXTENSION_KEY))"
+		--pack-extension-key="$(shell readlink -f $(CHROMIUM_EXTENSION_KEY))"
 	mv deploy.crx $@
