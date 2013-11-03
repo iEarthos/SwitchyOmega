@@ -28,7 +28,6 @@ part of switchy_profile;
 class ProfileCollection extends ObservableSet<Profile>
    implements Plainable, ProfileTracker {
   Map<String, _ProfileData> _profiles;
-  bool _renamingProfile = false;
 
   /**
    * Returns the profile by its [name].
@@ -206,103 +205,77 @@ class ProfileCollection extends ObservableSet<Profile>
     return _profiles.length;
   }
 
-  void addReference(InclusiveProfile from, IncludableProfile to) {
-    if (_renamingProfile) return;
-    var from_data = _profiles[from.name];
-    var to_data = _profiles[to.name];
+  void addReferenceByName(InclusiveProfile from, String toName) {
+    var fromName = from.name;
+    var from_data = _profiles[fromName];
+    var to_data = _profiles[toName];
 
-    if (to_data.allRef != null && to_data.allRef.containsKey(from)) {
-      throw new CircularReferenceException(from, to);
+    if (to_data.allRef != null && to_data.allRef.containsKey(fromName)) {
+      throw new CircularReferenceException(from, _profiles[toName].profile);
     }
 
-    from_data.directRef.increase(to);
-    from_data.allRef.increase(to);
-    to_data.referredBy.increase(from);
+    from_data.directRef.increase(toName);
+    from_data.allRef.increase(toName);
+    to_data.referredBy.increase(fromName);
 
     from_data.referredBy.forEach((profile, count) {
-      _profiles[profile.name].allRef.increase(to, count);
+      _profiles[profile].allRef.increase(fromName, count);
     });
 
     if (to_data.allRef != null) {
       to_data.allRef.forEach((profile, count) {
-        _profiles[profile.name].referredBy.increase(from, count);
+        _profiles[profile].referredBy.increase(fromName, count);
         from_data.allRef.increase(profile, count);
       });
     }
   }
 
-  void removeReference(InclusiveProfile from, IncludableProfile to) {
-    if (_renamingProfile) return;
-    var from_data = _profiles[from.name];
-    var to_data = _profiles[to.name];
+  void removeReferenceByName(InclusiveProfile from, String toName) {
+    var fromName = from.name;
+    var from_data = _profiles[fromName];
+    var to_data = _profiles[toName];
 
-    to_data.referredBy.decrease(from);
+    to_data.referredBy.decrease(fromName);
 
     if (from_data != null) {
-      from_data.directRef.decrease(to);
-      from_data.allRef.decrease(to);
+      from_data.directRef.decrease(toName);
+      from_data.allRef.decrease(toName);
       from_data.referredBy.forEach((profile, count) {
-        _profiles[profile.name].allRef.decrease(to, count);
+        _profiles[profile].allRef.decrease(toName, count);
       });
     }
 
     if (to_data.allRef != null) {
       to_data.allRef.forEach((profile, count) {
-        _profiles[profile.name].referredBy.decrease(from, count);
+        _profiles[profile].referredBy.decrease(fromName, count);
         from_data.allRef.decrease(profile, count);
       });
     }
   }
 
-  bool hasReference(InclusiveProfile from, IncludableProfile to) {
-    return _profiles[from.name].allRef.containsKey(to);
-  }
-
-  Iterable<IncludableProfile> directReferences(InclusiveProfile profile) {
-    return _profiles[profile.name].directRef.keys;
-  }
-
-  Iterable<IncludableProfile> allReferences(InclusiveProfile profile) {
-    return _profiles[profile.name].allRef.keys;
-  }
-
-  Iterable<InclusiveProfile> referredBy(IncludableProfile profile) {
-    return _profiles[profile.name].referredBy.keys;
-  }
-
-  // Some helpers for name-based references.
-  void addReferenceByName(InclusiveProfile from, String to) {
-    if (_renamingProfile) return;
-    addReference(from, getProfileByName(to));
-  }
-
-  void removeReferenceByName(InclusiveProfile from, String to) {
-    if (_renamingProfile) return;
-    removeReference(from, getProfileByName(to));
-  }
-
-  bool hasReferenceToName(InclusiveProfile from, String to) =>
-      hasReference(from, getProfileByName(to));
-
   void renameProfile(String oldName, String newName) {
-    deliverChangesSync();
-    var profileData = _profiles.remove(oldName);
+    var profileData = _profiles[oldName];
     if (profileData == null) return;
-    // InclusiveProfiles may call addReference or removeReference upon
-    // renaming. We just ignore the reference modification requests until
-    // the renaming is complete.
-    _renamingProfile = true;
+
+    var profile = profileData.profile;
+    profile.name = newName;
+    this.add(profileData.profile);
+    deliverChangesSync();
+    profile.name = oldName;
 
     for (var data in _profiles.values) {
       if (data.profile is InclusiveProfile && data.profile.name != oldName) {
         (data.profile as InclusiveProfile).renameProfile(oldName, newName);
       }
     }
-    // Update the name of the profile data.
-    profileData.profile.name = newName;
-    _profiles[newName] = profileData;
     deliverChangesSync();
-    _renamingProfile = false;
+
+    this.remove(profile);
+    if (profile is InclusiveProfile) {
+      profile.tracker = this;
+    }
+    deliverChangesSync();
+    profile.name = newName;
   }
 
   Iterable<Profile> validResultProfilesFor(InclusiveProfile profile) {
@@ -313,6 +286,29 @@ class ProfileCollection extends ObservableSet<Profile>
       return true;
     });
   }
+
+  void addReference(InclusiveProfile from, IncludableProfile to) {
+    addReferenceByName(from, to.name);
+  }
+
+  void removeReference(InclusiveProfile from, IncludableProfile to) {
+    removeReferenceByName(from, to.name);
+  }
+
+  bool hasReference(InclusiveProfile from, IncludableProfile to) =>
+      hasReferenceToName(from, to.name);
+
+  Iterable<IncludableProfile> directReferences(InclusiveProfile profile) =>
+      _profiles[profile.name].directRef.keys.map(getProfileByName);
+
+  Iterable<IncludableProfile> allReferences(InclusiveProfile profile) =>
+      _profiles[profile.name].allRef.keys.map(getProfileByName);
+
+  Iterable<InclusiveProfile> referredBy(IncludableProfile profile) =>
+      _profiles[profile.name].referredBy.keys.map(getProfileByName);
+
+  bool hasReferenceToName(InclusiveProfile from, String toName) =>
+      _profiles[from.name].allRef.containsKey(toName);
 }
 
 /**
@@ -320,15 +316,15 @@ class ProfileCollection extends ObservableSet<Profile>
  */
 class _ProfileData {
   Profile profile;
-  CountMap<IncludableProfile> directRef = null;
-  CountMap<IncludableProfile> allRef = null;
-  CountMap<InclusiveProfile> referredBy = null;
+  CountMap<String> directRef = null;
+  CountMap<String> allRef = null;
+  CountMap<String> referredBy = null;
 
   _ProfileData(this.profile) {
-    referredBy = new CountMap<InclusiveProfile>();
+    referredBy = new CountMap<String>();
     if (profile is InclusiveProfile) {
-      directRef = new CountMap<IncludableProfile>();
-      allRef = new CountMap<IncludableProfile>();
+      directRef = new CountMap<String>();
+      allRef = new CountMap<String>();
     }
   }
 }

@@ -267,25 +267,41 @@ class StoredSwitchyOptions extends SwitchyOptions {
             break;
           case '+':
             if (record.newValue != record.oldValue) {
-              if (record.newValue == null) {
-                profiles.forceRemove(profiles[record.key.substring(1)]);
-              } else if (record.oldValue == null) {
-                profiles.add(new Profile.fromPlain(record.newValue));
-              } else {
-                var rev = record.newValue['revision'];
-                var profile = profiles.getProfileByName(
-                    record.key.substring(1));
-                if (profile != null &&
-                    (profile.revision == null ||
-                    profile.revision.length <= rev.length &&
-                    profile.revision.compareTo(rev) < 0)) {
-                  var name = record.key.substring(1);
-                  deliverChangesSync();
-                  _revisionLock[name] = rev;
-                  profiles.getProfileByName(name).loadPlain(record.newValue);
-                  deliverChangesSync();
-                  _revisionLock.remove(name);
+              try {
+                if (record.newValue == null) {
+                  print('Remove: ${record.key}');
+                  profiles.forceRemove(profiles[record.key.substring(1)]);
+                } else if (record.oldValue == null) {
+                  print('Add: ${record.key}: ${JSON.stringify(record.newValue)}');
+                  profiles.add(new Profile.fromPlain(record.newValue));
+                } else {
+                  print('Update:From: ${record.key}: ${JSON.stringify(record.oldValue)}');
+                  print('Update:To:   ${record.key}: ${JSON.stringify(record.newValue)}');
+                  var rev = record.newValue['revision'];
+                  var profile = profiles.getProfileByName(
+                      record.key.substring(1));
+                  if (profile != null &&
+                      (profile.revision == null ||
+                      profile.revision.length <= rev.length &&
+                      profile.revision.compareTo(rev) < 0)) {
+                    var name = record.key.substring(1);
+                    deliverChangesSync();
+                    _revisionLock[name] = rev;
+                    profiles.getProfileByName(name).loadPlain(record.newValue);
+                    deliverChangesSync();
+                    _revisionLock.remove(name);
+                  }
                 }
+              } catch (ex) {
+                print(ex);
+                // Force reload of all profiles.
+                stopSyncing();
+                this.storage.get(null).then((data) {
+                    profiles.loadPlain(data);
+                    startSyncing();
+                    _onUpdate = onUpdate;
+                });
+                return false;
               }
               return true;
             }

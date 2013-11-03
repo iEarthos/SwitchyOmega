@@ -414,7 +414,7 @@ void handleQuickSwitchUI() {
       var set = new Set<String>.from(options.profiles.map((p) => p.name));
       set.removeAll(options.quickSwitchProfiles);
       quickSwitchDisabledProfiles = set.map(options.getProfileByName)
-          .toList(growable: false);
+          .where((p) => p != null).toList(growable: false);
       js.send('quickswitch.refresh');
   };
   observe(() => options.quickSwitchProfiles, refresh);
