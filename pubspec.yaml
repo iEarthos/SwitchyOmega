@@ -3,3 +3,4 @@ dependencies:
   web_ui: any
   browser: any
   crypto: any
+  json: any

@@ -22,7 +22,7 @@ library switchy_profile;
 
 import 'dart:collection';
 import 'dart:core';
-import 'dart:json' as JSON;
+import 'package:json/json.dart' as JSON;
 import 'package:crypto/crypto.dart';
 import 'package:web_ui/observe/observable.dart';
 import 'package:web_ui/observe/set.dart';

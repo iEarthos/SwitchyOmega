@@ -121,8 +121,8 @@ class FixedProfile extends IncludableProfile {
   }
 
   FixedProfile(String name) : super(name) {
-    observeChanges(this.bypassList, (_) {
-      notifyChange(this, ChangeRecord.FIELD, 'bypassList', null,
+    observeChanges(this.bypassList as Observable, (_) {
+      notifyChange(this as Observable, ChangeRecord.FIELD, 'bypassList', null,
           this.bypassList);
     });
   }

@@ -21,7 +21,7 @@ library switchy_background;
  */
 
 import 'dart:html';
-import 'dart:json' as JSON;
+import 'package:json/json.dart' as JSON;
 import 'dart:async';
 import 'package:web_ui/web_ui.dart';
 import 'package:switchyomega/switchyomega.dart';

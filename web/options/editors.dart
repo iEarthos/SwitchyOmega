@@ -21,7 +21,6 @@ library switchy_options_editors;
 
 import 'package:web_ui/web_ui.dart';
 import 'package:switchyomega/switchyomega.dart';
-import 'package:switchyomega/html/converters.dart' as convert;
 import 'package:switchyomega/condition/shexp_utils.dart';
 
 @observable
@@ -178,7 +177,7 @@ class RuleEditor {
     if (toType.contains('Regex')) {
       String regex = null;
       if (from is HostWildcardCondition) {
-        regex = (from as HostWildcardCondition).magicRegex();
+        regex = from.magicRegex();
         if (toType == 'UrlRegexCondition') {
           var host = regex.replaceFirst(r'(^|\.)', r'([^/.]+\.)*')
               .replaceAll(r'$', '/');
@@ -188,7 +187,7 @@ class RuleEditor {
       } else if (from is KeywordCondition) {
         return shExp2RegExp('*${from.pattern}*', trimAsterisk: true);
       } else if (from is UrlWildcardCondition) {
-        regex = (from as UrlWildcardCondition).convert2Regex();
+        regex = from.convert2Regex();
       }
       if (from is UrlWildcardCondition || from is UrlRegexCondition &&
           toType == 'HostRegexCondition') {

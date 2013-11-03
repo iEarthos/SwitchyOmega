@@ -45,7 +45,7 @@ void copyFromDataList(Element target, DataListElement datalist) {
 MutationObserver bindToDataList(Element target, [DataListElement datalist]) {
   if (datalist == null) {
     var datalist_id = target.attributes[autoBindToDataListAttrName];
-    datalist = target.document.query('#$datalist_id');
+    datalist = target.ownerDocument.querySelector('#$datalist_id');
     if (datalist == null) return null;
   }
 

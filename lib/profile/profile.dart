@@ -107,6 +107,8 @@ abstract class Profile extends Plainable {
  * A profile that uses data downloaded from [updateUrl].
  */
 abstract class UpdatingProfile {
+  String get name;
+
   String get updateUrl;
 
   /**

@@ -21,7 +21,7 @@ library switchy_browser;
 
 import 'dart:async';
 import 'dart:core';
-import 'dart:json' as JSON;
+import 'package:json/json.dart' as JSON;
 import 'package:crypto/crypto.dart';
 import 'package:web_ui/web_ui.dart';
 import 'package:switchyomega/lang/lib.dart';

@@ -102,7 +102,8 @@ class ProfileCollection extends ObservableSet<Profile>
     return _profiles.containsKey(value.name);
   }
 
-  void add(Profile profile) {
+  bool add(Profile profile) {
+    if (_profiles.containsKey(profile.name)) return false;
     if (!_profiles.containsKey(profile.name)) {
       _profiles[profile.name] = new _ProfileData(profile);
       if (profile is InclusiveProfile) {
@@ -113,6 +114,7 @@ class ProfileCollection extends ObservableSet<Profile>
         notifyChange(this, ChangeRecord.INSERT, profile, null, profile);
       }
     }
+    return true;
   }
 
   void addAll(Iterable<Profile> profiles) {

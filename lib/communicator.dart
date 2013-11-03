@@ -21,7 +21,7 @@
 library communicator;
 
 import 'dart:html';
-import 'dart:json' as JSON;
+import 'package:json/json.dart' as JSON;
 import 'dart:math';
 
 typedef void CommunicatorCallback(Object value, [Function respond]);

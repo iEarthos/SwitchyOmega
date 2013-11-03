@@ -19,10 +19,6 @@ library switchyomega;
  * You should have received a copy of the GNU General Public License
  * along with SwitchyOmega.  If not, see <http://www.gnu.org/licenses/>.
  */
-import 'condition/lib.dart';
-import 'package:switchyomega/lang/lib.dart';
-import 'profile/lib.dart';
-import 'package:switchyomega/html/lib.dart';
 
 export 'condition/lib.dart';
 export 'package:switchyomega/lang/lib.dart';

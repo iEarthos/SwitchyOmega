@@ -76,7 +76,7 @@ class MessageBrowser extends Browser {
       } else {
         config['mode'] = 'fixed_servers';
         var rules = {};
-        var plain = (profile as FixedProfile).toPlain();
+        var plain = profile.toPlain();
         for (var key in ['proxyForHttp', 'proxyForHttps',
                          'proxyForFtp', 'fallbackProxy']) {
           if (plain[key] != null)
@@ -105,11 +105,11 @@ class MessageBrowser extends Browser {
     } else if (profile is PacProfile && profile.pacUrl != null &&
         profile.pacUrl.isNotEmpty) {
       config['mode'] = 'pac_script';
-      config['pacScript'] = { 'url': (profile as PacProfile).pacUrl,
+      config['pacScript'] = { 'url': profile.pacUrl,
                               'mandatory': true };
     } else if (profile is ScriptProfile) {
       config['mode'] = 'pac_script';
-      config['pacScript'] = { 'data': (profile as ScriptProfile).toScript(),
+      config['pacScript'] = { 'data': profile.toScript(),
                               'mandatory': true};
     } else {
       throw new UnsupportedError(profile.profileType);

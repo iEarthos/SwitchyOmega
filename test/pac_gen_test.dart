@@ -18,7 +18,7 @@
  * along with SwitchyOmega.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import 'dart:json' as JSON;
+import 'package:json/json.dart' as JSON;
 import 'package:switchyomega/condition/lib.dart';
 import 'package:switchyomega/profile/lib.dart';
 import 'package:web_ui/observe.dart';
@@ -114,7 +114,7 @@ ProxyServer resolveProxy(Profile p, String url, String host, String scheme) {
           (p as InclusiveProfile).choose(url, host, scheme, null));
     }
     if (p is FixedProfile) {
-      return (p as FixedProfile).getProxyFor(url, host, scheme);
+      return p.getProxyFor(url, host, scheme);
     }
     if (p is DirectProfile) {
       return null;

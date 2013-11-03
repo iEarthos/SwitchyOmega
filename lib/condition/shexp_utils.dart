@@ -20,7 +20,7 @@
 
 library shexp_utils;
 import 'dart:core';
-import 'dart:json';
+import 'package:json/json.dart';
 import '../code_writer.dart';
 
 

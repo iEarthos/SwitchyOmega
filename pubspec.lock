@@ -4,23 +4,19 @@ packages:
   analyzer_experimental:
     description: analyzer_experimental
     source: hosted
-    version: "0.7.5"
+    version: "0.8.6"
   args:
     description: args
     source: hosted
-    version: "0.7.5"
-  barback:
-    description: barback
-    source: hosted
-    version: "0.7.5"
+    version: "0.8.7"
   browser:
     description: browser
     source: hosted
-    version: "0.7.5"
+    version: "0.8.7"
   crypto:
     description: crypto
     source: hosted
-    version: "0.7.5"
+    version: "0.8.7"
   csslib:
     description: csslib
     source: hosted
@@ -28,35 +24,31 @@ packages:
   custom_element:
     description: custom_element
     source: hosted
-    version: "0.7.5"
+    version: "0.8.7"
   html5lib:
     description: html5lib
     source: hosted
     version: "0.4.4"
+  json:
+    description: json
+    source: hosted
+    version: "0.8.7"
   logging:
     description: logging
     source: hosted
-    version: "0.7.5"
-  mdv:
-    description: mdv
-    source: hosted
-    version: "0.7.5"
+    version: "0.8.7"
   meta:
     description: meta
     source: hosted
-    version: "0.7.5"
+    version: "0.8.7"
   mutation_observer:
     description: mutation_observer
     source: hosted
-    version: "0.7.5"
-  observe:
-    description: observe
-    source: hosted
-    version: "0.7.5"
+    version: "0.8.7"
   path:
     description: path
     source: hosted
-    version: "0.7.5"
+    version: "0.8.7"
   pathos:
     description: pathos
     source: hosted
@@ -64,20 +56,20 @@ packages:
   source_maps:
     description: source_maps
     source: hosted
-    version: "0.7.5"
+    version: "0.8.7"
   stack_trace:
     description: stack_trace
     source: hosted
-    version: "0.7.5"
+    version: "0.8.7"
   unittest:
     description: unittest
     source: hosted
-    version: "0.7.5"
+    version: "0.8.7"
   unmodifiable_collection:
     description: unmodifiable_collection
     source: hosted
-    version: "0.7.5"
+    version: "0.8.7"
   web_ui:
     description: web_ui
     source: hosted
-    version: "0.4.21"
+    version: "0.4.24"

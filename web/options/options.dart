@@ -21,7 +21,7 @@
 library switchy_options;
 
 import 'dart:html';
-import 'dart:json' as JSON;
+import 'package:json/json.dart' as JSON;
 import 'dart:async';
 import 'package:web_ui/web_ui.dart';
 import 'package:crypto/crypto.dart';
@@ -71,7 +71,7 @@ void deleteProfile(Profile profile) {
   if (profile is FixedProfile) {
     fixedProfileEditors.remove(profile);
   } else if (profile is SwitchProfile) {
-    (profile as SwitchProfile).forEach((rule) => ruleEditors.remove(rule));
+    profile.forEach((rule) => ruleEditors.remove(rule));
   }
 }
 
