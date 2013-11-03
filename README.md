@@ -9,7 +9,8 @@ Development status
 ## Chromium Extension
 The project is now usable as a Chromium Extension.
 
-[A packaged extension can be downloaded here.](https://github.com/FelisCatus/SwitchyOmega/releases/tag/v2.0.1-alpha)
+You can download the packaged extension (.crx files) from
+[the latest releases](https://github.com/FelisCatus/SwitchyOmega/releases).
 
 You can also run `make release` on the source code to get packaged or unpackaged
 extension.
