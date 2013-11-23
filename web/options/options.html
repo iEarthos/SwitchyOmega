@@ -54,7 +54,7 @@
     <template instantiate="if options != null">
       <div>
         <datalist id="profiles" template="template" iterate="p in options.profiles.toList()">
-          <option>{{p.name}}</option>
+          <option value="{{p.name}}">{{p.name}}</option>
         </datalist>
         <datalist id="condition-types">
           <option data-i18n="condition_hostWildcard" value="HostWildcardCondition"></option>
@@ -279,7 +279,7 @@
               <template instantiate="if profile is InclusiveProfile">
                 <datalist id="{{cssSafeId('profiles-available-to-${profile.name}')}}" template="template"
                     iterate="p in validResultProfilesFor(profile)">
-                  <option>{{p.name}}</option>
+                  <option value="{{p.name}}">{{p.name}}</option>
                 </datalist>
               </template>
               <template instantiate="if profile.profileType == 'FixedProfile'">

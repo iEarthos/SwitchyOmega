@@ -25,7 +25,7 @@ part of switchy_profile;
  * or the [defaultProfileName] if no rule matches.
  */
 @observable
-class SwitchProfile extends InclusiveProfile with ListMixin, Observable
+class SwitchProfile extends InclusiveProfile with ListMixin<Rule>, Observable
     implements List<Rule> {
   String get profileType => 'SwitchProfile';
 

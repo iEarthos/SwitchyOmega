@@ -277,7 +277,7 @@ void restoreOptions(String data) {
       json = JSON.parse(data);
     } catch (e) {
 
-      query('#options-import-format-error').style.top = "0";
+      querySelector('#options-import-format-error').style.top = "0";
       return;
     }
     newOptions = upgradeOptions(json, browser.storage);
@@ -286,13 +286,13 @@ void restoreOptions(String data) {
       newOptions = new StoredSwitchyOptions.fromPlain(JSON.parse(data),
           browser.storage);
     } catch (e) {
-      query('#options-import-format-error').style.top = "0";
+      querySelector('#options-import-format-error').style.top = "0";
       return;
     }
   }
   ChangeUnobserver unobserve;
   unobserve = observe(() => options, (_) {
-    query('#options-import-success').style.top = "0";
+    querySelector('#options-import-success').style.top = "0";
     unobserve();
   });
   options = newOptions;
@@ -311,13 +311,13 @@ void restoreLocal(FileUploadInputElement file) {
 }
 
 void restoreOnline() {
-  var button = query('#restore-online') as ButtonElement;
+  var button = querySelector('#restore-online') as ButtonElement;
   button.disabled = true;
-  var url = (query('#restore-url') as InputElement).value;
+  var url = (querySelector('#restore-url') as InputElement).value;
   browser.download(url).then((data) {
     restoreOptions(data);
   }).catchError((e) {
-    query('#options-import-download-error').style.top = "0";
+    querySelector('#options-import-download-error').style.top = "0";
   }).whenComplete(() {
     button.disabled = false;
   });
@@ -326,7 +326,7 @@ void restoreOnline() {
 void saveOptions(Event e) {
   e.preventDefault();
   safe.send('options.set', JSON.stringify(options), (_, [__]) {
-    query('#options-save-success').style.top = "0";
+    querySelector('#options-save-success').style.top = "0";
   });
 }
 
@@ -376,7 +376,7 @@ void handleActionsUI() {
     ChangeUnobserver unobserve;
     unobserve = observe(() => options, (_) {
       js.send('tab.set', o['tab']);
-      query('#options-undo-success').style.top = "0";
+      querySelector('#options-undo-success').style.top = "0";
       unobserve();
     });
     options = new StoredSwitchyOptions.fromPlain(o['options'],
@@ -392,7 +392,7 @@ void handleActionsUI() {
       ChangeUnobserver unobserve;
       unobserve = observe(() => options, (_) {
         js.send('tab.set', o['tab']);
-        query('#options-reset-success').style.top = "0";
+        querySelector('#options-reset-success').style.top = "0";
         unobserve();
       });
       options = new StoredSwitchyOptions.fromPlain(o['options'],
@@ -408,7 +408,8 @@ void handleQuickSwitchUI() {
   js.on('quickswitch.update', (String type, [Function respond]) {
     options.quickSwitchProfiles.clear();
     options.quickSwitchProfiles.addAll(
-        queryAll('#cycle-enabled li .profile-name').map((e) => e.text));
+        querySelectorAll('#cycle-enabled li .profile-name')
+        .map((e) => e.text));
   });
   var refresh = (_) {
       var set = new Set<String>.from(options.profiles.map((p) => p.name));
@@ -427,9 +428,9 @@ void downloadProfileNow(UpdatingProfile p, Event e) {
   button.disabled = true;
   browser.download(p.updateUrl).then((data) {
     p.applyUpdate(data);
-    query('#options-profile-download-success').style.top = "0";
+    querySelector('#options-profile-download-success').style.top = "0";
   }).catchError((e) {
-    query('#options-profile-download-error').style.top = "0";
+    querySelector('#options-profile-download-error').style.top = "0";
   }).whenComplete(() {
     button.disabled = false;
     safe.send('options.set', JSON.stringify(options));

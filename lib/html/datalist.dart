@@ -29,7 +29,7 @@ void copyFromDataList(Element target, DataListElement datalist) {
       !node.classes.contains(copiedOptionClassName));
 
   target.nodes.addAll(
-      datalist.queryAll('option').map((o) {
+      datalist.querySelectorAll('option').map((o) {
         var copied = o.clone(true);
         (copied as Element).classes.add(copiedOptionClassName);
         return copied;
@@ -66,7 +66,7 @@ MutationObserver bindToDataList(Element target, [DataListElement datalist]) {
 }
 
 MutationObserver autoBindToDataList(Element root) {
-  root.queryAll('[$autoBindToDataListAttrName]').forEach(
+  root.querySelectorAll('[$autoBindToDataListAttrName]').forEach(
       (target) {
         bindToDataList(target);
       });
@@ -81,7 +81,7 @@ MutationObserver autoBindToDataList(Element root) {
             case 'childList':
               record.addedNodes.forEach((el) {
                 if (el is Element) {
-                  el.queryAll('[$autoBindToDataListAttrName]').forEach(
+                  el.querySelectorAll('[$autoBindToDataListAttrName]').forEach(
                       (target) {
                         bindToDataList(target);
                       });

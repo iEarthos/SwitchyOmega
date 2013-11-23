@@ -19,6 +19,7 @@ ipackages: packages
 	mkdir ipackages
 	ln -s ../lib/ ipackages/switchyomega
 	cp -rnL `echo packages/* | sed -e "s/packages\/switchyomega//"` ipackages/
+	make -C web out/packages out/options/packages out/background/packages
 
 release: all
 	make -f release.Makefile
