@@ -6,6 +6,7 @@ dependencies:
   polymer: '>=0.9.1 <0.10.0'
   grinder: any
   yaml: any
+  path: any
 transformers:
 - polymer:
     entry_points:

@@ -139,7 +139,7 @@ abstract class InclusiveProfile extends ScriptProfile {
  * A [Rule] is a combination of a [condition] and a [profileName].
  */
 @observable
-class Rule extends Plainable {
+class Rule extends Plainable with Observable {
   Condition condition;
 
   String profileName;
@@ -164,22 +164,14 @@ class Rule extends Plainable {
 
   Rule(this.condition, this.profileName) {
     var onConditionChange = (_) {
-      notifyChange(this as Observable, ChangeRecord.FIELD,
-          '[condition]', '', null);
+      this.notifyPropertyChange(#details, null, '');
     };
-    var unobserve = observe(this.condition, onConditionChange);
-    observeChanges(this as Observable, (List<ChangeRecord> changes) {
-      var conditionChanged = false;
-      changes.forEach((rec) {
-        if (rec.type == ChangeRecord.FIELD &&
-            rec.key == 'condition') {
-          conditionChanged = true;
-        }
-      });
-      if (conditionChanged) {
-        unobserve();
-        unobserve = observe(this.condition, onConditionChange);
-      }
+
+    var unobserve = this.condition.changes.listen(onConditionChange);
+
+    onPropertyChange(this, #condition, () {
+      unobserve();
+      unobserve = this.condition.changes.listen(onConditionChange);
     });
   }
 }

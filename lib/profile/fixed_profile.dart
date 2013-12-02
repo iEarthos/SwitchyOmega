@@ -38,7 +38,7 @@ class FixedProfile extends IncludableProfile {
    * When the url matches one of the [BypassConditions],
    * direct connection is used.
    */
-  final List<BypassCondition> bypassList = toObservable([]);
+  final ObservableList<BypassCondition> bypassList = toObservable([]);
 
   /**
    * Write the proxy servers and [bypassList] to a PAC script.
@@ -121,9 +121,8 @@ class FixedProfile extends IncludableProfile {
   }
 
   FixedProfile(String name) : super(name) {
-    observeChanges(this.bypassList as Observable, (_) {
-      notifyChange(this as Observable, ChangeRecord.FIELD, 'bypassList', null,
-          this.bypassList);
+    this.bypassList.changes.listen((_) {
+      this.notifyPropertyChange(#details, null, '');
     });
   }
 
@@ -157,7 +156,7 @@ class FixedProfile extends IncludableProfile {
  * A [ProxyServer].
  */
 @observable
-class ProxyServer extends Plainable {
+class ProxyServer extends Plainable with Observable {
   String protocol = defaultProtocol;
   String host;
   int port;

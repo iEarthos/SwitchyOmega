@@ -67,7 +67,7 @@ class UrlWildcardCondition extends UrlCondition
 
   UrlWildcardCondition([String pattern = '']) {
     this.pattern = pattern;
-    observe(this, (_) {
+    onPropertyChange(this, #pattern, () {
       _regex = null;
       _recorder = null;
     });

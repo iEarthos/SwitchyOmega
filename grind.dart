@@ -1,5 +1,7 @@
 import 'package:grinder/grinder.dart';
+import 'dart:io';
 import 'package:yaml/yaml.dart';
+import 'package:path/path.dart' as path;
 
 void main([List<String> args]) {
   //defineTask('init', taskFunction: init);
@@ -26,5 +28,42 @@ void setup(GrinderContext context) {
     context.fail("Error: DART_SDK environment variable is not set.");
   }
   new PubTools().install(context);
-  print(entryPoints);
+
+  if (FileSystemEntity.isLinkSync('web/packages')) {
+    new Link('web/packages').deleteSync();
+  }
+  var destDir = getDir('web/packages')..createSync();
+  for (FileSystemEntity entity in getDir('packages').listSync()) {
+    if (FileSystemEntity.identicalSync(entity.resolveSymbolicLinksSync(),
+          getDir('lib').absolute.path)) {
+      if (FileSystemEntity.isLinkSync(entity.path)) {
+        entity = new Link(entity.path);
+      } else {
+        continue;
+      }
+    }
+    if (entity is Directory) {
+      copyDirectory(entity, joinDir(destDir, [fileName(entity)]));
+    } else if (entity is File) {
+      copyFile(entity, destDir);
+    } else if (entity is Link) {
+      var linkFile = new Link(path.join(destDir.path, fileName(entity)));
+      var target = entity.targetSync();
+
+      if (path.isRelative(target)) {
+        target = path.relative(path.join('packages', target),
+            from: destDir.path);
+      }
+
+      if (!FileSystemEntity.isLinkSync(linkFile.path) ||
+          !FileSystemEntity.isDirectorySync(linkFile.targetSync()) ||
+          FileSystemEntity.identicalSync(linkFile.targetSync(), target)) {
+        if (FileSystemEntity.typeSync(linkFile.path, followLinks: false) !=
+            FileSystemEntityType.NOT_FOUND) {
+          linkFile.deleteSync(recursive: true);
+        }
+        linkFile.createSync(target);
+      }
+    }
+  }
 }

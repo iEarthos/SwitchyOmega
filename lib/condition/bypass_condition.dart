@@ -133,7 +133,7 @@ class BypassCondition extends Condition with PatternBasedCondition {
 
   BypassCondition([String pattern = '']) {
     this.pattern = pattern;
-    observe(() => pattern, (_) {
+    onPropertyChange(this, #pattern, () {
       _cached = false;
     });
   }

@@ -25,7 +25,7 @@ part of switchy_profile;
  * but they are not converted to plain.
  */
 
-class ProfileCollection extends ObservableSet<Profile>
+class ProfileCollection extends ObservableMap<String, Profile>
    implements Plainable, ProfileTracker {
   Map<String, _ProfileData> _profiles;
 
@@ -33,17 +33,7 @@ class ProfileCollection extends ObservableSet<Profile>
    * Returns the profile by its [name].
    */
   Profile getProfileByName(String name) {
-    var data = _profiles[name];
-    if (data == null) return null;
-    if (observeReads) notifyRead(this, ChangeRecord.INDEX, data.profile);
-    return data.profile;
-  }
-
-  /**
-   * Returns the profile by its [name].
-   */
-  Profile operator [](String name) {
-    return getProfileByName(name);
+    return this[name];
   }
 
   static final List<Profile> predefinedProfiles = [new AutoDetectProfile(),
@@ -52,6 +42,7 @@ class ProfileCollection extends ObservableSet<Profile>
 
   void _addPredefined() {
     for (var profile in predefinedProfiles) {
+      super[profile.name] = profile;
       _profiles[profile.name] = new _ProfileData(profile);
     }
   }
@@ -75,8 +66,84 @@ class ProfileCollection extends ObservableSet<Profile>
     _profiles = new Map<String, _ProfileData>();
     _addPredefined();
     if (profiles != null) {
-      this.addAll(profiles);
+      this.addProfiles(profiles);
     }
+  }
+
+  @reflectable void operator []=(String key, Profile value) {
+    var len = this.length;
+    var profile = this[key];
+    if (profile.predefined) return;
+    if (profile is InclusiveProfile) {
+      profile.tracker = null;
+    }
+
+    super[key] = value;
+    if (value is InclusiveProfile) {
+      value.tracker = this;
+    }
+  }
+
+  void addProfiles(Iterable<Profile> profiles) {
+    var added_profile = new Queue<Profile>();
+    profiles.forEach((profile) {
+      if (!this.containsKey(profile.name)) {
+        this[profile.name] = profile;
+        _profiles[profile.name] = new _ProfileData(profile);
+        added_profile.add(profile);
+      }
+    });
+    added_profile.forEach((profile) {
+      if (profile is InclusiveProfile) {
+        profile.tracker = this;
+      }
+    });
+  }
+
+  void addAll(Map<String, Profile> profiles) {
+    this.addProfiles(profiles.values);
+  }
+
+  Profile putIfAbsent(String key, Profile ifAbsent()) {
+    Profile result = super.putIfAbsent(key, ifAbsent);
+    if (result is InclusiveProfile) {
+      result.tracker = this;
+    }
+    return result;
+  }
+
+  /**
+   * Remove the profile with [name] if it is not predefined.
+   * If the profile is still referred by another profile, throws [StateError].
+   */
+  Profile remove(String name) {
+    var profile = this[name];
+    if (profile == null || profile.predefined) return null;
+    var data = _profiles[name];
+    if (data.referredBy.length > 0) throw new StateError(
+        'This profile cannot be removed because it is still referred by'
+        'at least one profile.');
+    Profile result = super.remove(name);
+    if (result is InclusiveProfile) {
+      result.tracker = this;
+    }
+    return result;
+  }
+
+  /**
+   * This method doesn't really clear all profiles, because predefined
+   * profiles cannot be removed.
+   */
+  void clear() {
+    int len = length;
+    this.values.forEach((profile) {
+      if (profile is InclusiveProfile) {
+        profile.tracker = null;
+      }
+    });
+    super.clear();
+    _profiles.clear();
+    _addPredefined();
   }
 
   void loadPlain(Map<String, Object> p) {
@@ -102,107 +169,36 @@ class ProfileCollection extends ObservableSet<Profile>
   }
 
   bool add(Profile profile) {
-    if (_profiles.containsKey(profile.name)) return false;
-    if (!_profiles.containsKey(profile.name)) {
-      _profiles[profile.name] = new _ProfileData(profile);
-      if (profile is InclusiveProfile) {
-        profile.tracker = this;
-      }
-      if (hasObservers(this)) {
-        notifyChange(this, ChangeRecord.FIELD, 'length', length - 1, length);
-        notifyChange(this, ChangeRecord.INSERT, profile, null, profile);
-      }
-    }
-    return true;
-  }
+    bool added = false;
+    super.putIfAbsent(profile.name, () {
+      added = true;
+      return profile;
+    });
 
-  void addAll(Iterable<Profile> profiles) {
-    var added_profile = new Queue<Profile>();
-    profiles.forEach((profile) {
-      if (!_profiles.containsKey(profile.name)) {
-        _profiles[profile.name] = new _ProfileData(profile);
-        added_profile.add(profile);
-      }
-    });
-    added_profile.forEach((profile) {
-      if (profile is InclusiveProfile) {
-        profile.tracker = this;
-      }
-    });
+    return added;
   }
 
   /**
-   * Remove [value] from this set if [value] is not predefined.
-   * If the [value] is still referred by another profile, throws [StateError].
-   */
-  bool remove(Profile value) {
-    if (value.predefined) return false;
-    var data = _profiles[value.name];
-    if (data == null) return false;
-    if (data.referredBy.length > 0) throw new StateError(
-        'This profile cannot be removed because it is still referred by'
-        'at least one profile.');
-    _profiles.remove(value.name);
-    if (value is InclusiveProfile) {
-      value.tracker = null;
-    }
-    if (hasObservers(this)) {
-      notifyChange(this, ChangeRecord.REMOVE, value, value, null);
-      notifyChange(this, ChangeRecord.FIELD, 'length', length + 1, length);
-    }
-    return true;
-  }
-
-  /**
-   * Remove [value] from this set if [value] is not predefined.
-   * If the [value] is still referred by another profile, the references are
+   * Remove the profile with [name] if it is not predefined.
+   * If the profile is still referred by another profile, the references are
    * cleared.
    * This method may cause inconsistency unless used with great care.
    */
-  bool forceRemove(Profile value) {
-    if (value.predefined) return false;
-    var data = _profiles[value.name];
-    if (data == null) return false;
+  Profile forceRemove(String name) {
+    var profile = this[name];
+    if (profile == null || profile.predefined) return null;
+    var data = _profiles[name];
     if (data.referredBy.length > 0) {
       new Map.from(data.referredBy).forEach((profile, count) {
         for (var i = 0; i < count; i++)
-          removeReference(profile, value);
+          removeReferenceByName(profile, name);
       });
     }
-    return remove(value);
-  }
-
-  /**
-   * This method doesn't really clear all profiles, because predefined
-   * profiles cannot be removed.
-   */
-  void clear() {
-    int len = length;
-    _profiles.values.forEach((data) {
-      Profile profile = data.profile;
-      if (profile is InclusiveProfile) {
-        profile.tracker = null;
-      }
-      if (hasObservers(this) && !profile.predefined) {
-        notifyChange(this, ChangeRecord.REMOVE, profile, profile, null);
-      }
-    });
-    _profiles.clear();
-    _addPredefined();
-    if (hasObservers(this)) {
-      notifyChange(this, ChangeRecord.FIELD, 'length', len, length);
-    }
+    return remove(name);
   }
 
   Object toJson() {
     return this.toPlain();
-  }
-
-  Iterator get iterator => new ProfileCollectionIterator(this);
-
-  int get length {
-    if (observeReads) notifyRead(this, ChangeRecord.FIELD, 'length');
-    return _profiles.length;
   }
 
   void addReferenceByName(InclusiveProfile from, String toName) {
@@ -260,26 +256,29 @@ class ProfileCollection extends ObservableSet<Profile>
     var profile = profileData.profile;
     profile.name = newName;
     this.add(profileData.profile);
-    deliverChangesSync();
+
+    this.deliverChanges();
     profile.name = oldName;
 
     for (var data in _profiles.values) {
       if (data.profile is InclusiveProfile && data.profile.name != oldName) {
-        (data.profile as InclusiveProfile).renameProfile(oldName, newName);
+        (data.profile as InclusiveProfile)
+            ..renameProfile(oldName, newName)
+            ..deliverChanges();
+
       }
     }
-    deliverChangesSync();
 
     this.remove(profile);
     if (profile is InclusiveProfile) {
       profile.tracker = this;
     }
-    deliverChangesSync();
+    this.deliverChanges();
     profile.name = newName;
   }
 
   Iterable<Profile> validResultProfilesFor(InclusiveProfile profile) {
-    return this.where((p) {
+    return this.values.where((p) {
       if (p == profile || p is! IncludableProfile) return false;
       if (p is InclusiveProfile) if (p.hasReferenceTo(profile.name))
         return false;
@@ -394,25 +393,4 @@ class CountMap<E> implements Map<E, int> {
 
   bool get isEmpty => _count.isEmpty;
   bool get isNotEmpty => !_count.isEmpty;
-}
-
-class ProfileCollectionIterator implements Iterator<Profile> {
-  final ProfileCollection _set;
-  final Iterator<_ProfileData> _iterator;
-  bool _hasNext = false;
-
-  ProfileCollectionIterator(ProfileCollection set)
-      : _set = set, _iterator = set._profiles.values.iterator;
-
-  bool moveNext() {
-    // The result of this function depends on the set's length.
-    _set.length;
-    return _hasNext = _iterator.moveNext();
-  }
-
-  Profile get current {
-    var result = _iterator.current.profile;
-    if (observeReads && _hasNext) notifyRead(_set, ChangeRecord.INDEX, result);
-    return result;
-  }
 }

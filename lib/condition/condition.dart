@@ -79,66 +79,43 @@ abstract class Condition extends Plainable with Observable {
 
 /**
  * A Condition which uses [pattern] to match URLs.
- * To mix in or implement this class, the target class must be Observable.
+ * To mix in or implement this class, the target class must be ChangeNotifier.
  */
 abstract class PatternBasedCondition {
   String _pattern;
   /** Get the pattern of this condition. */
-  String get pattern {
-    if (observeReads) {
-      notifyRead(this as Observable, ChangeRecord.FIELD, 'pattern');
-    }
-    return _pattern;
-  }
+  @reflectable String get pattern => _pattern;
 
   /** Set the pattern of this condition to [value]. */
-  void set pattern(String value) {
-    if (hasObservers(this as Observable)) {
-      notifyChange(this as Observable, ChangeRecord.FIELD, 'pattern',
-                   _pattern, value);
-    }
-    _pattern = value;
+  @reflectable void set pattern(String value) {
+    _pattern = (this as ChangeNotifier).notifyPropertyChange(#pattern,
+        _pattern, value);
   }
 }
 
 /**
  * A Condition which uses [regex] to match URLs.
- * To mix in or implement this class, the target class must be Observable.
+ * To mix in or implement this class, the target class must be ChangeNotifier.
  */
 abstract class RegexCondition implements PatternBasedCondition {
   RegExp _regex;
 
   /** Get the [regex] of this condition. */
-  RegExp get regex {
-    if (observeReads) {
-      notifyRead(this as Observable, ChangeRecord.FIELD, 'regex');
-    }
-    return _regex;
-  }
+  @reflectable RegExp get regex => _regex;
 
   /** Set the [regex] of this condition to [value]. */
-  void set regex(RegExp value) {
-    if (hasObservers(this as Observable)) {
-      notifyChange(this as Observable, ChangeRecord.FIELD, 'regex',
-                   regex, value);
-    }
-    _regex = value;
+  @reflectable void set regex(RegExp value) {
+    _regex = (this as ChangeNotifier).notifyPropertyChange(#regex, _regex,
+        value);
   }
 
   /** Get the pattern of the [regex]. */
-  String get pattern {
-    if (observeReads) {
-      notifyRead(this as Observable, ChangeRecord.FIELD, 'pattern');
-    }
-    return regex.pattern;
-  }
+  @reflectable String get pattern => regex.pattern;
 
   /** Set the [regex] to a new [RegExp] with a pattern of [value]. */
-  void set pattern(String value) {
-    if (hasObservers(this as Observable)) {
-      notifyChange(this as Observable, ChangeRecord.FIELD, 'pattern',
-                   regex.pattern, value);
-    }
-    regex = new RegExp(value);
+  @reflectable void set pattern(String value) {
+    var regex = new RegExp((this as ChangeNotifier).notifyPropertyChange(
+        #pattern, _pattern, value));
+    (this as ChangeNotifier).notifyPropertyChange(#regex, _regex, regex);
   }
 }

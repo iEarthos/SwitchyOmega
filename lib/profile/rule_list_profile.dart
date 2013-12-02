@@ -121,22 +121,24 @@ abstract class RuleListProfile extends InclusiveProfile
   RuleListProfile(String name, this.defaultProfileName,
                   this.matchProfileName)
     : super(name) {
-    observeChanges(this as Observable, (List<ChangeRecord> changes) {
-      if (changes.any((rec) => rec.key == 'sourceUrl' &&
-                             rec.newValue != rec.oldValue &&
-                             rec.newValue != null && rec.newValue != '')) {
+    this.changes.listen((records) {
+      if (records.any((rec) => rec is PropertyChangeRecord &&
+          rec.name == #sourceUrl && rec.newValue != rec.oldValue &&
+          rec.newValue != null && rec.newValue != '')) {
         this.ruleList = '';
       }
       if (tracker != null) {
-        changes.forEach((rec) {
-          switch (rec.key) {
-            case 'defaultProfileName':
-            case 'matchProfileName':
-              if (rec.newValue != rec.oldValue) {
-                tracker.removeReferenceByName(this, rec.oldValue);
-                tracker.addReferenceByName(this, rec.newValue);
-              }
-              break;
+        records.forEach((rec) {
+          if (rec is PropertyChangeRecord) {
+            switch (rec.name) {
+              case 'defaultProfileName':
+              case 'matchProfileName':
+                if (rec.newValue != rec.oldValue) {
+                  tracker.removeReferenceByName(this, rec.oldValue);
+                  tracker.addReferenceByName(this, rec.newValue);
+                }
+                break;
+            }
           }
         });
       }
@@ -152,9 +154,10 @@ abstract class RuleListProfile extends InclusiveProfile
       sourceUrl = u;
     }
     ruleList = p['ruleList'];
-    ChangeUnobserver unobserve;
-    unobserve = observe(() => this, (_) {
-      ruleList = p['ruleList'];
+
+    var unobserve;
+    unobserve = this.changes.listen((records) {
+      ruleList = p['rulelist'];
       unobserve();
     });
   }

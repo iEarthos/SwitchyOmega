@@ -64,9 +64,10 @@ class PacProfile extends ScriptProfile implements UpdatingProfile {
   }
 
   PacProfile(String name) : super(name) {
-    observeChanges(this as Observable, (List<ChangeRecord> changes) {
-      if (changes.any((c) => c.key == 'pacUrl' && c.newValue != c.oldValue &&
-                             c.newValue != null && c.newValue != '')) {
+    this.changes.listen((records) {
+      if (records.any((rec) => rec is PropertyChangeRecord &&
+          rec.name == #pacUrl && rec.newValue != rec.oldValue &&
+          rec.newValue != null && rec.newValue != '')) {
         this.pacScript = '';
       }
     });
@@ -78,8 +79,9 @@ class PacProfile extends ScriptProfile implements UpdatingProfile {
     if (u != null) {
       this.pacUrl = u;
     }
-    ChangeUnobserver unobserve;
-    unobserve = observe(() => this, (_) {
+
+    var unobserve;
+    unobserve = this.changes.listen((records) {
       pacScript = p['pacScript'];
       unobserve();
     });

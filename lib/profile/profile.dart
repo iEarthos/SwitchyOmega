@@ -24,7 +24,7 @@ part of switchy_profile;
  * A profile is a proxy mode that can be applied manually or automatically.
  */
 @observable
-abstract class Profile extends Plainable {
+abstract class Profile extends Plainable with Observable {
   /** The name of the profile. This is used as a key. */
   String name;
 

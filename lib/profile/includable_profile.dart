@@ -63,7 +63,7 @@ abstract class IncludableProfile extends Profile {
   }
 
   IncludableProfile(String name) : super(name) {
-    observe(() => this.name, (_) {
+    onPropertyChange(this, #name, () {
       _scriptName = null;
     });
   }

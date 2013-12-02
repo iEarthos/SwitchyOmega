@@ -22,7 +22,7 @@ library switchy_condition;
 
 import 'dart:core';
 import 'package:json/json.dart' as JSON;
-import 'package:web_ui/observe/observable.dart';
+import 'package:observe/observe.dart';
 import '../code_writer.dart';
 import '../lang/lib.dart';
 import 'shexp_utils.dart';
