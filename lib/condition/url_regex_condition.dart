@@ -23,8 +23,8 @@ part of switchy_condition;
 /**
  * Matches when the url matches the [regex].
  */
-class UrlRegexCondition extends UrlCondition
-    with RegexCondition {
+class UrlRegexCondition extends UrlCondition with RegexCondition,
+    ChangeNotifier {
   final String conditionType = 'UrlRegexCondition';
 
   bool matchUrl(String url, scheme) {

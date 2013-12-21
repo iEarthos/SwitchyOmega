@@ -24,7 +24,7 @@ part of switchy_condition;
  * Matches when the host matches the [regex] [pattern].
  */
 class HostRegexCondition extends HostCondition
-    with RegexCondition {
+    with RegexCondition, ChangeNotifier {
   final String conditionType = 'HostRegexCondition';
 
   bool matchHost(String host) {

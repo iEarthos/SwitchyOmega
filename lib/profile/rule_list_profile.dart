@@ -24,18 +24,17 @@ part of switchy_profile;
  * Matches when the url matches the [ruleList].
  * If [sourceUrl] is not null, the ruleList will be downloaded from [sourceUrl].
  */
-@observable
 abstract class RuleListProfile extends InclusiveProfile
     implements UpdatingProfile {
-  String sourceUrl = '';
+  @observable String sourceUrl = '';
 
-  String matchProfileName;
+  @observable String matchProfileName;
 
-  String defaultProfileName;
+  @observable String defaultProfileName;
 
   List<Rule> _rules;
 
-  String ruleList = '';
+  @observable String ruleList = '';
 
   void writeTo(CodeWriter w) {
     if (_rules == null) _rules = parseRules(ruleList);
@@ -130,9 +129,9 @@ abstract class RuleListProfile extends InclusiveProfile
       if (tracker != null) {
         records.forEach((rec) {
           if (rec is PropertyChangeRecord) {
-            switch (rec.name) {
-              case 'defaultProfileName':
-              case 'matchProfileName':
+            switch (rec.name.toString()) {
+              case "defaultProfileName":
+              case "matchProfileName":
                 if (rec.newValue != rec.oldValue) {
                   tracker.removeReferenceByName(this, rec.oldValue);
                   tracker.addReferenceByName(this, rec.newValue);
@@ -156,7 +155,7 @@ abstract class RuleListProfile extends InclusiveProfile
     ruleList = p['ruleList'];
 
     var unobserve;
-    unobserve = this.changes.listen((records) {
+    unobserve = onPropertyChange(this, #sourceUrl, () {
       ruleList = p['rulelist'];
       unobserve();
     });

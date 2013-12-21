@@ -24,13 +24,12 @@ part of switchy_profile;
  * A PAC profile selects the proxy by running a [pacScript].
  * If [pacUrl] is not null, the script is downloaded from [pacUrl].
  */
-@observable
 class PacProfile extends ScriptProfile implements UpdatingProfile {
   String get profileType => 'PacProfile';
 
-  String pacUrl = '';
+  @observable String pacUrl = '';
 
-  String pacScript = '';
+  @observable String pacScript = '';
 
   String toScript() => this.pacScript;
 

@@ -25,18 +25,11 @@ part of switchy_condition;
  * of the IP address are the same as those of [ip].
  * TODO(catus): Support IPv6.
  */
-@observable
 class IpCondition extends HostCondition {
   final String conditionType = 'IpCondition';
 
-  String ip;
-  int _prefixLength;
-  int get prefixLength => _prefixLength;
-  void set prefixLength(int value) {
-    _prefixLength = value;
-    _mask = null;
-    _maskValue = null;
-  }
+  @observable String ip;
+  @observable int prefixLength;
 
   String _mask = null;
 
@@ -120,8 +113,11 @@ class IpCondition extends HostCondition {
     w.inline('isInNet(host, ${JSON.stringify(ip)}, ${JSON.stringify(mask)})');
   }
 
-  IpCondition([this.ip = '0.0.0.0', int prefixLength = 0]) {
-    this._prefixLength = prefixLength;
+  IpCondition([this.ip = '0.0.0.0', this.prefixLength = 0]) {
+    onPropertyChange(this, #prefixLength, () {
+      _mask = null;
+      _maskValue = null;
+    });
   }
 
   Map<String, Object> toPlain([Map<String, Object> p]) {

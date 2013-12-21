@@ -24,7 +24,6 @@ part of switchy_profile;
  * Selects the result profile of the first matching [Rule],
  * or the [defaultProfileName] if no rule matches.
  */
-@observable
 class SwitchProfile extends InclusiveProfile with Observable {
   String get profileType => 'SwitchProfile';
 
@@ -46,7 +45,7 @@ class SwitchProfile extends InclusiveProfile with Observable {
     if (this.defaultProfileName == oldName) this.defaultProfileName = newName;
   }
 
-  String defaultProfileName;
+  @observable String defaultProfileName;
 
   void writeTo(CodeWriter w) {
     w.code('function (url, host, scheme) {');

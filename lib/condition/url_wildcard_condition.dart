@@ -24,7 +24,7 @@ part of switchy_condition;
  * Matches when the url matches the wildcard [pattern].
  */
 class UrlWildcardCondition extends UrlCondition
-    with PatternBasedCondition {
+    with PatternBasedCondition, ChangeNotifier {
   final String conditionType = 'UrlWildcardCondition';
 
   RegExp _regex;

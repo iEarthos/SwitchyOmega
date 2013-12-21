@@ -25,14 +25,13 @@ part of switchy_profile;
  * Besides, a [bypassList] can also be used for server which should be
  * connected directly.
  */
-@observable
 class FixedProfile extends IncludableProfile {
   final String profileType = 'FixedProfile';
 
-  ProxyServer proxyForHttp;
-  ProxyServer proxyForHttps;
-  ProxyServer proxyForFtp;
-  ProxyServer fallbackProxy;
+  @observable ProxyServer proxyForHttp;
+  @observable ProxyServer proxyForHttps;
+  @observable ProxyServer proxyForFtp;
+  @observable ProxyServer fallbackProxy;
 
   /**
    * When the url matches one of the [BypassConditions],
@@ -155,11 +154,10 @@ class FixedProfile extends IncludableProfile {
 /**
  * A [ProxyServer].
  */
-@observable
 class ProxyServer extends Plainable with Observable {
-  String protocol = defaultProtocol;
-  String host;
-  int port;
+  @observable String protocol = defaultProtocol;
+  @observable String host;
+  @observable int port;
 
   /**
    * Converts this ProxyServer to a token of a PAC result string.

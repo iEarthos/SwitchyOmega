@@ -25,9 +25,14 @@ part of switchy_profile;
  * It can be converted to a complete PAC script using [toScript].
  */
 abstract class InclusiveProfile extends ScriptProfile {
-  InclusiveProfile(String name) : super(name);
+  InclusiveProfile(String name) : super(name) {
+    onPropertyChange(this, #tracker, () {
+      if (tracker != null) {
+        initTracker(tracker);
+      }
+    });
+  }
 
-  ProfileTracker _tracker;
   /**
    * Set the tracker that tracks this profile and result profiles. This method
    * calls [initTracker] before the tracker is changed.
@@ -35,14 +40,7 @@ abstract class InclusiveProfile extends ScriptProfile {
    * [toScript].
    * Setting [tracker] to [:null:] disables reference-related methods.
    */
-  void set tracker(ProfileTracker value) {
-    if (_tracker != value && value != null) {
-      initTracker(value);
-    }
-    _tracker = value;
-  }
-
-  ProfileTracker get tracker => _tracker;
+  @observable ProfileTracker tracker;
 
   /**
    * Get all direct result profiles of this profile. Requires [tracker].
@@ -138,11 +136,10 @@ abstract class InclusiveProfile extends ScriptProfile {
 /**
  * A [Rule] is a combination of a [condition] and a [profileName].
  */
-@observable
 class Rule extends Plainable with Observable {
-  Condition condition;
+  @observable Condition condition;
 
-  String profileName;
+  @observable String profileName;
 
   Map<String, Object> toPlain([Map<String, Object> p]) {
     if (p == null) p = new Map<String, Object>();

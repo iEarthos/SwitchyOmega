@@ -73,9 +73,13 @@ class ProfileCollection extends ObservableMap<String, Profile>
   @reflectable void operator []=(String key, Profile value) {
     var len = this.length;
     var profile = this[key];
-    if (profile.predefined) return;
-    if (profile is InclusiveProfile) {
-      profile.tracker = null;
+    if (profile != null) {
+      if (profile.predefined) return;
+      if (profile is InclusiveProfile) {
+        profile.tracker = null;
+      }
+    } else {
+      _profiles[value.name] = new _ProfileData(value);
     }
 
     super[key] = value;
@@ -85,18 +89,8 @@ class ProfileCollection extends ObservableMap<String, Profile>
   }
 
   void addProfiles(Iterable<Profile> profiles) {
-    var added_profile = new Queue<Profile>();
     profiles.forEach((profile) {
-      if (!this.containsKey(profile.name)) {
-        this[profile.name] = profile;
-        _profiles[profile.name] = new _ProfileData(profile);
-        added_profile.add(profile);
-      }
-    });
-    added_profile.forEach((profile) {
-      if (profile is InclusiveProfile) {
-        profile.tracker = this;
-      }
+      this.add(profile);
     });
   }
 
@@ -105,9 +99,9 @@ class ProfileCollection extends ObservableMap<String, Profile>
   }
 
   Profile putIfAbsent(String key, Profile ifAbsent()) {
-    Profile result = super.putIfAbsent(key, ifAbsent);
-    if (result is InclusiveProfile) {
-      result.tracker = this;
+    Profile result = this[key];
+    if (result == null) {
+      result = this[key] = ifAbsent();
     }
     return result;
   }
@@ -147,18 +141,14 @@ class ProfileCollection extends ObservableMap<String, Profile>
   }
 
   void loadPlain(Map<String, Object> p) {
-    var plainProfiles = new Queue<Profile>();
-
     p.forEach((key, value) {
       if (key[0] == '+') {
-        plainProfiles.add(new Profile.fromPlain(value));
+        this.add(new Profile.fromPlain(value));
       }
     });
-
-    this.addAll(plainProfiles);
   }
 
-  factory ProfileCollection.fromPlain(List<Object> p) {
+  factory ProfileCollection.fromPlain(Map<String, Object> p) {
     var c = new ProfileCollection();
     c.loadPlain(p);
     return c;
@@ -170,7 +160,7 @@ class ProfileCollection extends ObservableMap<String, Profile>
 
   bool add(Profile profile) {
     bool added = false;
-    super.putIfAbsent(profile.name, () {
+    this.putIfAbsent(profile.name, () {
       added = true;
       return profile;
     });

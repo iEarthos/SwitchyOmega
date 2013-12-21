@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SO Test Runner</title>
+  <script type="application/dart">export 'tests.dart';</script>
+  <script src="packages/browser/dart.js"></script>
+  <script>
+    window.initPac = function (script) {
+      window.FindProxyForURL = eval(
+          '(function () {\n' + script + '\nreturn FindProxyForURL;})()');
+    };
+  </script>
+</head>
+<body>
+</body>
+</html>

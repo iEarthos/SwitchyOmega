@@ -24,15 +24,14 @@ part of switchy_condition;
  * Matches when the number of dots in the host is within the range
  * [minValue](inclusive) ~ [maxValue](inclusive).
  */
-@observable
 class HostLevelsCondition extends HostCondition {
   final String conditionType = 'HostLevelsCondition';
 
   /** Cache the charCode of '.' for greater speed. */
   static final int dotCharCode = 46;
 
-  int maxValue = 0;
-  int minValue = 0;
+  @observable int maxValue = 0;
+  @observable int minValue = 0;
 
   bool matchHost(String host) {
     int dotCount = 0;

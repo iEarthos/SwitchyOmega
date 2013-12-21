@@ -26,7 +26,7 @@ part of switchy_condition;
  * <https://github.com/FelisCatus/SwitchyOmega/wiki/Host-wildcard-condition>.
  */
 class HostWildcardCondition extends HostCondition
-    with PatternBasedCondition {
+    with PatternBasedCondition, ChangeNotifier {
   final String conditionType = 'HostWildcardCondition';
 
   @observable String pattern;

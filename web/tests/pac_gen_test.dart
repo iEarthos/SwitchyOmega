@@ -18,12 +18,14 @@
  * along with SwitchyOmega.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import 'dart:js';
 import 'package:json/json.dart' as JSON;
 import 'package:switchyomega/condition/lib.dart';
 import 'package:switchyomega/profile/lib.dart';
-import 'package:web_ui/observe.dart';
+import 'package:observe/observe.dart';
+import 'package:unittest/unittest.dart';
 
-void main() {
+void allTests() {
   var http = new FixedProfile('http');
   http.fallbackProxy = new ProxyServer('127.0.0.1', 'http', 8888);
 
@@ -69,32 +71,29 @@ void main() {
   var sw = new SwitchProfile('auto', list2.name);
   // The following line will only work in PAC files because it uses isInNet.
   // f.bypassList.add(new BypassCondition('192.168.0.0/18'));
-  sw.add(new Rule(new HostWildcardCondition('*.example.com'), ssh.name));
-  sw.add(new Rule(new HostLevelsCondition(0, 0), new DirectProfile().name));
-  sw.add(new Rule(new KeywordCondition('foo'), ssh.name));
+  sw.rules.add(new Rule(new HostWildcardCondition('*.example.com'),
+      ssh.name));
+  sw.rules.add(new Rule(new HostLevelsCondition(0, 0),
+      new DirectProfile().name));
+  sw.rules.add(new Rule(new KeywordCondition('foo'), ssh.name));
 
   var col = new ProfileCollection([http, ssh, list1, list2, sw]);
-  deliverChangesSync();
+
+  Observable.dirtyCheck();
 
   // Serialize the profiles to JSON and then parse back to test the roundtrip.
-  var json = JSON.stringify(col);
-  //print(col.allReferences(list2).toList());
-  //return;
+  var json = JSON.stringify(col.toPlain());
   col = new ProfileCollection.fromPlain(JSON.parse(json));
-  deliverChangesSync();
+  Observable.dirtyCheck();
 
   var auto = col['auto'] as InclusiveProfile;
-  print(auto.toScript());
+  context.callMethod('initPac', [auto.toScript()]);
 
   // Some test cases
-  print('var assert = function (actural, expected, extra) {\n'
-        "  if (actural !== expected) \n"
-        "    console.log('[' + extra + ']: ' + actural + "
-        "' (Expected: ' + expected + ')');\n"
-        '};');
   testCase(sw, 'https://www.example.com/somepath');
   testCase(sw, 'ftp://www.example.com/somepath');
   testCase(sw, 'http://www.example.com/somepath');
+  testCase(sw, 'http://www.example.net/');
   testCase(sw, 'http://foo.test/test');
   testCase(sw, 'http://bar/test');
   testCase(sw, 'http://foo.test:3333/test');
@@ -109,10 +108,11 @@ void main() {
 
 ProxyServer resolveProxy(Profile p, String url, String host, String scheme) {
   while (p != null) {
+    var next_p = p;
     if (p is InclusiveProfile) {
-      p = p.tracker.getProfileByName(
-          (p as InclusiveProfile).choose(url, host, scheme, null));
+      next_p = p.tracker.getProfileByName(p.choose(url, host, scheme, null));
     }
+    p = next_p;
     if (p is FixedProfile) {
       return p.getProxyFor(url, host, scheme);
     }
@@ -123,30 +123,30 @@ ProxyServer resolveProxy(Profile p, String url, String host, String scheme) {
 }
 
 void testCase(Profile p, String url) {
-  var scheme = url.substring(0, url.indexOf(':'));
-  var host;
+  test(url, () {
+    var scheme = url.substring(0, url.indexOf(':'));
+    var host;
 
-  var hostStart = scheme.length + 3;
-  var slashPos = url.indexOf('/', hostStart);
-  if (slashPos < 0) slashPos = url.length;
+    var hostStart = scheme.length + 3;
+    var slashPos = url.indexOf('/', hostStart);
+    if (slashPos < 0) slashPos = url.length;
 
-  if (url.codeUnitAt(slashPos - 1) == BypassCondition.closeSquareBracketCode) {
-    host = url.substring(hostStart, slashPos + 1);
-  } else {
-    var colonPos = url.lastIndexOf(':', slashPos - 1);
-    if (colonPos < hostStart) {
-      host = url.substring(hostStart, slashPos);
+    if (url.codeUnitAt(slashPos - 1) == BypassCondition.closeSquareBracketCode) {
+      host = url.substring(hostStart, slashPos + 1);
     } else {
-      host = url.substring(hostStart, colonPos);
+      var colonPos = url.lastIndexOf(':', slashPos - 1);
+      if (colonPos < hostStart) {
+        host = url.substring(hostStart, slashPos);
+      } else {
+        host = url.substring(hostStart, colonPos);
+      }
     }
-  }
 
-  var resultProxy = resolveProxy(p, url, host, scheme);
-  var result = resultProxy == null ? 'DIRECT' : resultProxy.toPacResult();
+    var resultProxy = resolveProxy(p, url, host, scheme);
+    var result = resultProxy == null ? 'DIRECT' : resultProxy.toPacResult();
 
-  url = JSON.stringify(url);
-  host = JSON.stringify(host);
-  result = JSON.stringify(result);
+    var proxy = context.callMethod('FindProxyForURL', [url, host]);
 
-  print('assert(FindProxyForURL($url, $host), $result, $url);');
+    expect(proxy, equals(result));
+  });
 }

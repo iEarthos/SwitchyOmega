@@ -23,10 +23,9 @@ part of switchy_profile;
 /**
  * A profile is a proxy mode that can be applied manually or automatically.
  */
-@observable
 abstract class Profile extends Plainable with Observable {
   /** The name of the profile. This is used as a key. */
-  String name;
+  @observable String name;
 
   /** When overridden in derived classes, return the profile type. */
   String get profileType;
@@ -34,13 +33,13 @@ abstract class Profile extends Plainable with Observable {
   /**
     Colors can help to tell profiles from each other.
   */
-  String color;
+  @observable String color;
 
   /**
    * This field can be used to detect whether this profile has changed. The
    * value of this field is controlled by user packages.
    */
-  String revision;
+  @observable String revision;
 
   /**
     Whether this profile is a predefined profile.

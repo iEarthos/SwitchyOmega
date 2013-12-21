@@ -25,7 +25,8 @@ part of switchy_condition;
  * For the pattern syntax, see
  * <https://code.google.com/chrome/extensions/proxy.html#bypass_list>
  */
-class BypassCondition extends Condition with PatternBasedCondition {
+class BypassCondition extends Condition with PatternBasedCondition,
+    ChangeNotifier {
   final String conditionType = 'BypassCondition';
 
   bool _cached = false;
