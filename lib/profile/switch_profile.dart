@@ -82,7 +82,7 @@ class SwitchProfile extends InclusiveProfile with Observable {
     return p;
   }
 
-  final Map<Rule, dynamic> _unobserve = {};
+  final Map<Rule, StreamSubscription<List<ChangeRecord>>> _subs = {};
 
   SwitchProfile(String name, this.defaultProfileName) : super(name) {
     if (tracker != null) tracker.addReferenceByName(this, defaultProfileName);
@@ -105,15 +105,15 @@ class SwitchProfile extends InclusiveProfile with Observable {
             Rule r = rec.oldValue as Rule;
             if (tracker != null) tracker.removeReferenceByName(this,
                 r.profileName);
-            _unobserve[r]();
+            _subs[r].cancel();
           }
         }
-        if (rec is MapChangeRecord && (rec.isRemove || !rec.isInsert)) {
+        if (rec is MapChangeRecord && (rec.isInsert || !rec.isRemove)) {
           if (rec.newValue != null) {
             Rule r = rec.newValue as Rule;
             if (tracker != null) tracker.addReferenceByName(this,
                 r.profileName);
-            _unobserve[r] = r.changes.listen((changes) {
+            _subs[r] = r.changes.listen((changes) {
               if (tracker == null) return;
               var changed = false;
               changes.forEach((rec2) {

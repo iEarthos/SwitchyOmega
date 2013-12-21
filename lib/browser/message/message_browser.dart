@@ -221,8 +221,7 @@ class MessageProxyChangeEvent extends ProxyChangeEvent {
               return profile;
             }
           }
-          newProfile = new PacProfile('');
-          newProfile.pacUrl = url;
+          newProfile = new PacProfile('')..pacUrl = url;
         } else {
           var script = pacScript['data'] as String;
           for (var profile in col) {
@@ -231,8 +230,7 @@ class MessageProxyChangeEvent extends ProxyChangeEvent {
               return profile;
             }
           }
-          newProfile = new PacProfile('');
-          newProfile.pacScript = script;
+          newProfile = new PacProfile('')..pacScript = script;
         }
         break;
       case 'fixed_servers':
@@ -268,13 +266,13 @@ class MessageProxyChangeEvent extends ProxyChangeEvent {
               return profile;
           }
         }
-        newProfile = new FixedProfile('');
-        newProfile.proxyForHttp = servers['proxyForHttp'];
-        newProfile.proxyForHttps = servers['proxyForHttps'];
-        newProfile.proxyForFtp = servers['proxyForFtp'];
-        newProfile.fallbackProxy = servers['fallbackProxy'];
-        newProfile.bypassList.addAll(
-            bypass.map((pattern) => new BypassCondition(pattern)));
+        newProfile = new FixedProfile('')
+          ..proxyForHttp = servers['proxyForHttp']
+          ..proxyForHttps = servers['proxyForHttps']
+          ..proxyForFtp = servers['proxyForFtp']
+          ..fallbackProxy = servers['fallbackProxy']
+          ..bypassList.addAll(
+              bypass.map((pattern) => new BypassCondition(pattern)));
         break;
       default:
         throw new UnsupportedError(
@@ -321,14 +319,14 @@ class MessageBrowserStorage extends BrowserStorage {
     return comp.future;
   }
 
-  StreamController<ChangeRecord> _changes = null;
+  StreamController<BrowserStorageChangeRecord> _changes = null;
 
-  Stream<ChangeRecord> get onChange {
+  Stream<BrowserStorageChangeRecord> get onChange {
     if (_changes == null) {
       _changes = new StreamController();
       _c.on('storage.onchange', (Map<String, Object> changes, [_]) {
         changes.forEach((key, change) {
-          _changes.add(new ChangeRecord(ChangeRecord.FIELD, key,
+          _changes.add(new BrowserStorageChangeRecord(key,
               change['oldValue'], change['newValue']));
         });
       });

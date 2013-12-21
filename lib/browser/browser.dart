@@ -83,8 +83,17 @@ abstract class BrowserStorage {
   Future remove(List<String> keys);
 
   /**
-   * Get a stream of [ChangeRecord]s which is filled when the items in storage
-   * has changed, internally (via this [BrowserStorage] instance) or externally.
+   * Get a stream of [BrowserStorageChangeRecord]s which is filled when the
+   * items in storage has changed, internally (via this [BrowserStorage]
+   * instance) or externally.
    */
-  Stream<ChangeRecord> get onChange;
+  Stream<BrowserStorageChangeRecord> get onChange;
+}
+
+class BrowserStorageChangeRecord {
+  String key;
+  dynamic oldValue;
+  dynamic newValue;
+
+  BrowserStorageChangeRecord(this.key, this.oldValue, this.newValue);
 }

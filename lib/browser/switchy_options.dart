@@ -19,31 +19,30 @@ part of switchy_browser;
  * You should have received a copy of the GNU General Public License
  * along with SwitchyOmega.  If not, see <http://www.gnu.org/licenses/>.
  */
-@observable
-class SwitchyOptions extends Plainable {
+class SwitchyOptions extends Plainable with Observable {
   /**
    * The schemeVersion is increased every time the structure of the result of
    * [toPlain] changes.
    */
   static const schemaVersion = 1;
 
-  bool confirmDeletion;
+  @observable bool confirmDeletion;
 
-  bool refreshOnProfileChange;
+  @observable bool refreshOnProfileChange;
 
-  String startupProfileName;
+  @observable String startupProfileName;
 
-  bool enableQuickSwitch;
+  @observable bool enableQuickSwitch;
 
-  bool revertProxyChanges;
+  @observable bool revertProxyChanges;
 
   /**
    * The interval (in minutes) between PAC or rule list updates.
    * A negative value disables automatic updating.
    */
-  int downloadInterval;
+  @observable int downloadInterval;
 
-  final List<String> quickSwitchProfiles = toObservable([]);
+  final ObservableList<String> quickSwitchProfiles = toObservable([]);
 
   final ProfileCollection profiles = new ProfileCollection();
 
@@ -103,8 +102,8 @@ class StoredSwitchyOptions extends SwitchyOptions {
   static const schemaVersion = SwitchyOptions.schemaVersion;
 
   BrowserStorage storage;
-  final Map<Profile, ChangeUnobserver> _unobservers = {};
-  final List<ChangeUnobserver> _syncObservers = [];
+  final Map<Profile, StreamSubscription<List<ChangeRecord>>> _subs = {};
+  final List<StreamSubscription<List<ChangeRecord>>> _syncObservers = [];
   final Completer _readyCompleter = new Completer();
   Future get ready => _readyCompleter.future;
   Map<String, String> _revisionLock = {};
@@ -137,9 +136,8 @@ class StoredSwitchyOptions extends SwitchyOptions {
   }
 
   void startSyncing() {
-    deliverChangesSync();
-    _syncObservers.add(observeChanges(this as Observable,
-        (List<ChangeRecord> changes) {
+    Observable.dirtyCheck();
+    _syncObservers.add(this.changes.listen((List<ChangeRecord> changes) {
       var items = new Map<String, Object>();
       changes.forEach((record) {
         items['-' + record.key] = record.newValue;
@@ -147,15 +145,15 @@ class StoredSwitchyOptions extends SwitchyOptions {
       storage.set(items);
     }));
 
-    _syncObservers.add(observe(this.quickSwitchProfiles, (_) {
+    _syncObservers.add(this.quickSwitchProfiles.changes.listen((_) {
       storage.set({'-quickSwitchProfiles': this.quickSwitchProfiles});
     }));
 
-    var observeProfile = (profile) {
-      _unobservers[profile] = observeChanges(profile, (changes) {
+    var observeProfile = (_, Profile profile) {
+      _subs[profile] = profile.changes.listen((records) {
         if (this.profiles.contains(profile)) {
-          if (changes.any(
-              (c) => c.type != ChangeRecord.FIELD || c.key != 'revision')) {
+          if (records.any(
+              (c) => c is! PropertyChangeRecord || c.name != #revision)) {
             if (profile.revision == null ||
                 _revisionLock[profile.name] != profile.revision) {
               profile.revision =
@@ -174,29 +172,23 @@ class StoredSwitchyOptions extends SwitchyOptions {
 
     profiles.forEach(observeProfile);
 
-    _syncObservers.add(observeChanges(this.profiles,
-        (List<ChangeRecord> changes) {
+    _syncObservers.add(this.profiles.changes.listen((changes) {
       var items = new Map<String, Object>();
-      changes.forEach((record) {
-        switch (record.type) {
-          case ChangeRecord.INDEX:
-          case ChangeRecord.INSERT:
-            var value = record.newValue as Profile;
+      changes.forEach((rec) {
+        if (rec is MapChangeRecord && (rec.isInsert || !rec.isRemove)) {
+            var value = rec.newValue as Profile;
             var key = value.name;
             value = value.toPlain();
             items['+' + key] = value;
-            break;
-          case ChangeRecord.REMOVE:
-            items['+' + record.oldValue.name] = null;
-            break;
         }
-        if (record.type == ChangeRecord.REMOVE ||
-            record.type == ChangeRecord.INDEX) {
-          _unobservers[record.oldValue]();
+        if (rec is MapChangeRecord && rec.isRemove) {
+            items['+' + rec.oldValue.name] = null;
         }
-        if (record.type == ChangeRecord.INSERT ||
-            record.type == ChangeRecord.INDEX) {
-          observeProfile(record.newValue);
+        if (rec is MapChangeRecord && (rec.isRemove || !rec.isInsert)) {
+          _subs[rec.oldValue].cancel();
+        }
+        if (rec is MapChangeRecord && (rec.isInsert || !rec.isRemove)) {
+          observeProfile(null, rec.newValue);
         }
       });
       var removed = new List<String>();
@@ -212,10 +204,10 @@ class StoredSwitchyOptions extends SwitchyOptions {
   }
 
   void stopSyncing() {
-    _syncObservers.forEach((unobserve) => unobserve());
+    _syncObservers.forEach((sub) => sub.cancel());
     _syncObservers.clear();
-    _unobservers.forEach((_, unobserve) => unobserve());
-    _unobservers.clear();
+    _subs.forEach((_, sub) => sub.cancel());
+    _subs.clear();
     _onUpdate = null;
   }
 
@@ -227,11 +219,11 @@ class StoredSwitchyOptions extends SwitchyOptions {
     return storage.remove(null).then((_) => storage.set(items));
   }
 
-  Stream<ChangeRecord> _onUpdate;
+  Stream<BrowserStorageChangeRecord> _onUpdate;
 
-  Stream<ChangeRecord> get onUpdate {
+  Stream<BrowserStorageChangeRecord> get onUpdate {
     if (_onUpdate == null) {
-      Stream<ChangeRecord> onUpdate = null;
+      Stream<BrowserStorageChangeRecord> onUpdate = null;
       _onUpdate = storage.onChange.where((record) {
         if (_onUpdate != onUpdate) return false;
         switch (record.key[0]) {
@@ -270,7 +262,7 @@ class StoredSwitchyOptions extends SwitchyOptions {
               try {
                 if (record.newValue == null) {
                   print('Remove: ${record.key}');
-                  profiles.forceRemove(profiles[record.key.substring(1)]);
+                  profiles.forceRemove(record.key.substring(1));
                 } else if (record.oldValue == null) {
                   print('Add: ${record.key}: ${JSON.stringify(record.newValue)}');
                   profiles.add(new Profile.fromPlain(record.newValue));
@@ -285,10 +277,10 @@ class StoredSwitchyOptions extends SwitchyOptions {
                       profile.revision.length <= rev.length &&
                       profile.revision.compareTo(rev) < 0)) {
                     var name = record.key.substring(1);
-                    deliverChangesSync();
+                    Observable.dirtyCheck();
                     _revisionLock[name] = rev;
                     profiles.getProfileByName(name).loadPlain(record.newValue);
-                    deliverChangesSync();
+                    Observable.dirtyCheck();
                     _revisionLock.remove(name);
                   }
                 }

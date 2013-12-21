@@ -79,10 +79,10 @@ class PacProfile extends ScriptProfile implements UpdatingProfile {
       this.pacUrl = u;
     }
 
-    var unobserve;
-    unobserve = this.changes.listen((records) {
+    var sub;
+    sub = this.changes.listen((records) {
       pacScript = p['pacScript'];
-      unobserve();
+      sub.cancel();
     });
   }
 

@@ -154,10 +154,10 @@ abstract class RuleListProfile extends InclusiveProfile
     }
     ruleList = p['ruleList'];
 
-    var unobserve;
-    unobserve = onPropertyChange(this, #sourceUrl, () {
+    var sub;
+    sub = onPropertyChange(this, #sourceUrl, () {
       ruleList = p['rulelist'];
-      unobserve();
+      sub.cancel();
     });
   }
 

@@ -17,11 +17,11 @@
     "default_popup": "web/popup/popup.html"
   },
   "background": {
-    "page": "web/out/background/background_safe.html"
+    "page": "web/background/background_safe.html"
   },
   "homepage_url": "https://chrome.google.com/webstore/detail/dpplabbmogkhghncfbfdeeokoefdjegm",
   "minimum_chrome_version": "22.0.0",
-  "options_page": "web/out/options/options_safe.html",
+  "options_page": "web/options/options_safe.html",
   "permissions": [
     "proxy",
     "tabs",
@@ -31,8 +31,8 @@
   ],
   "sandbox": {
     "pages": [
-      "web/out/options/options.html",
-      "web/out/background/background.html"
+      "web/options/options.html",
+      "web/background/background.html"
     ]
   }
 }

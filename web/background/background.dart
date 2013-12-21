@@ -23,7 +23,7 @@ library switchy_background;
 import 'dart:html';
 import 'package:json/json.dart' as JSON;
 import 'dart:async';
-import 'package:web_ui/web_ui.dart';
+import 'package:observe/observe.dart';
 import 'package:switchyomega/switchyomega.dart';
 import 'package:switchyomega/browser/lib.dart';
 import 'package:switchyomega/browser/message/lib.dart';
@@ -44,7 +44,8 @@ Future applyProfile(String name, {bool refresh: false, bool noConfig: false}) {
     possibleResults = options.profiles.validResultProfilesFor(currentProfile)
         .map((p) => p.name).toList();
   } else if (currentProfile is IncludableProfile) {
-    possibleResults = options.profiles.where((p) => p is IncludableProfile)
+    possibleResults = options.profiles.values.where(
+        (p) => p is IncludableProfile)
         .map((p) => p.name).toList();
   }
 
@@ -55,7 +56,7 @@ Future applyProfile(String name, {bool refresh: false, bool noConfig: false}) {
     tempProfile.name = '$name (+temp rules)';
     tempProfile.color = currentProfile.color;
     profile = tempProfile;
-    deliverChangesSync();
+    tempProfile.deliverChanges();
   }
 
   return browser.applyProfile(profile, possibleResults,
@@ -69,8 +70,9 @@ Profile resolveProfile(Profile p, String url) {
   var date = new DateTime.now();
   while (p != null) {
     if (p is InclusiveProfile) {
-      p = p.tracker.getProfileByName(
-          (p as InclusiveProfile).choose(url, uri.host, uri.scheme, date));
+      var pp = p;
+      p = pp.tracker.getProfileByName(
+          pp.choose(url, uri.host, uri.scheme, date));
     } else {
       return p;
     }
@@ -106,7 +108,7 @@ Future<Set<String>> updateProfiles() {
   var completer = new Completer<Set<String>>();
   var count = 0;
   var fail = new Set<String>();
-  options.profiles.forEach((profile) {
+  options.profiles.forEach((_, profile) {
     if (profile is UpdatingProfile) {
       if (profile.updateUrl == null || profile.updateUrl.isEmpty) return;
       if (profile is AutoDetectProfile &&
@@ -185,14 +187,14 @@ void onOptionsUpdate(record) {
   if (record.key[0] == '+') {
     var profileName = record.key.substring(1);
     if (tempProfile != null) {
-      for (var i = 0; i < tempProfile.length; ) {
-        if (options.profiles[tempProfile[i].profileName] == null) {
-          tempProfile.removeAt(i);
+      for (var i = 0; i < tempProfile.rules.length; ) {
+        if (options.profiles[tempProfile.rules[i].profileName] == null) {
+          tempProfile.rules.removeAt(i);
         } else {
           i++;
         }
       }
-      deliverChangesSync();
+      Observable.dirtyCheck();
     }
     if (options.profiles[currentProfile.name] == null) {
       applyProfile(getStartupProfile(null).name);
@@ -235,6 +237,7 @@ void main() {
           options = new StoredSwitchyOptions.fromPlain(o['options'],
               browser.storage);
         } catch (e) {
+          print(e);
           safe.send('state.set', {
             'type': 'error',
             'reason': 'options',
@@ -295,9 +298,9 @@ void main() {
                               'conditionType': data['type'],
                               'pattern': data['details']
         };
-        profile.insert(0, new Rule(new Condition.fromPlain(plainCondition),
-            data['result']));
-        deliverChangesSync();
+        profile.rules.insert(0, new Rule(
+            new Condition.fromPlain(plainCondition), data['result']));
+        Observable.dirtyCheck();
         if (profile.name == currentProfile.name || (
             currentProfile is InclusiveProfile &&
             options.profiles.hasReference(currentProfile, profile))) {
@@ -313,8 +316,8 @@ void main() {
         tempProfile.tracker = new TempProfileTracker(options.profiles);
       }
       var condition = new HostWildcardCondition('*.' + details['domain']);
-      tempProfile.insert(0, new Rule(condition, details['name']));
-      deliverChangesSync();
+      tempProfile.rules.insert(0, new Rule(condition, details['name']));
+      Observable.dirtyCheck();
       applyProfile(currentProfile.name,
                    refresh: options.refreshOnProfileChange);
     },
@@ -322,7 +325,7 @@ void main() {
       if (currentProfile.name == '') {
         currentProfile.name = name;
         options.profiles.add(currentProfile);
-        deliverChangesSync();
+        Observable.dirtyCheck();
         applyProfile(currentProfile.name,
             refresh: options.refreshOnProfileChange);
       }

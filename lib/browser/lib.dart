@@ -23,7 +23,7 @@ import 'dart:async';
 import 'dart:core';
 import 'package:json/json.dart' as JSON;
 import 'package:crypto/crypto.dart';
-import 'package:web_ui/web_ui.dart';
+import 'package:observe/observe.dart';
 import 'package:switchyomega/lang/lib.dart';
 import 'package:switchyomega/profile/lib.dart';
 import 'package:switchyomega/condition/lib.dart';

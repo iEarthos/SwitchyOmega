@@ -248,16 +248,15 @@ class ProfileCollection extends ObservableMap<String, Profile>
     this.add(profileData.profile);
 
     this.deliverChanges();
+    profile.deliverChanges();
     profile.name = oldName;
 
     for (var data in _profiles.values) {
       if (data.profile is InclusiveProfile && data.profile.name != oldName) {
-        (data.profile as InclusiveProfile)
-            ..renameProfile(oldName, newName)
-            ..deliverChanges();
-
+        (data.profile as InclusiveProfile).renameProfile(oldName, newName);
       }
     }
+    Observable.dirtyCheck();
 
     this.remove(profile);
     if (profile is InclusiveProfile) {

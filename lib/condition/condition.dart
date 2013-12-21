@@ -115,7 +115,7 @@ abstract class RegexCondition implements PatternBasedCondition {
   /** Set the [regex] to a new [RegExp] with a pattern of [value]. */
   @reflectable void set pattern(String value) {
     var regex = new RegExp((this as ChangeNotifier).notifyPropertyChange(
-        #pattern, _pattern, value));
+        #pattern, _regex.pattern, value));
     (this as ChangeNotifier).notifyPropertyChange(#regex, _regex, regex);
   }
 }

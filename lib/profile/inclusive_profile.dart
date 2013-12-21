@@ -164,11 +164,11 @@ class Rule extends Plainable with Observable {
       this.notifyPropertyChange(#details, null, '');
     };
 
-    var unobserve = this.condition.changes.listen(onConditionChange);
+    var sub = this.condition.changes.listen(onConditionChange);
 
     onPropertyChange(this, #condition, () {
-      unobserve();
-      unobserve = this.condition.changes.listen(onConditionChange);
+      sub.cancel();
+      sub = this.condition.changes.listen(onConditionChange);
     });
   }
 }

@@ -66,4 +66,14 @@ void setup(GrinderContext context) {
       }
     }
   }
+
+  var packagesDir = getDir('web/packages');
+  
+  for (FileSystemEntity entity in getDir('web').listSync(
+        recursive: true, followLinks: false)) {
+    if (entity is Link && fileName(entity) == 'packages') {
+      entity.updateSync(path.relative(packagesDir.path,
+            from: entity.parent.path));
+    }
+  }
 }
