@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<link rel="import" href="bs_alert.html" />
+<link rel="import" href="bs_modal.html" />
+<link rel="import" href="sw_options_nav.html" />
+<link rel="import" href="sw_profile_editor.html" />
+<polymer-element name="sw-options" lightdom>
+  <script type="application/dart" src="sw_options.dart"></script>
+  <template>
+    <div class="container-fluid row-fluid">
+      <template if="{{options == null}}">
+        <div id="splash">
+          <div>
+            <!-- The following title should be filled with text even if the i18n cache is not loaded. -->
+            <h1 data-i18n="appNameShort">SwitchyOmega</h1>
+            <div class="progress progress-striped active">
+              <div class="bar" style="width: 100%;"></div>
+            </div>
+          </div>
+        </div>
+      </template>
+    </div>
+    <template if="{{options != null}}">
+      <header class="span2" id="options-nav">
+        <div class="width-holder">
+          <sw-options-nav profiles="{{options.profiles}}"></sw-options-nav>
+        </div>
+      </header>
+      <div id="main" class="span10">
+        <div class="tab-content">
+          <div class="tab-pane" id="tab-ui">
+            <header class="span10">
+              <h2 data-i18n="options_tab_ui"></h2>
+              <hr />
+            </header>
+            <section class="settings-group">
+              <h3 data-i18n="options_group_miscOptions"></h3>
+              <p>
+                <label class="checkbox">
+                  <input type="checkbox" id="confirm-deletion" checked="{{options.confirmDeletion}}" />
+                  <span data-i18n="options_confirmDeletion"></span>
+                </label>
+              </p>
+              <p>
+                <label class="checkbox">
+                  <input type="checkbox" id="refresh-on-profile-change" checked="{{options.refreshOnProfileChange}}" />
+                  <span data-i18n="options_refreshOnProfileChange"></span>
+                </label>
+              </p>
+            </section>
+            <section class="settings-group">
+              <h3 data-i18n="options_group_switchOptions"></h3>
+              <div class="h-control">
+                <label data-i18n="options_startupProfile" for="startup-profile"></label>
+                <select id="startup-profile" value="{{options.startupProfileName}}">
+                  <option data-i18n="options_startupProfile_none" value=""></option>
+                  <option template repeat="{{name in options.profiles.keys}}" value="{{name}}">{{name}}</option>
+                </select>
+              </div>
+              <p>
+                <label class="checkbox">
+                  <input type="checkbox" id="quick-switch" checked="{{options.enableQuickSwitch}}" />
+                  <span data-i18n="options_quickSwitch"></span>
+                </label>
+              </p>
+              <div id="quick-switch-settings" class="settings-group {{iif(options.enableQuickSwitch, '', 'hide')}}">
+                <h4 data-i18n="options_cycledProfiles"></h4>
+                <p class="help-block" data-i18n="options_cycledProfilesHelp"></p>
+                <ul id="cycle-enabled" class="cycle-profile-container">
+                  <template repeat="{{name in quickSwitchEnabledProfiles}}">
+                    <li>
+                      <span class="profile-color" style="background-color: {{options.getProfileByName(name).color}};"></span>
+                      <span class="profile-name">{{name}}</span>
+                    </li>
+                  </template>
+                </ul>
+                <p></p>
+                <h4 data-i18n="options_notCycledProfiles"></h4>
+                <ul id="cycle-disabled" class="cycle-profile-container">
+                  <template repeat="{{p in quickSwitchDisabledProfiles}}">
+                    <li>
+                      <span class="profile-color" style="background-color: {{p.color}};"></span>
+                      <span class="profile-name">{{p.name}}</span>
+                    </li>
+                  </template>
+                </ul>
+              </div>
+            </section>
+          </div>
+          <div class="tab-pane" id="tab-general">
+            <header class="span10">
+              <h2 data-i18n="options_tab_general"></h2>
+              <hr />
+            </header>
+            <section class="settings-group">
+              <h3 data-i18n="options_group_proxyChanges"></h3>
+              <label class="checkbox">
+                <input type="checkbox" id="revert-proxy-changes" checked="{{options.revertProxyChanges}}" />
+                <span data-i18n="options_revertProxyChanges"></span>
+              </label>
+            </section>
+            <section class="settings-group">
+              <h3 data-i18n="options_downloadOptions"></h3>
+              <p class="help-block" data-i18n="options_downloadOptionsHelp"></p>
+              <div class="h-control">
+                <label data-i18n="options_downloadInterval" for="download-interval"></label>
+                <select id="download-interval" value="options.downloadInterval | int2str">
+                  <option value="15" data-i18n="options_downloadInterval_15"></option>
+                  <option value="60" data-i18n="options_downloadInterval_60"></option>
+                  <option value="180" data-i18n="options_downloadInterval_180"></option>
+                  <option value="360" data-i18n="options_downloadInterval_360"></option>
+                  <option value="720" data-i18n="options_downloadInterval_720"></option>
+                  <option value="1440" data-i18n="options_downloadInterval_1440"></option>
+                  <option value="-1" data-i18n="options_downloadInterval_never"></option>
+                </select>
+              </div>
+            </section>
+          </div>
+          <div class="tab-pane" id="tab-importexport">
+            <header class="span10">
+              <h2 data-i18n="options_tab_importExport"></h2>
+              <hr />
+            </header>
+            <section class="settings-group">
+              <h3 data-i18n="options_group_importExportProfile"></h3>
+              <p>
+                <button class="btn" id="export-pac-file" data-i18n="options_exportPacFile" on-click="{{exportPac}}"></button>
+                <span class="help-inline" data-i18n="options_exportPacFileHelp"></span>
+              </p>
+            </section>
+            <section class="settings-group">
+              <h3 data-i18n="options_group_importExportSettings"></h3>
+              <p>
+                <button class="btn" id="make-backup" data-i18n="options_makeBackup" on-click="{{exportOptions}}"></button>
+                <span class="help-inline" data-i18n="options_makeBackupHelp"></span>
+              </p>
+              <p>
+                <input type="file" id="restore-local-file" on-change="{{restoreLocal}}"/>
+                <button class="btn" id="restore-local" data-i18n="options_restoreLocal"></button>
+                <span class="help-inline" data-i18n="options_restoreLocalHelp"></span>
+              </p>
+              <div>
+                <label class="control-label" data-i18n="options_restoreOnline"></label>
+                <div class="form-inline">
+                  <input type="url" class="input-xxlarge" data-i18n-values="placeholder: options_restoreOnlinePlaceholder" id="restore-url" />
+                  <button class="btn" id="restore-online" data-i18n="options_restoreOnlineSubmit" on-click="{{restoreOnline}}"></button>
+                </div>
+              </div>
+            </section>
+          </div>
+          <template repeat="{{profile in options.profiles.values}}">
+            <template if="{{!profile.predefined}}">
+              <div class="tab-pane" id="{{cssSafeId('profile-' + profile.name)}}" data-profile="{{profile.name}}">
+                <sw-profile-editor profile="{{profile}}" resultProfiles="{{validResultProfilesFor(profile)}}"></sw-profile-editor>
+              </div>
+            </template>
+          </template>
+        </div>
+      </div>
+      <bs-modal id="modal-profile-rename" confirmBtnI18n="dialog_save"
+          shown="{{modalRenameProfile_newName != null}}"
+          validator="{{modalRenameProfile_isValid}}">
+        <h3 class="modal-title" data-i18n="options_modalHeader_renameProfile"></h3>
+        <div class="form-horizontal">
+          <div class="control-group {{iif(modalRenameProfile_isValid(), '', 'error')}}">
+            <label class="control-label" for="profile-rename-new-name" data-i18n="options_newProfileName"></label>
+            <div class="controls">
+              <input type="text" id="profile-rename-new-name" value="{{modalRenameProfile_newName}}" required="required" />
+              <span class="help-inline">
+                <template if="{{!modalRenameProfile_isValid()}}">
+                  <span data-i18n="{{iif(modalRenameProfile_newName.isEmpty, 'options_profileNameEmpty', 'options_profileNameConflict')"></span>
+                </template>
+              </span>
+            </div>
+          </div>
+        </div>
+      </bs-modal>
+      <bs-modal id="modal-profile-delete" confirmBtnI18n="options_deleteProfile" confirmBtnClass="btn-danger"
+          shown="{{modalDeleteProfile_profile != null}}">
+        <h3 class="modal-title" data-i18n="options_modalHeader_deleteProfile"></h3>
+        <p data-i18n="options_deleteProfileConfirm"></p>
+        <div class="well">
+          <span class="profile-color" style="background-color: {{modalDeleteProfile_profile.color}};"></span>
+          <span>{{modalDeleteProfile_profile.name}}</span>
+        </div>
+      </bs-modal>
+      <bs-modal id="modal-profile-cannot-delete"
+          shown="{{modalCannotDeleteProfile_referring != null}}">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">×</button>
+          <h3 data-i18n="options_modalHeader_cannotDeleteProfile"></h3>
+        </div>
+        <div>
+          <p data-i18n="options_profileReferredBy"></p>
+          <div class="well">
+            <ul>
+              <template repeat="{{profile in modalCannotDeleteProfile_referring}}">
+                <li>
+                  <span class="profile-color" style="background-color: {{profile.color}};"></span>
+                  <span>{{profile.name}}</span>
+                </li>
+              </template>
+            </ul>
+          </div>
+          <p data-i18n="options_modifyReferringProfiles"></p>
+        </div>
+        <div class="modal-footer">
+          <a href="#" class="btn" data-dismiss="modal" data-i18n="dialog_ok"></a>
+        </div>
+      </bs-modal>
+      <bs-modal id="modal-rule-delete" confirmBtnI18n="options_deleteRule" confirmBtnClass="btn-danger"
+          shown="{{modalDeleteRule_rule != null}}">
+        <h3 class="modal-title" data-i18n="options_modalHeader_deleteRule"></h3>
+        <template if="{{modalDeleteRule_rule != null}}">
+          <p data-i18n="options_deleteRuleConfirm"></p>
+          <div class="well">
+            <span class="label label-info">{{conditionTypesDisplay[modalDeleteRule_rule.condition.conditionType]}}</span>
+            <template if="{{modalDeleteRule_rule_condition_is_PatternBasedCondition}}">
+              {{modalDeleteRule_rule.condition.pattern}}
+            </template>
+            <template if="{{modalDeleteRule_rule_condition_is_HostLevelsCondition}}">
+              {{modalDeleteRule_rule.condition.minValue}}
+              <span data-i18n="options_hostLevelsBetween"></span>
+              {{modalDeleteRule_rule.condition.maxValue}}
+            </template>
+            <span class="pull-right">
+              <span class="profile-color" style="background-color: {{options.profiles[modalDeleteRule_rule.profileName].color}};"></span>
+              <span>{{modalDeleteRule_rule.profileName}}</span>
+            </span>
+          </div>
+        </template>
+      </bs-modal>
+      <bs-modal id="modal-rule-reset" confirmBtnI18n="options_resetRules"
+          shown="{{modalResetRules_resultProfile != null}}">
+        <h3 class="modal-header" data-i18n="options_modalHeader_resetRules"></h3>
+        <p data-i18n="options_resetRulesConfirm"></p>
+        <div class="well">
+          <span class="profile-color" style="background-color: {{modalResetRules_resultProfile.color}};"></span>
+          <span>{{modalResetRules_resultProfile.name}}</span>
+        </div>
+      </bs-modal>
+      <bs-modal id="modal-profile-new" confirmBtnI18n="options_createProfile"
+          shown="{{modalNewProfile_name != null}}"
+          validator="{{modalNewProfile_isValid}}"
+          on-modalhide="{{newProfile}}">
+        <h3 class="modal-header" data-i18n="options_modalHeader_newProfile"></h3>
+        <div class="control-group {{iif(modalNewProfile_isValid(), '', 'error')}}">
+          <label class="control-label" for="profile-new-name" data-i18n="options_newProfileName"></label>
+          <div class="controls">
+            <input type="text" id="profile-new-name" value="{{modalNewProfile_name}}" required="required" />
+            <span class="help-inline">
+              <template if="{{!modalNewProfile_isValid()}}">
+                <span data-i18n="{{iif(modalNewProfile_name.isEmpty, 'options_profileNameEmpty', 'options_profileNameConflict')"></span>
+              </template>
+            </span>
+          </div>
+          <p data-i18n="options_profileType"></p>
+          <div class="well">
+            <template repeat="{{type in profileTypes}}">
+              <label class="radio">
+                <input type="radio" name="profile-new-type" value="{{type}}" checked="{{type == 'FixedProfile'}}">
+                <span class="profile-type">
+                  <i class="{{profileIcons[type]}}"></i>
+                  <span data-i18n="options_profileType{{type}}"></span>
+                </span>
+                <span class="help-inline" data-i18n="options_profileDesc{{type}}"></span>
+              </label>
+            </template>
+          </div>
+        </div>
+      </bs-modal>
+      <bs-modal id="modal-undo-changes" confirmBtnI18n="options_undo" confirmBtnClass="btn-danger">
+        <h3 class="modal-header" data-i18n="options_modalHeader_undoChanges"></h3>
+        <p data-i18n="options_undoChangesConfirm"></p>
+      </bs-modal>
+      <bs-modal id="modal-reset-options" confirmBtnI18n="options_reset" confirmBtnClass="btn-danger">
+        <h3 class="modal-header" data-i18n="options_modalHeader_resetOptions"></h3>
+        <p data-i18n="options_resetOptionsConfirm"></p>
+      </bs-modal>
+      <bs-alert id="alert" shown="{{alertShown}}" success="{{alertSuccess}}">
+        <span data-i18n="{{alertI18n}}"></span>
+      </bs-alert>
+    </template>
+  </template>
+</polymer-element>

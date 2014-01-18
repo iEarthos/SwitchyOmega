@@ -28,7 +28,7 @@ abstract class Profile extends Plainable with Observable {
   @observable String name;
 
   /** When overridden in derived classes, return the profile type. */
-  String get profileType;
+  @reflectable String get profileType;
 
   /**
     Colors can help to tell profiles from each other.
@@ -45,7 +45,7 @@ abstract class Profile extends Plainable with Observable {
     Whether this profile is a predefined profile.
     This can be overridden to prevent this profile from being deleted or changed.
   */
-  bool get predefined => false;
+  @reflectable bool get predefined => false;
 
   /** Create a [name]d profile. */
   Profile(String name, [this.color = null]) {

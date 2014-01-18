@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<link rel="import" href="sw_profile_editor_fixed.html" />
+<link rel="import" href="sw_rule_editor.html" />
+<polymer-element name="sw-profile-editor" lightdom>
+  <script type="application/dart" src="sw_profile_editor.dart"></script>
+  <template>
+    <header class="span10 profile-header">
+      <h2>
+        <input type="color" value="{{profile.color}}" />
+        <span data-i18n="options_profileTabPrefix"></span>
+        <span class="profile-name">{{profile.name}}</span>
+      </h2>
+      <div class="profile-toolbar">
+        <a class="profile-delete btn btn-info" on-click="requestProfileRename" data-profile-name="{{profile.name}}">
+          <i class="icon-pencil icon-white"></i>
+          <span data-i18n="options_renameProfile"></span>
+        </a>
+        <a class="profile-delete btn btn-danger" on-click="requestProfileDelete" data-profile-name="{{profile.name}}">
+          <i class="icon-trash icon-white"></i>
+          <span data-i18n="options_deleteProfile"></span>
+        </a>
+      </div>
+      <hr />
+    </header>
+    <template if="{{profile.profileType == 'FixedProfile'}}">
+      <sw-profile-editor-fixed profile="{{profile}}"></sw-profile-editor-fixed>
+    </template>
+    <template if="{{profile.profileType == 'PacProfile'}}">
+      <section class="settings-group">
+        <h3 data-i18n="options_group_pacUrl"></h3>
+        <div class="input-append">
+          <input type="url" class="pac-url input-xxlarge" value="{{profile.pacUrl}}" on-change="{{dispatchInput}}"/>
+          <a class="add-on clear-input btn">
+            <i class="icon-remove"></i>
+          </a>
+        </div>
+        <p class="help-block" data-i18n="options_pacUrlHelp"></p>
+      </section>
+      <section class="settings-group">
+        <h3 data-i18n="options_group_pacScript"></h3>
+        <p><button class="btn download-profile-now" data-i18n="options_downloadProfileNow" on-click="downloadProfileNow"
+            data-profile-name="{{profile.name}}" disabled?="{{profile.pacUrl == ''}}"></button></p>
+        <textarea class="pac-script input-xxlarge" disabled?="{{profile.pacUrl != ''}}" value="{{profile.pacScript}}"></textarea>
+      </section>
+    </template>
+    <template if="{{profile.profileType == 'SwitchProfile'}}">
+      <section class="settings-group">
+        <h3 data-i18n="options_group_switchRules"></h3>
+        <table class="switch-table table table-bordered table-condensed">
+          <thead>
+            <tr>
+              <th data-i18n="options_sort"></th>
+              <th data-i18n="options_conditionType"></th>
+              <th data-i18n="options_conditionDetails"></th>
+              <th data-i18n="options_resultProfile"></th>
+              <th data-i18n="options_conditionActions"></th>
+            </tr>
+          </thead>
+          <tbody class="conditions">
+            <tr template repeat="{{rule in profile.rules}}" is="sw-rule-editor"
+                rule="{{rule}}" profile="{{profile}}" resultProfiles="{{resultProfiles}}"></tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td style="border-right: none;"></td>
+              <td style="border-left: none;" colspan="4">
+                <a on-click="addRule" data-profile-name="{{profile.name}}" href="#"><i class="icon-plus"></i> <span data-i18n="options_addCondition"></span></a>
+              </td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td></td>
+              <td colspan="2" data-i18n="options_switchDefaultProfile"></td>
+              <td>
+                <select value="{{profile.defaultProfileName}}">
+                  <option template repeat="{{profile in resultProfiles}}" value="{{profile}}">{{profile}}</option>
+                </select>
+              </td>
+              <td>
+                <a on-click="requestResetRules" data-profile-name="{{profile.name}}" href="#"><i class="icon-chevron-up"></i></a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </template>
+    <template if="{{isRuleList}}">
+      <section class="settings-group">
+        <h3 data-i18n="options_group_ruleListResult"></h3>
+        <div class="h-control">
+          <label data-i18n="options_ruleListMatchProfile"></label>
+          <select value="{{profile.matchProfileName}}">
+            <option template repeat="{{profile in resultProfiles}}" value="{{profile}}">{{profile}}</option>
+          </select>
+        </div>
+        <div class="h-control">
+          <label data-i18n="options_ruleListDefaultProfile"></label>
+          <select value="{{profile.defaultProfileName}}">
+            <option template repeat="{{profile in resultProfiles}}" value="{{profile}}">{{profile}}</option>
+          </select>
+        </div>
+      </section>
+      <section class="settings-group">
+        <h3 data-i18n="options_group_ruleListUrl"></h3>
+        <div class="input-append">
+          <input type="url" class="rule-list-url input-xxlarge" value="{{profile.sourceUrl}}" on-change="{{dispatchInput}}"/>
+          <a class="add-on clear-input btn">
+            <i class="icon-remove"></i>
+          </a>
+        </div>
+        <p class="help-block" data-i18n="options_ruleListUrlHelp"></p>
+      </section>
+      <section class="settings-group">
+        <h3 data-i18n="options_group_ruleListText"></h3>
+        <p><button class="btn download-profile-now" data-i18n="options_downloadProfileNow" on-click="downloadProfileNow" data-profile-name="{{profile.name}}"
+            disabled="{{profile.sourceUrl == ''}}"></button></p>
+        <textarea class="rule-list-text input-xxlarge" disabled="{{!profile.sourceUrl == ''}}" value="{{profile.ruleList}}"></textarea>
+      </section>
+    </template>
+  </template>
+</polymer-element>

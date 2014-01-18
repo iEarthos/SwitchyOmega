@@ -27,7 +27,7 @@ void setup(GrinderContext context) {
   if (sdkDir == null) {
     context.fail("Error: DART_SDK environment variable is not set.");
   }
-  new PubTools().install(context);
+  new PubTools().get(context);
 
   if (FileSystemEntity.isLinkSync('web/packages')) {
     new Link('web/packages').deleteSync();
@@ -68,7 +68,7 @@ void setup(GrinderContext context) {
   }
 
   var packagesDir = getDir('web/packages');
-  
+
   for (FileSystemEntity entity in getDir('web').listSync(
         recursive: true, followLinks: false)) {
     if (entity is Link && fileName(entity) == 'packages') {

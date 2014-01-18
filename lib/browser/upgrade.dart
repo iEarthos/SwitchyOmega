@@ -154,7 +154,7 @@ socksVersion: 5
           }
           break;
         }
-        switchProfile.add(new Rule(c, rule['profileId']));
+        switchProfile.rules.add(new Rule(c, rule['profileId']));
       });
 
       options.profiles.add(switchProfile);

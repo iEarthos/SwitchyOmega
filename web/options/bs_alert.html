@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<polymer-element name="bs-alert">
+  <script type="application/dart" src="bs_alert.dart"></script>
+  <template>
+    <div class="alert alert-{{iif(success, 'success', 'error')}} alert-top-fixed {{iif(shown, 'alert-shown', '')}}">
+      <button type="button" class="close">×</button>
+      <i class="{{iif(success, 'icon-ok', 'icon-remove-sign')}}"></i>
+      <content></content>
+    </div>
+  </template>
+</polymer-element>

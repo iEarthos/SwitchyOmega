@@ -26,7 +26,7 @@ part of switchy_profile;
  * connected directly.
  */
 class FixedProfile extends IncludableProfile {
-  final String profileType = 'FixedProfile';
+  @reflectable final String profileType = 'FixedProfile';
 
   @observable ProxyServer proxyForHttp;
   @observable ProxyServer proxyForHttps;
@@ -37,6 +37,7 @@ class FixedProfile extends IncludableProfile {
    * When the url matches one of the [BypassConditions],
    * direct connection is used.
    */
+  @reflectable
   final ObservableList<BypassCondition> bypassList = toObservable([]);
 
   /**

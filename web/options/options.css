@@ -18,13 +18,13 @@
  * along with SwitchyOmega.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-body {
+.container-fluid {
   white-space: nowrap;
   padding: 0 !important;
   background-color: #fff;
 }
 
-body > * {
+.container-fluid > * {
   white-space: normal;
 }
 
@@ -118,7 +118,7 @@ body > * {
 #main {
 }
 
-header h1 {
+.navbar h1 {
   font-size: 1.2em;
   color: #5C6166;
   display: inline-block;
@@ -146,7 +146,18 @@ header > hr {
   padding-top: 70px;
 }
 
-.tab-pane header {
+.tab-content>*>.tab-pane,
+.pill-content>*>.pill-pane {
+  display: none;
+}
+
+.tab-content>*>.active,
+.pill-content>*>.active {
+  display: block;
+}
+
+.tab-pane header,
+.profile-header {
   background-color: rgba(255, 255, 255, 0.6);
   background-image: -webkit-linear-gradient(top, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.6));
   background-image:    -moz-linear-gradient(top, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.6));
@@ -164,6 +175,10 @@ header > hr {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.modal-body {
+  padding: 0;
 }
 
 /* Responsive */
@@ -339,6 +354,10 @@ input[type="color"] {
           transition: top 1s ease-in-out;
 }
 
+.alert-shown {
+  top: 0;
+}
+
 /* Sortable helpers */
 
 .sort-bar {
@@ -391,7 +410,7 @@ input[type="color"] {
 
 /* Quick Switch */
 
-#quick-switch-settings {
+#quick-switch-settings.hide {
   display: none;
 }
 

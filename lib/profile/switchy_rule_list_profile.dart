@@ -26,7 +26,7 @@ part of switchy_profile;
  * https://code.google.com/p/switchy/wiki/RuleList
  */
 class SwitchyRuleListProfile extends RuleListProfile {
-  final String profileType = 'SwitchyRuleListProfile';
+  @reflectable final String profileType = 'SwitchyRuleListProfile';
 
   SwitchyRuleListProfile(String name, String defaultProfileName,
       String matchProfileName)

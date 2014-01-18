@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<polymer-element name="sw-profile-editor-fixed">
+  <script type="application/dart" src="sw_profile_editor_fixed.dart"></script>
+  <template>
+    <template if="{{profile != null}}">
+      <section class="settings-group">
+        <h3 data-i18n="options_group_proxyServers"></h3>
+        <table class="fixed-servers table table-bordered table-striped">
+          <thead>
+            <tr>
+              <th data-i18n="options_proxy_scheme"></th>
+              <th data-i18n="options_proxy_protocol"></th>
+              <th data-i18n="options_proxy_server"></th>
+              <th data-i18n="options_proxy_port"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr template repeat="{{proxy in proxies}}">
+              <td>
+                <template if="{{proxy.scheme == ''}}">
+                  <span data-i18n="options_scheme_default"></span>
+                </template>
+                <template if="{{proxy.scheme != ''}}">
+                  <span>{{proxy.scheme}}://</span>
+                </template>
+              </td>
+              <td>
+                <select class="input-medium"
+                    value="{{proxy.protocol}}">
+                  <option value="" data-i18n="{{iif(proxy.isDefault, 'options_protocol_direct', 'options_protocol_useDefault')}}"></option>
+                  <option value="http">HTTP</option>
+                  <option value="https">HTTPS</option>
+                  <option value="socks4">SOCKS4</option>
+                  <option value="socks5">SOCKS5</option>
+                </select>
+              </td>
+              <td>
+                <input type="text" value="{{proxy.host}}"
+                    placeholder="{{iif(proxy.isDefault, '', proxy.profileEditor[''].host)}}" />
+              </td>
+              <td>
+                <input type="number" min="1" class="input-small"
+                    value="{{proxy.portAsString}}"
+                    placeholder="{{ifNull(proxy.defaultPort, '').toString()}}" />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+      <section class="settings-group">
+        <h3 data-i18n="options_group_bypassList"></h3>
+        <p class="help-block" data-i18n="options_bypassListHelp"></p>
+        <textarea class="bypass-list input-xxlarge" on-change="{{onBypassListChange}}">{{bypassListToText(profile.bypassList)}}</textarea>
+      </section>
+    </template>
+  </template>
+</polymer-element>

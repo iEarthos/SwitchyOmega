@@ -1,6 +1,6 @@
 /*!
- * Copyright (C) 2012-2013, The SwitchyOmega Authors. Please see the AUTHORS file
- * for details.
+ * Copyright (C) 2012-2013, The SwitchyOmega Authors. Please see the AUTHORS
+ * file for details.
  *
  * This file is part of SwitchyOmega.
  *
@@ -20,49 +20,92 @@
 
 (function () {
   'use strict';
-  // Forbid direct view on this page
-  if (window.top === window) {
-    location.href = location.href.replace(".html", "_safe.html");
-  }
+  /* jshint jquery: true */
+  /* global chrome: false, Communicator: false, strings: false */
+  /* global i18nDict: false, i18nTemplate: false */
 
   // Dart uses symbol $ in generated scripts.
   jQuery.noConflict();
   var $ = jQuery;
 
-  var c = new Communicator(window.top);
+  // document.register is renamed to document.registerElement recently.
+  document.register = document.register || document.registerElement;
+
+  var storage = chrome.storage.local;
+
   var dart = new Communicator(window);
 
-  var i18n = null;
-  c.send('i18n.cache', null, function (cache) {
-    i18n = new i18nDict(cache);
-    var MutationObserver = window.MutationObserver ||
-                           window.WebKitMutationObserver;
-    new MutationObserver(function (mutations) {
-      mutations.forEach(function (record) {
-        switch (record.type) {
-          case 'attributes':
-            i18nTemplate.process(record.target, i18n);
-            break;
-          case 'childList':
-            for (var i = 0; i < record.addedNodes.length; i++) {
-              if (record.addedNodes[i] instanceof Element) {
-                i18nTemplate.process(record.addedNodes[i], i18n);
-              }
-            }
-            break;
-        }
-      });
-    }).observe(document, {
-        childList: true,
-        attributes: true,
-        subtree: true
-    });
-    i18nTemplate.process(document, i18n);
+  var i18nCache = {};
+  strings.forEach(function (name) {
+    i18nCache[name] = chrome.i18n.getMessage(name);
   });
+  var i18n = new i18nDict(i18nCache); // jshint ignore:line
+  window.i18n = new i18nDict(i18nCache); // jshint ignore:line
 
-  var lastTab = null;
+  var MutationObserver = window.MutationObserver ||
+    window.WebKitMutationObserver;
+  var ob = new MutationObserver(function (mutations) {
+    mutations.forEach(function (record) {
+      switch (record.type) {
+        case 'attributes':
+          i18nTemplate.process(record.target, i18n);
+          break;
+        case 'childList':
+          for (var i = 0; i < record.addedNodes.length; i++) {
+            var ele = record.addedNodes[i];
+            if (ele instanceof Element) {
+              i18nTemplate.process(ele, i18n);
+            }
+          }
+          break;
+      }
+    });
+  });
+  ob.observe(document, {
+    childList: true,
+    attributes: true,
+    subtree: true
+  });
+  window.onShadowHostReady = function (shadowHost) {
+    var shadowRoot = shadowHost.shadowRoot || shadowHost.webkitShadowRoot ||
+        shadowHost.mozShadowRoot;
+    // Use shadowHost in case that Shadow DOM is being polyfilled.
+    shadowRoot = shadowRoot || shadowHost;
+    i18nTemplate.process(shadowRoot, i18n);
+    ob.observe(shadowRoot, {
+      childList: true,
+      attributes: true,
+      subtree: true
+    });
+  };
+  i18nTemplate.process(document, i18n);
 
-  c.on({
+  window.bsShowModal = function (modal) {
+    modal = $(modal);
+    if (!modal.data('bs-modal-handler')) {
+      modal.on('hide', function () {
+        modal[0].dispatchEvent(new CustomEvent('modalhide'));
+      });
+      modal.data('bs-modal-handler', 'installed');
+    }
+    modal.modal('show');
+  };
+  window.bsHideModal = function (modal) {
+    $(modal).modal('hide');
+  };
+
+  var lastTab = location.hash || localStorage['options_last_tab'];
+  var loadOptions = function (respond) {
+    storage.get(null, function (items) {
+      respond({
+        'options': items,
+        'tab': localStorage['options_last_tab'],
+        'currentProfileName': localStorage['currentProfileName'] || 'direct'
+      });
+    });
+  };
+
+  dart.on({
     'options.init': function () {
       // Sortable
       var containers = $('.cycle-profile-container');
@@ -71,36 +114,31 @@
         tolerance: 'pointer',
         axis: 'y',
         forceHelperSize: true,
-        forcePlaceholderSize: true,
+        forcePlaceholderSize: true
+      }).disableSelection();
+      $('#cycle-enabled').sortable({
         update: function () {
           dart.send('quickswitch.update');
         }
-      }).disableSelection();
-      var quickSwitch = $('#quick-switch');
-      quickSwitch.change(function () {
-        if (quickSwitch[0].checked) {
-          containers.sortable('enable');
-          $('#quick-switch-settings').slideDown();
-        } else {
-          containers.sortable('disable');
-          $('#quick-switch-settings').slideUp();
-        }
       });
-      $('#quick-switch').change();
+      containers.data('cycleSortable', 'true');
 
       // Memorize Tab
       $('#options-nav').on('shown', 'a[data-toggle="tab"]', function (e) {
         lastTab = e.target.getAttribute('href');
-        c.send('tab.set', lastTab);
+        localStorage['options_last_tab'] = lastTab;
       });
 
       // Restore options from local files.
-      $('#restore-local').on('click', function (e) {
+      $('#restore-local').on('click', function () {
         $('#restore-local-file').click();
       });
     },
     'quickswitch.refresh': function () {
-      $('.cycle-profile-container').sortable('refresh');
+      var containers = $('.cycle-profile-container');
+      if (containers.data('cycleSortable')) {
+        containers.sortable('refresh');
+      }
     },
     'tab.set': function (tabhref) {
       tabhref = tabhref || lastTab;
@@ -119,88 +157,49 @@
       }
       tab.tab('show');
     },
-    'modal.profile.delete': function (_, reply) {
-      var modal = $('#modal-profile-delete');
-      var button = $('#profile-delete-confirm');
-      var on_click = function () {
-        modal.off('hidden', on_hidden);
-        button.off('click', on_click);
-        reply('delete');
-      };
-      var on_hidden = function () {
-        modal.off('hidden', on_hidden);
-        button.off('click', on_click);
-        reply('dismiss');
-      };
-      button.on('click', on_click);
-      modal.on('hidden', on_hidden);
-      modal.modal();
-    },
-    'modal.profile.cannotDelete': function (_, reply) {
-      var modal = $('#modal-profile-cannot-delete');
-      var on_hidden = function () {
-        modal.off('hidden', on_hidden);
-        reply();
-      };
-      modal.on('hidden', on_hidden);
-      modal.modal();
-    },
-    'modal.profile.rename': function (_, reply) {
-      var modal = $('#modal-profile-rename');
-      var button = $('#profile-rename-save');
-      var on_click = function () {
-        if (button.is('.disabled')) {
-          return false;
-        }
-        modal.off('hidden', on_hidden);
-        button.off('click', on_click);
-        reply('rename');
-      };
-      var on_hidden = function () {
-        modal.off('hidden', on_hidden);
-        button.off('click', on_click);
-        reply('dismiss');
-      };
-      button.on('click', on_click);
-      modal.on('hidden', on_hidden);
-      modal.modal();
-    },
-    'modal.rule.delete': function (_, reply) {
-      var modal = $('#modal-rule-delete');
-      var button = $('#rule-delete-confirm');
-      var on_click = function () {
-        modal.off('hidden', on_hidden);
-        button.off('click', on_click);
-        reply('delete');
-      };
-      var on_hidden = function () {
-        modal.off('hidden', on_hidden);
-        button.off('click', on_click);
-        reply('dismiss');
-      };
-      button.on('click', on_click);
-      modal.on('hidden', on_hidden);
-      modal.modal();
-    },
-    'modal.rule.reset': function (_, reply) {
-      var modal = $('#modal-rule-reset');
-      var button = $('#rule-reset-confirm');
-      var on_click = function () {
-        modal.off('hidden', on_hidden);
-        button.off('click', on_click);
-        reply('reset');
-      };
-      var on_hidden = function () {
-        modal.off('hidden', on_hidden);
-        button.off('click', on_click);
-        reply('dismiss');
-      };
-      button.on('click', on_click);
-      modal.on('hidden', on_hidden);
-      modal.modal();
-    },
     'file.saveAs': function (data, reply) {
+      /* global saveAs: false */
       saveAs(new Blob([data.content]), data.name);
+      reply();
+    },
+    'ajax.get': function (url, respond) {
+      jQuery.ajax({
+        url: url,
+        cache: false,
+        dataType: 'text',
+        success: function (data) {
+          respond({'data': data});
+        },
+        error: function (_, status, error) {
+          respond({'status': status, 'error': error});
+        }
+      });
+    },
+    'error.log': function (data) {
+      window.onerror(data.message, data.url, data.line);
+    },
+    'options.get': function (data, respond) {
+      loadOptions(respond);
+    },
+    'options.reset': function (data, respond) {
+      chrome.runtime.sendMessage({
+        action: 'options.reset'
+      }, function () {
+        loadOptions(respond);
+      });
+    },
+    'storage.get': function (keys, respond) {
+      storage.get(keys, respond);
+    },
+    'storage.set': function (items, respond) {
+      storage.set(items, respond);
+    },
+    'storage.remove': function (keys, respond) {
+      if (keys == null) {
+        storage.clear(respond);
+      } else {
+        storage.remove(keys, respond);
+      }
     }
   });
 
@@ -209,45 +208,44 @@
     var MutationObserver = window.MutationObserver ||
                            window.WebKitMutationObserver;
     new MutationObserver(function (mutations) {
+      var handleConditions = function (_, e) {
+        var tb = $(e);
+        tb.disableSelection().sortable({
+          handle: '.sort-bar',
+          tolerance: 'pointer',
+          axis: 'y',
+          forceHelperSize: true,
+          forcePlaceholderSize: true,
+          containment: 'parent',
+          start: function (e, ui) {
+            ui.item.data('index-old', ui.item.index());
+          },
+          update: function (e, ui) {
+            ui.item.attr('data-index-old', ui.item.data('index-old'));
+            ui.item.attr('data-index-new', ui.item.index());
+            var evt = document.createEvent('CustomEvent');
+            evt.initCustomEvent('x-sort', true, false, null);
+            ui.item[0].dispatchEvent(evt);
+
+            ui.item.removeAttr('data-index-old');
+            ui.item.removeAttr('data-index-new');
+          }
+        });
+      };
       mutations.forEach(function (record) {
         switch (record.type) {
           case 'childList':
             for (var i = 0; i < record.addedNodes.length; i++) {
               if (record.addedNodes[i] instanceof Element) {
-                $('.conditions', record.addedNodes[i]).each(function (_, e) {
-                  var tb = $(e);
-                  tb.disableSelection().sortable({
-                    handle: '.sort-bar',
-                    tolerance: 'pointer',
-                    axis: 'y',
-                    forceHelperSize: true,
-                    forcePlaceholderSize: true,
-                    containment: 'parent',
-                    start: function (e, ui) {
-                      ui.item.data('index-old', ui.item.index());
-                    },
-                    update: function (e, ui) {
-                      ui.item.attr('data-index-old',
-                          ui.item.data('index-old'));
-                      ui.item.attr('data-index-new', ui.item.index());
-
-                      var evt = document.createEvent('CustomEvent');
-                      evt.initCustomEvent('x-sort', true, false, null);
-                      ui.item[0].dispatchEvent(evt);
-
-                      ui.item.removeAttr('data-index-old');
-                      ui.item.removeAttr('data-index-new');
-                    }
-                  });
-                });
+                $('.conditions', record.addedNodes[i]).each(handleConditions);
               }
             }
             break;
         }
       });
     }).observe(document, {
-        childList: true,
-        subtree: true
+      childList: true,
+      subtree: true
     });
 
     var fireInputAndChangeEvent = function (target) {
@@ -260,27 +258,9 @@
       target.dispatchEvent(evt);
     };
 
-    // Create new profiles
-    $('body').on('click', '#profile-new-create', function (e) {
-      if ($('#profile-new-create').is('.disabled')) return;
-      var type = $('input[name="profile-new-type"]:checked').val();
-      dart.send('profile.create', type);
-    });
-
-    // Undo changes
-    $('body').on('click', '#undo-changes-confirm', function (e) {
-      dart.send('options.undo', null);
-    });
-
-    // Reset options
-    $('body').on('click', '#reset-options-confirm', function (e) {
-      if ($('#reset-options-confirm').is('.disabled')) return;
-      dart.send('options.reset', null);
-    });
-
     // Click anywhere to close alert.
-    $(document).on('click', function (e) {
-      $('.alert').css('top', '-100%');
+    $(document).on('click', function () {
+      $('#alert')[0].dispatchEvent(new CustomEvent('alerthide'));
     });
 
     // Clear input
@@ -303,11 +283,12 @@
           var handler = function () {
             if (input.val()) {
               button.removeClass('revert');
-              button.find('i').removeClass('icon-repeat').addClass('icon-remove');
+              $('i', button).removeClass('icon-repeat').addClass('icon-remove');
               input.off(eventMap);
             }
           };
-          var eventMap = {'change': handler, 'keyup': handler, 'keydown': handler};
+          var eventMap = {'change': handler, 'keyup': handler,
+            'keydown': handler};
           input.on(eventMap);
         }
       }

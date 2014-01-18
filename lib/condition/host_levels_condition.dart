@@ -53,7 +53,13 @@ class HostLevelsCondition extends HostCondition {
     }
   }
 
-  HostLevelsCondition([this.minValue = 0, this.maxValue = 0]);
+  HostLevelsCondition([this.minValue = 0, this.maxValue = 0]) {
+    this.changes.listen((_) {
+      if (maxValue < minValue) {
+        maxValue = minValue;
+      }
+    });
+  }
 
   Map<String, Object> toPlain([Map<String, Object> p]) {
     p = super.toPlain(p);

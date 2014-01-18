@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<polymer-element name="sw-rule-editor" extends="tr" lightdom>
+  <script type="application/dart" src="sw_rule_editor.dart"></script>
+  <template>
+    <td class="sort-bar">
+      <i class="icon-resize-vertical"></i>
+    </td>
+    <td>
+      <template if="{{rule != null}}">
+        <select value="{{conditionType}}">
+          <option template repeat="{{type in conditionTypes}}"
+              value="{{type}}" data-i18n="{{conditionTypesDisplay[type]}}"></option>
+        </select>
+      </template>
+    </td>
+    <td>
+      <template if="{{rule != null}}">
+        <template if="{{isPatternBasedCondition}}">
+          <input type="url" class="" value="{{pattern}}" />
+        </template>
+        <template if="{{conditionType == 'HostLevelsCondition'}}">
+          <input type="number" min="1" max="99" class="input-small"
+              value="{{rule.condition.minValue | int2str}}" />
+          <span data-i18n="options_hostLevelsBetween">≤ host levels ≤</span>
+          <input type="number" min="{{rule.condition.minValue.toString()}}" max="99" class="input-small"
+              value="{{rule.condition.maxValue | int2str}}" />
+        </template>
+      </template>
+    </td>
+    <td>
+      <template if="{{rule != null}}">
+        <select value="{{rule.profileName}}"">
+          <option template repeat="{{profile in resultProfiles}}" value="{{profile}}">{{profile}}</option>
+        </select>
+      </template>
+    </td>
+    <td>
+      <a on-click="{{requestRemoveRule}}" data-profile-name="{{profile.name}}" href="#"><i class="icon-trash"></i></a>
+    </td>
+  </template>
+</polymer-element>

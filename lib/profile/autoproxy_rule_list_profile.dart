@@ -26,7 +26,7 @@ part of switchy_profile;
  * https://autoproxy.org/zh-CN/node/19
  */
 class AutoProxyRuleListProfile extends RuleListProfile {
-  final String profileType = 'AutoProxyRuleListProfile';
+  @reflectable final String profileType = 'AutoProxyRuleListProfile';
 
   AutoProxyRuleListProfile(String name, String defaultProfileName,
       String matchProfileName)

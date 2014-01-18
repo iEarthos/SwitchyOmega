@@ -26,7 +26,7 @@ part of switchy_profile;
  * modifications to the [inner] tracker.
  */
 class TempProfileTracker extends ProfileTracker {
-  final ProfileTracker inner;
+  @reflectable final ProfileTracker inner;
 
   TempProfileTracker(this.inner);
 

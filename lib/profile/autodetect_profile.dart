@@ -25,10 +25,10 @@ part of switchy_profile;
  * script which can be downloaded at <http://wpad/wpad.dat>.
  */
 class AutoDetectProfile extends PacProfile {
-  final String profileType = 'AutoDetectProfile';
-  final bool predefined = true;
+  @reflectable final String profileType = 'AutoDetectProfile';
+  @reflectable final bool predefined = true;
 
-  final String pacUrl = 'http://wpad/wpad.dat';
+  @reflectable final String pacUrl = 'http://wpad/wpad.dat';
 
   AutoDetectProfile._private() : super('auto_detect') {
     this.color = ProfileColors.auto_detect;

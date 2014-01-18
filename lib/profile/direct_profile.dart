@@ -24,8 +24,8 @@ part of switchy_profile;
  * When this profile is applied, no proxy should be used.
  */
 class DirectProfile extends IncludableProfile {
-  final String profileType = 'DirectProfile';
-  final bool predefined = true;
+  @reflectable final String profileType = 'DirectProfile';
+  @reflectable final bool predefined = true;
 
   void writeTo(CodeWriter w) {
     w.inline("['DIRECT']");

@@ -24,3 +24,5 @@ export 'condition/lib.dart';
 export 'package:switchyomega/lang/lib.dart';
 export 'profile/lib.dart';
 export 'package:switchyomega/html/lib.dart';
+export 'package:switchyomega/browser/lib.dart';
+export 'package:switchyomega/browser/message/lib.dart';

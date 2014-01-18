@@ -24,8 +24,8 @@ part of switchy_profile;
  * This profile instructs the brower to use settings from the enviroment.
  */
 class SystemProfile extends Profile {
-  final String profileType = 'SystemProfile';
-  final bool predefined = true;
+  @reflectable final String profileType = 'SystemProfile';
+  @reflectable final bool predefined = true;
 
   SystemProfile._private() : super('system') {
     this.color = ProfileColors.system;

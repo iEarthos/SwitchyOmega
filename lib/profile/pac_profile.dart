@@ -25,7 +25,7 @@ part of switchy_profile;
  * If [pacUrl] is not null, the script is downloaded from [pacUrl].
  */
 class PacProfile extends ScriptProfile implements UpdatingProfile {
-  String get profileType => 'PacProfile';
+  @reflectable String get profileType => 'PacProfile';
 
   @observable String pacUrl = '';
 

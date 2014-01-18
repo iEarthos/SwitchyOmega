@@ -25,9 +25,9 @@ part of switchy_profile;
  * or the [defaultProfileName] if no rule matches.
  */
 class SwitchProfile extends InclusiveProfile with Observable {
-  String get profileType => 'SwitchProfile';
+  @reflectable String get profileType => 'SwitchProfile';
 
-  final ObservableList<Rule> rules = toObservable([]);
+  @reflectable final ObservableList<Rule> rules = toObservable([]);
 
   void initTracker(ProfileTracker tracker) {
     tracker.addReferenceByName(this, defaultProfileName);

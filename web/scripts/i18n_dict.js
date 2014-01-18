@@ -25,6 +25,7 @@ function i18nDict(data) {
 }
 
 i18nDict.prototype.getValue = function (name) {
+  if (!name) return '';
   var data = this.data;
   var result = data[name];
   if (typeof result === 'undefined') {

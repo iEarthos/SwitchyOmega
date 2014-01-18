@@ -42,9 +42,10 @@ class SwitchyOptions extends Plainable with Observable {
    */
   @observable int downloadInterval;
 
-  final ObservableList<String> quickSwitchProfiles = toObservable([]);
+  @observable final ObservableList<String> quickSwitchProfiles =
+      toObservable([]);
 
-  final ProfileCollection profiles = new ProfileCollection();
+  @observable final ProfileCollection profiles = new ProfileCollection();
 
   Profile getProfileByName(String name) {
     return profiles[name];
@@ -212,7 +213,7 @@ class StoredSwitchyOptions extends SwitchyOptions {
   }
 
   Future storeAll() {
-    for (var p in profiles) {
+    for (var p in profiles.values) {
       p.revision = new DateTime.now().millisecondsSinceEpoch.toRadixString(16);
     }
     var items = this.toPlain();
