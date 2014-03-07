@@ -3,7 +3,7 @@ dependencies:
   browser: any
   crypto: any
   json: any
-  polymer: '>=0.9.1 <0.10.0'
+  polymer: any
   grinder: any
   yaml: any
   path: any

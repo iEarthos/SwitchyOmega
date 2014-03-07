@@ -78,6 +78,7 @@ class SwOptionsElement extends PolymerElement with SwitchyOptionsUtils {
   }
 
   @reflectable void exportPac(_, __, ___) {
+    print(8);
     var current = options.profiles[currentProfileName];
     if (current is ScriptProfile) {
       js.send('file.saveAs', {

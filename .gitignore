@@ -15,7 +15,7 @@ out
 
 ## Pub Package Manager
 packages
-deploy
+build
 
 # Chromium Extension
 *.pem

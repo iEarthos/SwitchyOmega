@@ -72,9 +72,9 @@ class ProxyServerEditor extends Observable {
     if (_isEmpty || _host == '') return null;
     return new ProxyServer(_host, _protocol, _port);
   }
-  SwProfileEditorFixedElement profileEditor = null;
-  final String scheme;
-  bool get isDefault => scheme == '';
+  @reflectable SwProfileEditorFixedElement profileEditor = null;
+  @reflectable final String scheme;
+  @reflectable bool get isDefault => scheme == '';
 
   ProxyServerEditor(this.profileEditor, this.scheme,
       [ProxyServer proxy = null]) {
@@ -107,9 +107,8 @@ class ProxyServerEditor extends Observable {
 
   String _protocol = defaultProtocol;
 
-  @observable
-  String get protocol => _isEmpty ? '' : _protocol;
-  void set protocol(String value) {
+  @observable String get protocol => _isEmpty ? '' : _protocol;
+  @observable void set protocol(String value) {
     if (value == '') {
       _isEmpty = true;
     } else {
@@ -125,7 +124,7 @@ class ProxyServerEditor extends Observable {
 
   @observable
   String get host => _isEmpty ? '' : _host;
-  void set host(String value) {
+  @observable void set host(String value) {
     _host = value;
     _isEmpty = _host == '';
     this.notifyPropertyChange(#host, null, host);
@@ -135,9 +134,8 @@ class ProxyServerEditor extends Observable {
 
   @observable int _port = null;
 
-  @observable
-  String get portAsString => _isEmpty ? '' : _port.toString();
-  void set portAsString(String value) {
+  @observable String get portAsString => _isEmpty ? '' : _port.toString();
+  @observable void set portAsString(String value) {
     if (value == '') {
       _port = null;
     } else {
